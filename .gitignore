@@ -1,6 +1,12 @@
 node_modules
 dist
 .tmp
+.tmp/
 .sass-cache
 bower_components
 test/bower_components
+.thumbs
+.db
+ehthumbs.db
+build/
+dist/
