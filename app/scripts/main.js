@@ -43,7 +43,7 @@ var game = {
 
     },
 
-    board: [9],
+    board: [null, null, null, null, null, null, null, null, null],
     //9 possible positions Null==Empty, True==Player1, False==Player2
 
     moveFromTo: function(player, from, to) {
@@ -65,7 +65,7 @@ var game = {
             this.turns++;
             this.storeMoves(from, to);
             console.log("Successful Movement, From: %s To: %s For %s", from, to, player ? 'X' : 'O');
-            //this.trackcurrent(this.board);
+            this.trackcurrent(this.board);
             if (this.isWinIn(player, board)) {
                 console.log("%c%s Won!", "color:red;font-size:20px;", this.getName(player));
                 this.newGame();
@@ -132,8 +132,9 @@ var game = {
     moves: [],
     //contains all moves within a game for storage and playback on reset, first element contains the initial board on which to apply the moves, moves.length+4 is how many turns passed in the game
     storeMoves: function(from, to) {
-        var arr = [from, to];
-        this.moves.push(arr);
+
+        this.moves.push([from, to]);
+
     },
 
     load: function() {
@@ -149,13 +150,36 @@ var game = {
         this.wipeBoard();
         this.fillBoard();
 
+
     },
     //updates HUD to current values
     wipeBoard: function() {
-
+        if (document.getElementById("board")) {
+            document.getElementById("board").innerHTML = "";
+        }
     },
     fillBoard: function() {
-
+        var begining = "",
+            rowOne = "",
+            rowTwo = "",
+            rowThree = "",
+            end = "",
+            empty = "",
+            flase = "",
+            ture = "",
+            board = this.board;
+        for (var i = 0, l = board.length; i < l; i++) {
+            if (i / 3 < 1) {
+                rowOne += board[i] ? ture : board[i] === null ? empty : flase;
+            } else if (i / 3 < 2) {
+                rowTwo += board[i] ? ture : board[i] === null ? empty : flase;
+            } else {
+                rowThree += board[i] ? ture : board[i] === null ? empty : flase;
+            }
+        }
+        if (document.getElementById("board")) {
+            document.getElementById("board").innerHTML = begining + rowOne + end + begining + rowTwo + end + begining + rowThree + end;
+        }
     },
     newGame: function() {
         this.save();
@@ -851,10 +875,8 @@ console.time("Lets see how long it takes");
 game.chooseBestMove(true, game.board);
 console.timeEnd("Lets see how long it takes");
 var c = 0;
-console.time("Lets see how long it takes");
 while (game.turns !== 0 && c < 10) {
     game.chooseBestMove(c % 2 == 1, game.board);
     c++;
 }
-console.timeEnd("Lets see how long it takes");
 console.log("It took %s rounds to win using the AI against itself!", game.toInt(c / 2));
