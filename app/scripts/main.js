@@ -149,8 +149,6 @@ var game = {
         this.trackcurrent(this.board);
         this.wipeBoard();
         this.fillBoard();
-
-
     },
     //updates HUD to current values
     wipeBoard: function() {
@@ -159,6 +157,7 @@ var game = {
         }
     },
     fillBoard: function() {
+        //maybe using reactor js so this maybe be unneccsary
         var begining = "",
             rowOne = "",
             rowTwo = "",
