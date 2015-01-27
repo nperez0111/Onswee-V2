@@ -36,26 +36,10 @@
                 <h3 class="text-muted">onsweev2</h3>
             </div>
 
-            <div class="jumbotron">
-                <h1>'Allo, 'Allo!</h1>
-                <p class="lead">Always a pleasure scaffolding your apps.</p>
-                <p><a class="btn btn-lg btn-success" href="#">Splendid! <span class="glyphicon glyphicon-ok"></span></a></p>
-            </div>
-
-            <div class="row marketing">
-                <div class="col-lg-6">
-                    <h4>HTML5 Boilerplate</h4>
-                    <p>HTML5 Boilerplate is a professional front-end template for building fast, robust, and adaptable web apps or sites.</p>
-
-                    <h4>Sass</h4>
-                    <p>Sass is a mature, stable, and powerful professional grade CSS extension language.</p>
-
-
-                    <h4>Bootstrap</h4>
-                    <p>Sleek, intuitive, and powerful mobile first front-end framework for faster and easier web development.</p>
-
-
-                </div>
+            <div id="gameBoard">
+            
+                
+            
             </div>
 
             <div class="footer">
@@ -69,6 +53,33 @@
         <!-- bower:js -->
         <script src="../bower_components/jquery/dist/jquery.js"></script>
         <script src="../bower_components/ractive/ractive.js"></script>
+        <script id='template' type='text/ractive'>
+            
+                    {{#each board:i}}
+                    
+                    <div class="boardPlaceHolder {{'b'+(i+1)}}" id="drop{{i}}" ondrop="drop(event)" ondragover="allowDrop(event)" onclick="game.placePiece(game.turns%2==0?true:false,{{i}})">
+                    
+                        {{#if (board[i] !== null)}}
+                        
+                            <div class="{{board[i] ? 'P1':'P2'}}" id="drag{{i}}" draggable="true" ondragstart="whichAmI(event)">
+                            
+                                {{board[i] ? 'P1':'P2'}}
+                                
+                            </div>
+                            
+                            {{else}}
+                            
+                            
+                            
+                        {{/if}}
+                        
+                    </div>
+                    
+                    {{/each}}
+               
+          </script>
+        
+         
         <!-- endbower -->
         <!-- endbuild -->
 
@@ -100,5 +111,5 @@
         <!-- build:js({app,.tmp}) scripts/main.js -->
         <script src="scripts/main.js"></script>
         <!-- endbuild -->
-</body>
+    </body>
 </html>

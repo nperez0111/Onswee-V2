@@ -30,6 +30,27 @@ Array.prototype.clone = function() {
 };
 //provides a clone method for arrays
 
+function allowDrop(ev) {
+    ev.preventDefault();
+}
+
+function whichAmI(ev) {
+    if ((game.turns % 2 === 0) == game.board[game.toInt(ev.target.id.replace(/^\D+/g, ""))]) {
+        ev.dataTransfer.setData("which", ev.target.id.replace(/^\D+/g, ""));
+    } else {
+        game.illegal("It's the other player's turn!");
+    }
+}
+
+function drop(ev) {
+    ev.preventDefault();
+    if (ev.dataTransfer.getData("which")) {
+        var drag = game.toInt(ev.dataTransfer.getData("which")),
+            dropp = game.toInt(ev.target.id.replace(/^\D+/g, ""));
+        game.moveFromTo(game.board[drag], drag, dropp);
+    }
+}
+
 var game = {
 
     init: function() {
@@ -45,7 +66,10 @@ var game = {
 
     board: [null, null, null, null, null, null, null, null, null],
     //9 possible positions Null==Empty, True==Player1, False==Player2
-
+    getEmpties: function() {
+        var b = this.board;
+        return [b[0] !== null, b[1] !== null, b[2] !== null, b[3] !== null, b[4] !== null, b[5] !== null, b[6] !== null, b[7] !== null, b[8] !== null];
+    },
     moveFromTo: function(player, from, to) {
         var board = this.board;
         if (board[from] == player && board[to] === null) {
@@ -66,6 +90,7 @@ var game = {
             this.storeMoves(from, to);
             console.log("Successful Movement, From: %s To: %s For %s", from, to, player ? 'X' : 'O');
             this.trackcurrent(this.board);
+            this.updateHUD();
             if (this.isWinIn(player, board)) {
                 console.log("%c%s Won!", "color:red;font-size:20px;", this.getName(player));
                 this.newGame();
@@ -147,38 +172,16 @@ var game = {
 
     updateHUD: function() {
         this.trackcurrent(this.board);
-        this.wipeBoard();
-        this.fillBoard();
+        /*this.wipeBoard();
+        this.fillBoard();*/
+        ractive.update('board');
     },
     //updates HUD to current values
     wipeBoard: function() {
-        if (document.getElementById("board")) {
-            document.getElementById("board").innerHTML = "";
-        }
+
     },
     fillBoard: function() {
-        //maybe using reactor js so this maybe be unneccsary
-        var begining = "",
-            rowOne = "",
-            rowTwo = "",
-            rowThree = "",
-            end = "",
-            empty = "",
-            flase = "",
-            ture = "",
-            board = this.board;
-        for (var i = 0, l = board.length; i < l; i++) {
-            if (i / 3 < 1) {
-                rowOne += board[i] ? ture : board[i] === null ? empty : flase;
-            } else if (i / 3 < 2) {
-                rowTwo += board[i] ? ture : board[i] === null ? empty : flase;
-            } else {
-                rowThree += board[i] ? ture : board[i] === null ? empty : flase;
-            }
-        }
-        if (document.getElementById("board")) {
-            document.getElementById("board").innerHTML = begining + rowOne + end + begining + rowTwo + end + begining + rowThree + end;
-        }
+
     },
     newGame: function() {
         this.save();
@@ -618,7 +621,7 @@ var game = {
     },
     //logs current board to console
     placePiece: function(player, pos) {
-        if (this.turns > 6) {
+        if (this.turns > 5) {
             return false;
         }
         if (this.board[pos] === null && (this.hasIllegalLineIn(player, this.hypotheticalMoveInFromTo(player, this.board.clone(), pos, pos)) === false)) {
@@ -627,6 +630,8 @@ var game = {
             this.updateHUD();
             if (this.turns == 5) {
                 this.moves[0] = this.board;
+                ractive.update('turns');
+                buildractive();
             }
             return true;
         }
@@ -636,7 +641,7 @@ var game = {
     //places Piece in Board if possible
     aiTurn: function() {
 
-        if (this.turns > 6) {
+        if (this.turns > 5) {
 
             this.chooseBestMove();
 
@@ -858,18 +863,30 @@ var game = {
         }
     }
 };
+var ractive;
 
+function buildractive() {
+    ractive = new Ractive({
+        el: 'gameBoard',
+        template: '#template',
+        data: {
+            board: game.board,
+            turns: game.turns > 5
+        }
+    });
+}
+buildractive();
 game.init();
 game.setName("Juan Peperoni", true);
 game.setName("Loui Pasta", false);
-game.placePiece(true, 2);
+/*game.placePiece(true, 2);
 game.placePiece(false, 1);
 game.placePiece(true, 4);
 game.placePiece(false, 0);
 game.placePiece(true, 7);
 game.placePiece(false, 8);
 game.moveFromTo(true, 2, 5);
-game.moveFromTo(false, 0, 3);
+/*game.moveFromTo(false, 0, 3);
 console.time("Lets see how long it takes");
 game.chooseBestMove(true, game.board);
 console.timeEnd("Lets see how long it takes");
@@ -879,3 +896,4 @@ while (game.turns !== 0 && c < 10) {
     c++;
 }
 console.log("It took %s rounds to win using the AI against itself!", game.toInt(c / 2));
+*/
