@@ -69,7 +69,7 @@
                     
                         {{#if (board[i] !== null)}}
                         
-                            <div class="{{board[i] ? 'P1':'P2'}}" id="drag{{i}}" draggable="{{turn}}" ondragstart="whichAmI(event)">
+                            <div class="{{board[i] ? 'P1':'P2'}}" id="drag{{i}}" draggable="{{turn}}" ondragstart="whichAmI(event)"><!--Add on click event to give two ways to move the piece?-->
                             
                                 {{(board[i] ? 'P1:':'P2:')+getName(board[i])}}
                                 
