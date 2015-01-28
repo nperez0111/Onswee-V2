@@ -38,7 +38,7 @@ function whichAmI(ev) {
     if ((game.turns % 2 === 0) == game.board[game.toInt(ev.target.id.replace(/^\D+/g, ""))]) {
         ev.dataTransfer.setData("which", ev.target.id.replace(/^\D+/g, ""));
     } else {
-        game.illegal("It's the other player's turn!");
+        game.illegal("It's " + game.getName(game.turns % 2 === 0) + "'s turn!");
     }
 }
 
@@ -71,6 +71,9 @@ var game = {
         return [b[0] !== null, b[1] !== null, b[2] !== null, b[3] !== null, b[4] !== null, b[5] !== null, b[6] !== null, b[7] !== null, b[8] !== null];
     },
     moveFromTo: function(player, from, to) {
+        if (this.turns < 13 && this.moveFromToWithRules(player, from, to) === false) {
+            return false;
+        }
         var board = this.board;
         if (board[from] == player && board[to] === null) {
             if (from == this.center) {
@@ -78,7 +81,7 @@ var game = {
             } else {
                 for (var i = 0, testMoves = this.illegalMovements[from], l = testMoves.length; i < l; i++) {
                     if (testMoves[i] == to) {
-                        this.illegal("That Position is too far to move to!");
+                        this.illegal("Sorry you can't move there!");
                         console.log("Attempted to move from: %s , To: %s", from, to);
                         return;
                     }
@@ -93,25 +96,25 @@ var game = {
             this.updateHUD();
             if (this.isWinIn(player, board)) {
                 console.log("%c%s Won!", "color:red;font-size:20px;", this.getName(player));
+                this.illegal(this.getName(player) + ' won!');
                 this.newGame();
             }
             return;
         } else {
             //Figure out what to do if its an invalid position
             console.log("Attempted to move from %s to %s with player %s", from, to, player ? 'X' : 'O');
-            this.illegal("Sorry you can't move into that position!");
+            this.illegal("Sorry you can't move there!");
         }
     },
     // accepts player interger position from and to on the board and moves if no errors occur
 
     moveFromToWithRules: function(player, from, to) {
-        if (this.hasIllegalLineIn(player, this.hypotheticalMoveInFromTo(this.board, player, from, to))) {
+        if (this.hasIllegalLineIn(player, this.hypotheticalMoveInFromTo(player, this.board, from, to))) {
             this.illegal("Sorry, during these turns you can't make a line of any kind");
 
-            //give win to other player
-            return;
+            return false;
         }
-        this.moveFromTo(player, from, to);
+        return true;
     },
 
     hypotheticalMoveInFromTo: function(player, board, from, to) {
@@ -164,8 +167,21 @@ var game = {
 
     load: function() {
 
-
-        this.updateHUD();
+        //get the board last played on from local storage if it exists
+        /* var board = /*whatever board that is */
+        /* ;
+                for (var i = 0, l = board.length; i < l; i++) {
+                    if (board[i] || !board[i]) {
+                        this.placePiece(board[i], i);
+                    }
+                }
+                this.turns = /*however many turns were saved that round*/
+        /*;
+                this.setName(true, /*whateve name it was*/
+        /* );
+                this.setName(false, /*whateve name it was*/
+        /* );
+                this.updateHUD();*/
 
     },
     //loads last game played at last saved positions
@@ -174,17 +190,25 @@ var game = {
         this.trackcurrent(this.board);
         /*this.wipeBoard();
         this.fillBoard();*/
-        ractive.update('board');
+        ractive.update();
+        ractive.set({
+            board: game.board,
+            turn: game.turns > 5,
+            turns: game.turns,
+            getName: function(player) {
+                return game.getName(player);
+            },
+            curTurn: game.toInt(game.turns / 2),
+            getActive: game.turns % 2 === 0 ? 'Active' : 'Inactive',
+            getInActive: game.turns % 2 === 0 ? 'Inactive' : 'Active'
+        });
     },
     //updates HUD to current values
-    wipeBoard: function() {
-
-    },
-    fillBoard: function() {
+    saveScore: function() {
 
     },
     newGame: function() {
-        this.save();
+        this.saveScore();
         this.init();
         this.updateHUD();
     },
@@ -192,6 +216,13 @@ var game = {
 
     illegal: function(errorMsg) {
         console.log(errorMsg);
+        $('#messageArea').text(errorMsg);
+        $('#messageArea').slideDown('slow', function() {
+            $('#messageArea').delay('2400').slideUp('slow', function() {
+                $('#messageArea').text('');
+            });
+
+        });
     },
     //something illegal happened
 
@@ -630,8 +661,6 @@ var game = {
             this.updateHUD();
             if (this.turns == 5) {
                 this.moves[0] = this.board;
-                ractive.update('turns');
-                buildractive();
             }
             return true;
         }
@@ -871,7 +900,13 @@ function buildractive() {
         template: '#template',
         data: {
             board: game.board,
-            turns: game.turns > 5
+            turn: game.turns > 5,
+            turns: game.turns,
+            getName: function(player) {
+                return game.getName(player);
+            },
+
+
         }
     });
 }
