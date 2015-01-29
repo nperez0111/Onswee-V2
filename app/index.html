@@ -40,7 +40,9 @@
             <div id="messageArea">
                 
             </div>
-            
+            <div id="settingsPage">
+                
+            </div>
             <div id="gameBoard">
             
                 
@@ -57,7 +59,47 @@
         <!-- build:js scripts/vendor.js -->
         <!-- bower:js -->
         <script src="../bower_components/jquery/dist/jquery.js"></script>
+
         <script src="../bower_components/ractive/ractive.js"></script>
+
+        <script id='settings' type='text/ractive'>
+        
+            <div id="NameChooser">
+            
+                <label for="player1">Player 1: </label><input type="text" id="player1" placeholder="Player 1's Name" value="{{player1}}" maxlength="25">
+                
+                <label for="player2">Player 2: </label><input type="text" id="player2" placeholder="Player 2's Name" value="{{player2}}" maxlength="25">
+                
+            </div>
+            
+
+            <div id="IconChooser">
+
+                <h2>Choose Each player&apos;s Icon</h2>
+                
+                    <div id="playercont">
+
+                        <h3>{{player1}} <img src="{{getIcon(true)}}" alt="Player 1 Icon"></h3>
+                        <h3>{{player2}} <img src="{{getIcon(false)}}" alt="Player 2 Icon"></h3>
+
+                    </div>
+
+
+                {{#each iconPossibles:i}}
+
+                    <div onclick="game.setIcon({{player}},{{i}})" class="icons">
+
+                        <img src="{{iconPossibles[i]}}" alt="Icon Number {{i+3}}">
+
+                    </div>
+
+                {{/each}}
+
+            </div>
+
+        </script>
+
+
         <script id='template' type='text/ractive'>
                 <div id="hud">
                     <span id="turn">Round: {{((~~(turns / 2))+1)}}</span>
@@ -65,29 +107,39 @@
                 
                     {{#each board:i}}
                     
-                    <div class="boardPlaceHolder {{'b'+(i+1)}}" id="drop{{i}}" ondrop="drop(event)" ondragover="allowDrop(event)" onclick="game.placePiece(game.turns%2==0?true:false,{{i}})">
+                    <div class="boardPlaceHolder b{{(i+1)}}" id="drop{{i}}" ondrop="drop(event)" ondragover="allowDrop(event)" onclick="game.placePiece(game.turns%2==0?true:false,{{i}})">
                     
                         {{#if (board[i] !== null)}}
                         
-                            <div class="{{board[i] ? 'P1':'P2'}}" id="drag{{i}}" draggable="{{turn}}" ondragstart="whichAmI(event)"><!--Add on click event to give two ways to move the piece?-->
+                            <div class="{{board[i] ? 'P1':'P2'}}" id="drag{{i}}" draggable="{{turn}}" ondragstart="whichAmI(event)">
+                            <!--Add on click event to give two ways to move the piece?-->
                             
                                 {{(board[i] ? 'P1:':'P2:')+getName(board[i])}}
+                                <img class="pieceIcon" src="{{icon[board[i]?0:1]}}" alt="{{board[i]?'Player 1 Piece':'Player 2 Piece'}}" />
                                 
                             </div>
-                            
-                            {{else}}
-                            
-                            
+
                             
                         {{/if}}
                         
                     </div>
                     
                     {{/each}}
+
                <div id="curTurn">
-            <span class="whosTurn {{turns % 2 === 0 ? 'Active' : 'Inactive'}}">{{getName(true)+(turns%2==0?"'s Turn":"")}}</span>
-            <span class="whosTurn {{turns % 2 === 1 ? 'Active' : 'Inactive'}}">{{getName(false)+(turns%2==1?"'s Turn":"")}}</span>
-            </div>
+
+                    <div class="whosTurn">
+                        <img src="{{getIcon(true)}}" alt="Player 1 Icon" />
+                        <span class="whosTurn {{turns % 2 === 0 ? 'Active' : 'Inactive'}}">{{getName(true)+(turns%2==0?"'s Turn":"")}}</span>
+                    </div> 
+
+                    <div class="whosTurn">
+                        <img src="{{getIcon(false)}}" alt="Player 2 Icon" />
+                        <span class="whosTurn {{turns % 2 === 1 ? 'Active' : 'Inactive'}}">{{getName(false)+(turns%2==1?"'s Turn":"")}}</span>
+                    </div>
+
+                </div>
+
           </script>
         
          

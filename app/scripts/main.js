@@ -81,7 +81,7 @@ var game = {
             } else {
                 for (var i = 0, testMoves = this.illegalMovements[from], l = testMoves.length; i < l; i++) {
                     if (testMoves[i] == to) {
-                        this.illegal("Sorry you can't move there!");
+                        this.illegal("Sorry, you can't move there!");
                         console.log("Attempted to move from: %s , To: %s", from, to);
                         return;
                     }
@@ -97,13 +97,13 @@ var game = {
             if (this.isWinIn(player, board)) {
                 console.log("%c%s Won!", "color:red;font-size:20px;", this.getName(player));
                 this.illegal(this.getName(player) + ' won!');
-                this.newGame();
+                this.newGame(player);
             }
             return;
         } else {
             //Figure out what to do if its an invalid position
             console.log("Attempted to move from %s to %s with player %s", from, to, player ? 'X' : 'O');
-            this.illegal("Sorry you can't move there!");
+            this.illegal("Sorry, you can't move there!");
         }
     },
     // accepts player interger position from and to on the board and moves if no errors occur
@@ -147,12 +147,53 @@ var game = {
             this.player2Name = str;
         }
         this.updateHUD();
+        settings.set({
+            player1: game.player1Name,
+            player2: game.player2Name
+        });
+        settings.update();
         this.save();
         //reflect Name change to HUD
     },
+    icon: ['images/x.png', 'images/o.png'],
+    //default icons and who it is set to
+    iconPossibles: ['default3.png', 'default4.png', 'default5.png', 'default6.png', 'default7.png', 'default8.png'],
+    //these are all of the possible icons to choose from
+    getIcon: function(player) {
+        return this.icon[player ? 0 : 1];
+    },
+    //returns the location to look for the icon depending on player
+    setIcon: function(player, icon) {
+        if ((this.icon[player] == this.iconPossibles[icon]) || (this.icon[(player === 0 ? 1 : 0)] == this.iconPossibles[icon])) {
+            //if the one we are setting it to is the one set or if the one we are setting it to is the other players then just dont set it
+            return;
+        }
+        var tmp = this.icon[player];
 
+        this.icon[player] = this.iconPossibles[icon];
+
+        this.iconPossibles[icon] = tmp;
+
+        tmp = null;
+        settings.set({
+            player1: game.player1Name,
+            player2: game.player2Name,
+            getName: function(player) {
+                return game.getName(player);
+            },
+            getIcon: function(player) {
+                return game.getIcon(player);
+            },
+            iconPossibles: game.iconPossibles,
+
+        });
+        settings.set('player', player === 0 ? 1 : 0);
+
+        settings.update();
+    },
+    //sets the location to look for icons
     save: function() {
-
+        //save turn, save current moves, add last board state to moves, save names, save icons, save scores
 
 
     },
@@ -191,6 +232,20 @@ var game = {
         /*this.wipeBoard();
         this.fillBoard();*/
         ractive.update();
+        settings.update();
+        ractive.set({
+            player1: game.getName(true),
+            player2: game.getName(false),
+            getName: function(player) {
+                return game.getName(player);
+            },
+            getIcon: function(player) {
+                return game.getIcon(player);
+            },
+            iconPossibles: game.iconPossibles,
+            player: 0,
+
+        });
         ractive.set({
             board: game.board,
             turn: game.turns > 5,
@@ -198,27 +253,25 @@ var game = {
             getName: function(player) {
                 return game.getName(player);
             },
-            curTurn: game.toInt(game.turns / 2),
-            getActive: game.turns % 2 === 0 ? 'Active' : 'Inactive',
-            getInActive: game.turns % 2 === 0 ? 'Inactive' : 'Active'
         });
     },
     //updates HUD to current values
-    saveScore: function() {
-
+    saveScore: function(player) {
+        return player;
     },
-    newGame: function() {
-        this.saveScore();
+    newGame: function(player) {
+        this.saveScore(player);
         this.init();
         this.updateHUD();
     },
     //Resets all settings to default and updates HUd to reflect a wiped game
-
+    speed: 2400,
+    //Set how long the message stay
     illegal: function(errorMsg) {
         console.log(errorMsg);
         $('#messageArea').text(errorMsg);
         $('#messageArea').slideDown('slow', function() {
-            $('#messageArea').delay('2400').slideUp('slow', function() {
+            $('#messageArea').delay(this.speed).slideUp('slow', function() {
                 $('#messageArea').text('');
             });
 
@@ -664,7 +717,7 @@ var game = {
             }
             return true;
         }
-        this.illegal("Sorry you can't place on that location!");
+        this.illegal("Sorry that space is filled!");
         return false;
     },
     //places Piece in Board if possible
@@ -892,7 +945,7 @@ var game = {
         }
     }
 };
-var ractive;
+var ractive, settings;
 
 function buildractive() {
     ractive = new Ractive({
@@ -905,9 +958,37 @@ function buildractive() {
             getName: function(player) {
                 return game.getName(player);
             },
+            getIcon: function(player) {
+                return game.getIcon(player);
+            },
+            icon: game.icon,
+            player: 0,
 
 
         }
+    });
+    settings = new Ractive({
+        el: 'settingsPage',
+        template: '#settings',
+        data: {
+            player1: game.player1Name,
+            player2: game.player2Name,
+            getName: function(player) {
+                return game.getName(player);
+            },
+            getIcon: function(player) {
+                return game.getIcon(player);
+            },
+            iconPossibles: game.iconPossibles,
+            player: 0,
+
+        }
+    });
+    settings.observe('player1', function(newValue, oldValue) {
+        game.setName(newValue, true);
+    });
+    settings.observe('player2', function(newValue, oldValue) {
+        game.setName(newValue, false);
     });
 }
 buildractive();
