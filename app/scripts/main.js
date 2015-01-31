@@ -1,6 +1,6 @@
 function supportsLocalStorage() {
     try {
-        return 'localStorage' in window && window['localStorage'] !== null;
+        return 'localStorage' in window && window.localStorage !== null;
     } catch (e) {
         return false;
     }
@@ -30,15 +30,22 @@ Array.prototype.clone = function() {
 };
 //provides a clone method for arrays
 function select(num) {
-    snum = ractive.get('selected');
+    var snum = ractive.get('selected');
     if (snum == -1) {
         //is not set so let's set current num to special and possible move locs to activated
         var arr = [];
-        console.log(game.allPosMoveLocs[num]);
         for (var c = 0, all = game.allPosMoveLocs[num], cl = all.length; c < cl; c++) {
             if (game.board[all[c]] === null) {
-                arr.push(c);
+                if (game.turns < 13 && game.hasIllegalLineIn(game.board[num], game.hypotheticalMoveInFromTo(game.board[num], game.board, num, all[c]))) {
+
+                } else {
+                    arr.push(all[c]);
+                }
             }
+        }
+        if (arr.length === 0) {
+            this.illegal("Can't move that piece anywhere!");
+            return;
         }
         ractive.set('selected', num);
         ractive.set('moveables', arr);
@@ -48,11 +55,11 @@ function select(num) {
         ractive.set('moveables', []);
     } else if (num === ractive.get('moveables')[0] || num === ractive.get('moveables')[1] || num === ractive.get('moveables')[2]) {
         //move to num if it is one of the move locs
-        for (var co = 0, all = game.allPosMoveLocs, clo = all[snum].length; co < clo; co++) {
-            if (game.board[all[snum][co]] === null) {
-                game.moveFromTo(this.turn % 2, this.allPosMoveLocs[snum][co], num);
-                settings.set('selected', -1);
-                settings.set('moveables', []);
+        for (var co = 0, allo = game.allPosMoveLocs[snum], clo = allo.length; co < clo; co++) {
+            if (game.board[allo[co]] === null) {
+                game.moveFromTo(game.board[snum], snum, num);
+                ractive.set('selected', -1);
+                ractive.set('moveables', []);
                 return;
             }
         }
@@ -281,7 +288,7 @@ var game = {
         this.updateHUD();
     },
     //Resets all settings to default and updates HUd to reflect a wiped game
-    speed: 2400,
+    speed: 2500,
     //Set how long the message stay
     illegal: function(errorMsg) {
         console.log(errorMsg);
