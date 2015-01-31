@@ -34,20 +34,23 @@ function select(num) {
     if (snum == -1) {
         //is not set so let's set current num to special and possible move locs to activated
         var arr = [];
-        for (var c = 0, all = game.allPosMoveLocs, cl = all[snum].length; c < cl; c++) {
-            if (this.board[all[snum][c]] === null) {
+        console.log(game.allPosMoveLocs[num]);
+        for (var c = 0, all = game.allPosMoveLocs[num], cl = all.length; c < cl; c++) {
+            if (game.board[all[c]] === null) {
                 arr.push(c);
             }
         }
+        ractive.set('selected', num);
         ractive.set('moveables', arr);
     } else if (snum == num) {
         //deselect that board position and make those positions un special and set setts.selected to -1
+        ractive.set('selected', -1);
         ractive.set('moveables', []);
-    } else {
+    } else if (num === ractive.get('moveables')[0] || num === ractive.get('moveables')[1] || num === ractive.get('moveables')[2]) {
         //move to num if it is one of the move locs
         for (var co = 0, all = game.allPosMoveLocs, clo = all[snum].length; co < clo; co++) {
-            if (this.board[all[snum][co]] === null) {
-                this.moveFromTo(this.turn % 2, this.allPosMoveLocs[snum][co], num);
+            if (game.board[all[snum][co]] === null) {
+                game.moveFromTo(this.turn % 2, this.allPosMoveLocs[snum][co], num);
                 settings.set('selected', -1);
                 settings.set('moveables', []);
                 return;
@@ -55,6 +58,8 @@ function select(num) {
         }
 
     }
+    game.updateHUD();
+
 }
 
 function allowDrop(ev) {
@@ -973,10 +978,8 @@ function buildractive() {
             moveables: [],
             selected: -1,
             isActive: function(num) {
-
-                console.log(num);
                 for (var i = 0; i < this.get('moveables').length; i++) {
-                    console.log(this.get('moveables')[i]);
+
                     if (num == this.get('moveables')[i]) {
                         return true;
                     }
