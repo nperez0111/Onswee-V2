@@ -30,19 +30,19 @@ Array.prototype.clone = function() {
 };
 //provides a clone method for arrays
 function select(num) {
-    snum = settings.get('selected');
+    snum = ractive.get('selected');
     if (snum == -1) {
         //is not set so let's set current num to special and possible move locs to activated
         var arr = [];
         for (var c = 0, all = game.allPosMoveLocs, cl = all[snum].length; c < cl; c++) {
-            if (board[all[snum][c]] === null) {
+            if (this.board[all[snum][c]] === null) {
                 arr.push(c);
             }
         }
-        settings.set('moveables', arr);
+        ractive.set('moveables', arr);
     } else if (snum == num) {
         //deselect that board position and make those positions un special and set setts.selected to -1
-
+        ractive.set('moveables', []);
     } else {
         //move to num if it is one of the move locs
         for (var co = 0, all = game.allPosMoveLocs, clo = all[snum].length; co < clo; co++) {
@@ -970,6 +970,20 @@ function buildractive() {
             player2: game.player2Name,
             icon: game.icon,
             player: 0,
+            moveables: [],
+            selected: -1,
+            isActive: function(num) {
+
+                console.log(num);
+                for (var i = 0; i < this.get('moveables').length; i++) {
+                    console.log(this.get('moveables')[i]);
+                    if (num == this.get('moveables')[i]) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
 
 
         }
@@ -983,19 +997,7 @@ function buildractive() {
             icon: game.icon,
             iconPossibles: game.iconPossibles,
             player: 0,
-            moveables: [0, 3, 5],
-            selected: -1,
-            isActive: function(num) {
 
-                console.log('woa');
-                for (var i = this.moveables.length - 1;; i--) {
-                    if (num == this.moveables[i]) {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
 
         }
     });
