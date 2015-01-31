@@ -33,6 +33,10 @@ function select(num) {
     var snum = ractive.get('selected');
     if (snum == -1) {
         //is not set so let's set current num to special and possible move locs to activated
+        if (game.board[num] == (game.turns % 2 == 1)) {
+            game.illegal("It's " + game.getName(game.turns % 2 === 0) + "'s turn!");
+            return;
+        }
         var arr = [];
         for (var c = 0, all = game.allPosMoveLocs[num], cl = all.length; c < cl; c++) {
             if (game.board[all[c]] === null) {
@@ -275,7 +279,6 @@ var game = {
             player1: game.player1Name,
             player2: game.player2Name,
             icon: game.icon,
-            player: 0,
         });
     },
     //updates HUD to current values
@@ -308,7 +311,7 @@ var game = {
         [0, 3, 6, 7, 8],
         [1, 2, 5, 7, 8],
         [],
-        [0, 1, 4, 6, 7],
+        [0, 1, 3, 6, 7],
         [0, 1, 2, 5, 8],
         [0, 1, 2, 3, 5],
         [0, 1, 2, 3, 6]
