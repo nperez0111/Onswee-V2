@@ -1,7 +1,12 @@
 // bower:scss
 @import "../../bower_components/bootstrap-sass-official/vendor/assets/stylesheets/bootstrap.scss";
 // endbower
-
+@import "../../bower_components/normalize.css/nomalize.css";
+*{
+    box-sizing : border-box;
+    -webkit-box-sizing : border-box;
+    -moz-box-sizing : border-box;
+}
 .browsehappy {
     margin: 0.2em 0;
     background: #ccc;

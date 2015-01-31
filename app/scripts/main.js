@@ -29,6 +29,33 @@ Array.prototype.clone = function() {
     return this.slice(0);
 };
 //provides a clone method for arrays
+function select(num) {
+    snum = settings.get('selected');
+    if (snum == -1) {
+        //is not set so let's set current num to special and possible move locs to activated
+        var arr = [];
+        for (var c = 0, all = game.allPosMoveLocs, cl = all[snum].length; c < cl; c++) {
+            if (board[all[snum][c]] === null) {
+                arr.push(c);
+            }
+        }
+        settings.set('moveables', arr);
+    } else if (snum == num) {
+        //deselect that board position and make those positions un special and set setts.selected to -1
+
+    } else {
+        //move to num if it is one of the move locs
+        for (var co = 0, all = game.allPosMoveLocs, clo = all[snum].length; co < clo; co++) {
+            if (this.board[all[snum][co]] === null) {
+                this.moveFromTo(this.turn % 2, this.allPosMoveLocs[snum][co], num);
+                settings.set('selected', -1);
+                settings.set('moveables', []);
+                return;
+            }
+        }
+
+    }
+}
 
 function allowDrop(ev) {
     ev.preventDefault();
@@ -61,6 +88,7 @@ var game = {
         this.board = daboard;
         this.turns = 0;
         this.moves = [];
+        this.playerChosen = 0;
 
     },
 
@@ -139,7 +167,10 @@ var game = {
 
     },
     //returns String, true for P1, False for P2
-
+    choosePlayer: function(event, player) {
+        settings.set('player', player ? 0 : 1);
+        settings.update();
+    },
     setName: function(str, player) {
         if (player) {
             this.player1Name = str;
@@ -168,11 +199,11 @@ var game = {
             //if the one we are setting it to is the one set or if the one we are setting it to is the other players then just dont set it
             return;
         }
-        var tmp = this.icon[player];
+        var tmp = this.icon[player]; //stores curicon
 
-        this.icon[player] = this.iconPossibles[icon];
+        this.icon[player] = this.iconPossibles[icon]; //sets curicon to newicon
 
-        this.iconPossibles[icon] = tmp;
+        this.iconPossibles[icon] = tmp; //sets new icon to old icon
 
         tmp = null;
         settings.set({
@@ -981,6 +1012,19 @@ function buildractive() {
             },
             iconPossibles: game.iconPossibles,
             player: 0,
+            moveables: [0, 3, 5],
+            selected: -1,
+            isActive: function(num) {
+
+                console.log('woa');
+                for (var i = this.moveables.length - 1;; i--) {
+                    if (num == this.moveables[i]) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
 
         }
     });

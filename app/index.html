@@ -66,9 +66,9 @@
         
             <div id="NameChooser">
             
-                <label for="player1">Player 1: </label><input type="text" id="player1" placeholder="Player 1's Name" value="{{player1}}" maxlength="25">
+                <label for="player1">Player 1: </label><input type="text" id="player1" placeholder="Player 1's Name" value="{{player1}}" maxlength="25" tabindex="1">
                 
-                <label for="player2">Player 2: </label><input type="text" id="player2" placeholder="Player 2's Name" value="{{player2}}" maxlength="25">
+                <label for="player2">Player 2: </label><input type="text" id="player2" placeholder="Player 2's Name" value="{{player2}}" maxlength="25" tabindex="2">
                 
             </div>
             
@@ -79,8 +79,8 @@
                 
                     <div id="playercont">
 
-                        <h3>{{player1}} <img src="{{getIcon(true)}}" alt="Player 1 Icon"></h3>
-                        <h3>{{player2}} <img src="{{getIcon(false)}}" alt="Player 2 Icon"></h3>
+                        <h3 onclick="game.choosePlayer(true)" class="{{(player===0)?'Active':'Inactive'}}">{{player1}} <img src="{{getIcon(true)}}" alt="Player 1 Icon"></h3>
+                        <h3 onclick="game.choosePlayer(false)" class="{{(player==1)?'Active':'Inactive'}}">{{player2}} <img src="{{getIcon(false)}}" alt="Player 2 Icon"></h3>
 
                     </div>
 
@@ -111,7 +111,7 @@
                     
                         {{#if (board[i] !== null)}}
                         
-                            <div class="{{board[i] ? 'P1':'P2'}}" id="drag{{i}}" draggable="{{turn}}" ondragstart="whichAmI(event)">
+                            <div class="{{board[i] ? 'P1':'P2'}}" id="drag{{i}}" draggable="{{turn}}" ondragstart="whichAmI(event)" onclick="select({{i}})">
                             <!--Add on click event to give two ways to move the piece?-->
                             
                                 {{(board[i] ? 'P1:':'P2:')+getName(board[i])}}
