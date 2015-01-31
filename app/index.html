@@ -79,8 +79,8 @@
                 
                     <div id="playercont">
 
-                        <h3 onclick="game.choosePlayer(true)" class="{{(player===0)?'Active':'Inactive'}}">{{player1}} <img src="{{getIcon(true)}}" alt="Player 1 Icon"></h3>
-                        <h3 onclick="game.choosePlayer(false)" class="{{(player==1)?'Active':'Inactive'}}">{{player2}} <img src="{{getIcon(false)}}" alt="Player 2 Icon"></h3>
+                        <h3 onclick="game.choosePlayer(true)" class="{{(player===0)?'Active':'Inactive'}}">{{player1}} <img src="{{icon[0]}}" alt="Player 1 Icon"></h3>
+                        <h3 onclick="game.choosePlayer(false)" class="{{(player==1)?'Active':'Inactive'}}">{{player2}} <img src="{{icon[1]}}" alt="Player 2 Icon"></h3>
 
                     </div>
 
@@ -114,11 +114,15 @@
                             <div class="{{board[i] ? 'P1':'P2'}}" id="drag{{i}}" draggable="{{turn}}" ondragstart="whichAmI(event)" onclick="select({{i}})">
                             <!--Add on click event to give two ways to move the piece?-->
                             
-                                {{(board[i] ? 'P1:':'P2:')+getName(board[i])}}
+                                {{(board[i] ? 'P1:':'P2:')+(board[i] ? player1 : player2)}}
                                 <img class="pieceIcon" src="{{icon[board[i]?0:1]}}" alt="{{board[i]?'Player 1 Piece':'Player 2 Piece'}}" />
                                 
                             </div>
 
+                        {{else}}
+                            {{#if isActive(i)}}
+                                <div class="emptyActive">Can move here</div>
+                            {{/if}}
                             
                         {{/if}}
                         
@@ -129,13 +133,13 @@
                <div id="curTurn">
 
                     <div class="whosTurn">
-                        <img src="{{getIcon(true)}}" alt="Player 1 Icon" />
-                        <span class="whosTurn {{turns % 2 === 0 ? 'Active' : 'Inactive'}}">{{getName(true)+(turns%2==0?"'s Turn":"")}}</span>
+                        <img src="{{icon[0]}}" alt="Player 1 Icon" />
+                        <span class="whosTurn {{turns % 2 === 0 ? 'Active' : 'Inactive'}}">{{player1+(turns%2==0?"'s Turn":"")}}</span>
                     </div> 
 
                     <div class="whosTurn">
-                        <img src="{{getIcon(false)}}" alt="Player 2 Icon" />
-                        <span class="whosTurn {{turns % 2 === 1 ? 'Active' : 'Inactive'}}">{{getName(false)+(turns%2==1?"'s Turn":"")}}</span>
+                        <img src="{{icon[1]}}" alt="Player 2 Icon" />
+                        <span class="whosTurn {{turns % 2 === 1 ? 'Active' : 'Inactive'}}">{{player2+(turns%2==1?"'s Turn":"")}}</span>
                     </div>
 
                 </div>

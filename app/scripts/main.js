@@ -214,8 +214,7 @@ var game = {
 
         });
         settings.set('player', player === 0 ? 1 : 0);
-
-        settings.update();
+        this.updateHUD();
     },
     //sets the location to look for icons
     save: function() {
@@ -259,26 +258,18 @@ var game = {
         this.fillBoard();*/
         ractive.update();
         settings.update();
-        ractive.set({
-            player1: game.getName(true),
-            player2: game.getName(false),
-            getName: function(player) {
-                return game.getName(player);
-            },
-            getIcon: function(player) {
-                return game.getIcon(player);
-            },
-            iconPossibles: game.iconPossibles,
-            player: 0,
-
+        settings.set({
+            player1: game.player1Name,
+            player2: game.player2Name
         });
         ractive.set({
             board: game.board,
             turn: game.turns > 5,
             turns: game.turns,
-            getName: function(player) {
-                return game.getName(player);
-            },
+            player1: game.player1Name,
+            player2: game.player2Name,
+            icon: game.icon,
+            player: 0,
         });
     },
     //updates HUD to current values
@@ -981,12 +972,8 @@ function buildractive() {
             board: game.board,
             turn: game.turns > 5,
             turns: game.turns,
-            getName: function(player) {
-                return game.getName(player);
-            },
-            getIcon: function(player) {
-                return game.getIcon(player);
-            },
+            player1: game.player1Name,
+            player2: game.player2Name,
             icon: game.icon,
             player: 0,
 
@@ -1000,11 +987,9 @@ function buildractive() {
             player1: game.player1Name,
             player2: game.player2Name,
             getName: function(player) {
-                return game.getName(player);
+                return player ? this.player1 : this.player2;
             },
-            getIcon: function(player) {
-                return game.getIcon(player);
-            },
+            icon: game.icon,
             iconPossibles: game.iconPossibles,
             player: 0,
             moveables: [0, 3, 5],
