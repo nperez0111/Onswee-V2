@@ -70,6 +70,7 @@ function select(num) {
 
     }
     game.updateHUD();
+    game.justWon = false;
 
 }
 
@@ -87,6 +88,7 @@ function whichAmI(ev) {
 
 function drop(ev) {
     ev.preventDefault();
+    game.justWon = false;
     if (ev.dataTransfer.getData("which")) {
         var drag = game.toInt(ev.dataTransfer.getData("which")),
             dropp = game.toInt(ev.target.id.replace(/^\D+/g, ""));
@@ -141,6 +143,9 @@ var game = {
                 console.log("%c%s Won!", "color:red;font-size:20px;", this.getName(player));
                 this.illegal(this.getName(player) + ' won!');
                 this.newGame(player);
+                if (this.justWon === false) {
+                    this.justWon = true;
+                }
             }
             return;
         } else {
@@ -150,6 +155,9 @@ var game = {
         }
     },
     // accepts player interger position from and to on the board and moves if no errors occur
+
+    justWon: null,
+    // to fix browser eager click post win 
 
     moveFromToWithRules: function(player, from, to) {
         if (this.hasIllegalLineIn(player, this.hypotheticalMoveInFromTo(player, this.board, from, to))) {
@@ -730,6 +738,11 @@ var game = {
     },
     //logs current board to console
     placePiece: function(player, pos) {
+        if (this.justWon) {
+            this.justWon = false;
+            //this is for browser clicking
+            return false;
+        }
         if (this.turns > 5) {
             return false;
         }
