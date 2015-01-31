@@ -40,7 +40,7 @@ function select(num) {
         var arr = [];
         for (var c = 0, all = game.allPosMoveLocs[num], cl = all.length; c < cl; c++) {
             if (game.board[all[c]] === null) {
-                if (game.turns < 13 && game.hasIllegalLineIn(game.board[num], game.hypotheticalMoveInFromTo(game.board[num], game.board, num, all[c]))) {
+                if (game.turns < 12 && game.hasIllegalLineIn(game.board[num], game.hypotheticalMoveInFromTo(game.board[num], game.board, num, all[c]))) {
 
                 } else {
                     arr.push(all[c]);
@@ -104,7 +104,6 @@ var game = {
         this.board = daboard;
         this.turns = 0;
         this.moves = [];
-        this.playerChosen = 0;
 
     },
 
@@ -115,7 +114,7 @@ var game = {
         return [b[0] !== null, b[1] !== null, b[2] !== null, b[3] !== null, b[4] !== null, b[5] !== null, b[6] !== null, b[7] !== null, b[8] !== null];
     },
     moveFromTo: function(player, from, to) {
-        if (this.turns < 13 && this.moveFromToWithRules(player, from, to) === false) {
+        if (this.turns < 12 && this.moveFromToWithRules(player, from, to) === false) {
             return false;
         }
         var board = this.board;
@@ -897,7 +896,7 @@ var game = {
     //chooses Best Location to move to for a player
     trimArrangements: function(player, board) {
         var boardy = board.clone(),
-            bool = this.turns < 13;
+            bool = this.turns < 12;
         for (var i = boardy.length; i--;) {
             if (this.canCompleteALineIn(!player, boardy[i]) || (bool && this.hasIllegalLineIn(player, boardy[i])) || this.isSameMoveAsLastTime(player, boardy[i])) {
                 boardy.splice(i, 1);
