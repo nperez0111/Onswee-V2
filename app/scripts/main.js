@@ -178,11 +178,6 @@ var game = {
             this.player2Name = str;
         }
         this.updateHUD();
-        settings.set({
-            player1: game.player1Name,
-            player2: game.player2Name
-        });
-        settings.update();
         this.save();
         //reflect Name change to HUD
     },
@@ -1030,9 +1025,13 @@ function buildractive() {
     });
     settings.observe('player1', function(newValue, oldValue) {
         game.setName(newValue, true);
+        settings.set('player1', newValue);
+        settings.update();
     });
     settings.observe('player2', function(newValue, oldValue) {
         game.setName(newValue, false);
+        settings.set('player2', newValue);
+        settings.update();
     });
 }
 buildractive();
