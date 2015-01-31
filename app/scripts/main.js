@@ -204,12 +204,6 @@ var game = {
         settings.set({
             player1: game.player1Name,
             player2: game.player2Name,
-            getName: function(player) {
-                return game.getName(player);
-            },
-            getIcon: function(player) {
-                return game.getIcon(player);
-            },
             iconPossibles: game.iconPossibles,
 
         });
@@ -986,9 +980,6 @@ function buildractive() {
         data: {
             player1: game.player1Name,
             player2: game.player2Name,
-            getName: function(player) {
-                return player ? this.player1 : this.player2;
-            },
             icon: game.icon,
             iconPossibles: game.iconPossibles,
             player: 0,
