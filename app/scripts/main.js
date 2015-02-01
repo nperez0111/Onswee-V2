@@ -74,6 +74,21 @@ function select(num) {
 
 }
 
+function goTo(which, link) {
+
+    if (game.which[0] == which) {
+        return;
+    }
+
+    $(game.which[0]).slideUp('slow');
+    $(which).slideDown('slow');
+    $(link).addClass('active');
+    $(game.which[1]).removeClass('active');
+
+    game.which = [which, link];
+
+}
+
 function allowDrop(ev) {
     ev.preventDefault();
 }
@@ -155,6 +170,7 @@ var game = {
         }
     },
     // accepts player interger position from and to on the board and moves if no errors occur
+    which: ['#gameBoard', '.game'],
 
     justWon: null,
     // to fix browser eager click post win 
@@ -1069,6 +1085,15 @@ $(document).ready(function() {
             top: y + 'px',
             left: x + 'px'
         }).addClass("animate");
+    });
+    $('.game').click(function() {
+        goTo('#gameBoard', '.game');
+    });
+    $('.settings').click(function() {
+        goTo('#settingsPage', '.settings');
+    });
+    $('.rules').click(function() {
+        goTo('#rules', '.rules');
     });
 });
 /*game.placePiece(true, 2);
