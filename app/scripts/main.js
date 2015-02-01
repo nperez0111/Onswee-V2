@@ -190,7 +190,7 @@ var game = {
 
     },
     //returns String, true for P1, False for P2
-    choosePlayer: function(event, player) {
+    choosePlayer: function(player) {
         settings.set('player', player ? 0 : 1);
         settings.update();
     },
