@@ -28,13 +28,21 @@
     display: block;
     text-emphasis: bold;
 }
-#settingsPage {
+#settingsPage, #rules {
     display: none;
+    margin-bottom: 16px;
 }
+#settingsPage, #rules, .boardPlaceHolder{
+    box-shadow: rgba(0, 0, 0, 0.3) 0 16px 16px 0;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.3) 0 16px 16px 0;
+    -moz-box-shadow: rgba(0, 0, 0, 0.3) 0 16px 16px 0;
+    
+}
+.b7,.b8,.b9{margin-bottom: 16px;}
 .boardPlaceHolder {
     display: inline-block;
     width: 33.333%;
-    height: 200px;
+    height: 200px;//set this dynamically with ractive
     float: left;
     text-align: center;
     background-color: #FFF;
@@ -275,6 +283,7 @@ input:focus ~ .highlight {
     -o-transition: all 0.2s ease;
     transition: all 0.2s ease;
     z-index: 0;
+    margin-bottom: 16px;
     img {
         width: 5em;
         display: inline;
@@ -282,9 +291,9 @@ input:focus ~ .highlight {
 }
 .ripplelink:hover {
     z-index: 1000;
-    box-shadow: rgba(0, 0, 0, 0.45) 0 16px 16px 0;
-    -webkit-box-shadow: rgba(0, 0, 0, 0.45) 0 16px 16px 0;
-    -moz-box-shadow: rgba(0, 0, 0, 0.45) 0 16px 16px 0;
+    box-shadow: rgba(0, 0, 0, 0.3) 0 16px 16px 0;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.3) 0 16px 16px 0;
+    -moz-box-shadow: rgba(0, 0, 0, 0.3) 0 16px 16px 0;
 }
 .ink {
     display: block;
