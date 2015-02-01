@@ -286,6 +286,8 @@ var game = {
             player1: game.player1Name,
             player2: game.player2Name,
             icon: game.icon,
+            moveables: [],
+            selected: -1,
         });
     },
     //updates HUD to current values
@@ -1041,6 +1043,34 @@ buildractive();
 game.init();
 game.setName("Juan Peperoni", true);
 game.setName("Loui Pasta", false);
+$(document).ready(function() {
+    $(".ripplelink").click(function(e) {
+        console.log('was calles');
+
+        if ($(this).find(".ink").length === 0) {
+            $(this).prepend("<span class='ink'></span>");
+        }
+
+        var ink = $(this).find(".ink");
+        ink.removeClass("animate");
+
+        if (!ink.height() && !ink.width()) {
+            var d = Math.max($(this).outerWidth(), $(this).outerHeight());
+            ink.css({
+                height: d,
+                width: d
+            });
+        }
+
+        var x = e.pageX - $(this).offset().left - ink.width() / 2;
+        var y = e.pageY - $(this).offset().top - ink.height() / 2;
+
+        ink.css({
+            top: y + 'px',
+            left: x + 'px'
+        }).addClass("animate");
+    });
+});
 /*game.placePiece(true, 2);
 game.placePiece(false, 1);
 game.placePiece(true, 4);

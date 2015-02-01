@@ -66,10 +66,20 @@
         
             <div id="NameChooser">
             
-                <label for="player1">Player 1: </label><input type="text" id="player1" placeholder="Player 1's Name" value="{{player1}}" maxlength="25" tabindex="1">
-                
-                <label for="player2">Player 2: </label><input type="text" id="player2" placeholder="Player 2's Name" value="{{player2}}" maxlength="25" tabindex="2">
-                
+                    <div class="group">      
+                      <input type="text" maxlength="25" tabindex="1" required>
+                      <span class="highlight"></span>
+                      <span class="bar"></span>
+                      <label>Player 1's Name </label>
+                    </div>
+                    
+                    <div class="group">      
+                      <input type="text" maxlength="25" tabindex="2" required>
+                      <span class="highlight"></span>
+                      <span class="bar"></span>
+                      <label>Player 2' Name </label>
+                    </div>
+                    
             </div>
             
 
@@ -79,8 +89,8 @@
                 
                     <div id="playercont">
 
-                        <h3 onclick="game.choosePlayer(true)" class="{{(player===0)?'Active':'Inactive'}}">{{player1}} <img src="{{icon[0]}}" alt="Player 1 Icon"></h3>
-                        <h3 onclick="game.choosePlayer(false)" class="{{(player==1)?'Active':'Inactive'}}">{{player2}} <img src="{{icon[1]}}" alt="Player 2 Icon"></h3>
+                        <h3 onclick="game.choosePlayer(true)" class="{{(player===0)?'Active':'Inactive'}}">{{player1}} <img src="{{icon[0]}}" class="ripplelink" alt="Player 1 Icon"></h3>
+                        <h3 onclick="game.choosePlayer(false)" class="{{(player==1)?'Active':'Inactive'}}">{{player2}} <img src="{{icon[1]}}" class="ripplelink" alt="Player 2 Icon"></h3>
 
                     </div>
 
@@ -89,7 +99,7 @@
 
                     <div onclick="game.setIcon({{player}},{{i}})" class="icons">
 
-                        <img src="{{iconPossibles[i]}}" alt="Icon Number {{i+3}}">
+                        <img src="{{iconPossibles[i]}}" class="ripplelink" alt="Icon Number {{i+3}}">
 
                     </div>
 
@@ -111,11 +121,9 @@
                     
                         {{#if (board[i] !== null)}}
                         
-                            <div class="{{board[i] ? 'P1':'P2'}}" id="drag{{i}}" draggable="{{turn}}" ondragstart="whichAmI(event)" onclick="select({{i}})">
-                            <!--Add on click event to give two ways to move the piece?-->
+                            <div class="{{board[i] ? 'P1':'P2'}}" id="drag{{i}}" draggable="{{turn}}" ondragstart="whichAmI(event)" onclick="select({{i}})" style="{{'background-image:url('+icon[board[i]?0:1]}})">
                             
                                 {{(board[i] ? 'P1:':'P2:')+(board[i] ? player1 : player2)}}
-                                <img class="pieceIcon" src="{{icon[board[i]?0:1]}}" alt="{{board[i]?'Player 1 Piece':'Player 2 Piece'}}" />
                                 
                             </div>
 
@@ -132,12 +140,12 @@
 
                <div id="curTurn">
 
-                    <div class="whosTurn">
+                    <div class="whosTurn ripplelink">
                         <img src="{{icon[0]}}" alt="Player 1 Icon" />
                         <span class="whosTurn {{turns % 2 === 0 ? 'Active' : 'Inactive'}}">{{player1+(turns%2==0?"'s Turn":"")}}</span>
                     </div> 
 
-                    <div class="whosTurn">
+                    <div class="whosTurn ripplelink">
                         <img src="{{icon[1]}}" alt="Player 2 Icon" />
                         <span class="whosTurn {{turns % 2 === 1 ? 'Active' : 'Inactive'}}">{{player2+(turns%2==1?"'s Turn":"")}}</span>
                     </div>
