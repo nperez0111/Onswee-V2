@@ -48,7 +48,7 @@ function select(num) {
             }
         }
         if (arr.length === 0) {
-            this.illegal("Can't move that piece anywhere!");
+            game.illegal("Can't move that piece anywhere!");
             return;
         }
         ractive.set('selected', num);
@@ -316,14 +316,24 @@ var game = {
         this.updateHUD();
     },
     //Resets all settings to default and updates HUd to reflect a wiped game
-    speed: 2500,
+
+    speed: 1500,
     //Set how long the message stay
+
+    animationIsGoing: false,
+    //to prevent browser eagerclick
+
     illegal: function(errorMsg) {
+        if (this.animationIsGoing) {
+            return;
+        }
+        this.animationIsGoing = true;
         console.log(errorMsg);
         $('#messageArea').text(errorMsg);
         $('#messageArea').slideDown('slow', function() {
-            $('#messageArea').delay(this.speed).slideUp('slow', function() {
+            $('#messageArea').delay(game.speed).slideUp('slow', function() {
                 $('#messageArea').text('');
+                game.animationIsGoing = false;
             });
 
         });
