@@ -17,6 +17,7 @@
         <!-- endbower -->
         <!-- endbuild -->
         <!-- build:css(.tmp) styles/main.css -->
+        <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="styles/main.css">
         <!-- endbuild -->
     </head>
@@ -70,7 +71,7 @@
             </div>
             
             <div class="footer">
-                <p><span class="glyphicon glyphicon-heart"></span> from the Yeoman team</p>
+                <p>By Nick the Sick</p>
             </div>
 
         </div>
@@ -87,17 +88,17 @@
             <div id="NameChooser">
             
                     <div class="group">      
-                      <input type="text" maxlength="25" tabindex="1" required>
+                      <input id="player1" type="text" maxlength="25" tabindex="1" oninput="setName(true)" onchange="setName(true)" required>
                       <span class="highlight"></span>
                       <span class="bar"></span>
-                      <label>Player 1's Name </label>
+                      <label for="player1">{{player1}} </label>
                     </div>
                     
                     <div class="group">      
-                      <input type="text" maxlength="25" tabindex="2" required>
+                      <input id="player2" type="text" maxlength="25" tabindex="2" oninput="setName(false)" onchange="setName(false)" required>
                       <span class="highlight"></span>
                       <span class="bar"></span>
-                      <label>Player 2' Name </label>
+                      <label for="player2">{{player2}} </label>
                     </div>
                     
             </div>
@@ -109,22 +110,45 @@
                 
                     <div id="playercont">
 
-                        <h3 onclick="game.choosePlayer(true)" class="{{(player===0)?'Active':'Inactive'}}">{{player1}} <img src="{{icon[0]}}" class="ripplelink" alt="Player 1 Icon"></h3>
-                        <h3 onclick="game.choosePlayer(false)" class="{{(player==1)?'Active':'Inactive'}}">{{player2}} <img src="{{icon[1]}}" class="ripplelink" alt="Player 2 Icon"></h3>
+                        <h3 onclick="game.choosePlayer(true)" class="icoChoice ripplelink {{(player===0)?'Active':'Inactive'}}">
+                        
+                            <span class="icoChoice">
+                            
+                                {{player1}}
+                                
+                            </span>
+                            
+                            
+                            <img src="{{icon[0]}}" alt="Player 1 Icon">
+                            
+                        </h3>
+                        
+                        
+                        <h3 onclick="game.choosePlayer(false)" class="icoChoice ripplelink {{(player==1)?'Active':'Inactive'}}">
+                        
+                            <span class="icoChoice">
+                            
+                                {{player2}}
+                                
+                            </span>
+                            
+                            
+                            <img src="{{icon[1]}}" alt="Player 2 Icon">
+                        </h3>
 
                     </div>
 
-
+                <div class="grid">
                 {{#each iconPossibles:i}}
 
-                    <div onclick="game.setIcon({{player}},{{i}})" class="icons">
+                    <div onclick="game.setIcon({{player}},{{i}})" class="col-1-4">
 
-                        <img src="{{iconPossibles[i]}}" class="ripplelink" alt="Icon Number {{i+3}}">
+                        <img src="{{iconPossibles[i]}}" alt="Icon Number {{i+3}}" class="icons">
 
                     </div>
 
                 {{/each}}
-
+                </div>
             </div>
 
         </script>
@@ -161,13 +185,29 @@
                <div id="curTurn">
 
                     <div class="whosTurn ripplelink">
+                    
                         <img src="{{icon[0]}}" alt="Player 1 Icon" />
-                        <span class="whosTurn {{turns % 2 === 0 ? 'Active' : 'Inactive'}}">{{player1+(turns%2==0?"'s Turn":"")}}</span>
+                        
+                        
+                        <span class="whosTurn {{turns % 2 === 0 ? 'Active' : 'Inactive'}}">
+                        
+                            {{player1+(turns%2==0?"'s Turn":"")}}
+                            
+                        </span>
+                        
                     </div> 
 
                     <div class="whosTurn ripplelink">
+                    
                         <img src="{{icon[1]}}" alt="Player 2 Icon" />
-                        <span class="whosTurn {{turns % 2 === 1 ? 'Active' : 'Inactive'}}">{{player2+(turns%2==1?"'s Turn":"")}}</span>
+                        
+                        
+                        <span class="whosTurn {{turns % 2 === 1 ? 'Active' : 'Inactive'}}">
+                        
+                            {{player2+(turns%2==1?"'s Turn":"")}}
+                        
+                        </span>
+                        
                     </div>
 
                 </div>

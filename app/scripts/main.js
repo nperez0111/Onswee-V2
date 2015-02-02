@@ -1057,8 +1057,6 @@ function buildractive() {
 }
 buildractive();
 game.init();
-game.setName("Juan Peperoni", true);
-game.setName("Loui Pasta", false);
 $(document).ready(function() {
     $(".ripplelink").click(function(e) {
         console.log('was calles');
@@ -1096,6 +1094,8 @@ $(document).ready(function() {
         goTo('#rules', '.rules');
     });
 });
+game.setName("Juan Peperoni", true);
+game.setName("El Che de Barrio", false);
 /*game.placePiece(true, 2);
 game.placePiece(false, 1);
 game.placePiece(true, 4);
