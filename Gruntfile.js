@@ -74,7 +74,7 @@ module.exports = function (grunt) {
                 open: true,
                 livereload: 35729,
                 // Change this to '0.0.0.0' to access the server from outside
-                hostname: '0.0.0.0'
+                hostname: '10.0.0.2'
             },
             livereload: {
                 options: {
@@ -282,28 +282,28 @@ module.exports = function (grunt) {
         // By default, your `index.html`'s <!-- Usemin block --> will take care of
         // minification. These next options are pre-configured if you do not wish
         // to use the Usemin blocks.
-        // cssmin: {
-        //     dist: {
-        //         files: {
-        //             '<%= config.dist %>/styles/main.css': [
-        //                 '.tmp/styles/{,*/}*.css',
-        //                 '<%= config.app %>/styles/{,*/}*.css'
-        //             ]
-        //         }
-        //     }
-        // },
-        // uglify: {
-        //     dist: {
-        //         files: {
-        //             '<%= config.dist %>/scripts/scripts.js': [
-        //                 '<%= config.dist %>/scripts/scripts.js'
-        //             ]
-        //         }
-        //     }
-        // },
-        // concat: {
-        //     dist: {}
-        // },
+         cssmin: {
+             dist: {
+                 files: {
+                     '<%= config.dist %>/styles/main.css': [
+                         '.tmp/styles/{,*/}*.css',
+                         '<%= config.app %>/styles/{,*/}*.css'
+                     ]
+                 }
+             }
+         },
+         uglify: {
+             dist: {
+                 files: {
+                     '<%= config.dist %>/scripts/main.js': [
+                         '<%= config.dist %>/scripts/main.js'
+                     ]
+                 }
+             }
+         },
+         concat: {
+             dist: {}
+         },
 
         // Copies remaining files to places other tasks can use
         copy: {
