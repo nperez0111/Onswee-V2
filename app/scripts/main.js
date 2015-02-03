@@ -121,6 +121,14 @@ var game = {
         this.board = daboard;
         this.turns = 0;
         this.moves = [];
+        if (this.load()) {
+            //any post load
+        } else {
+            if (!supportsLocalStorage()) {
+                return;
+            }
+            //any first time code here
+        }
 
     },
 
@@ -142,7 +150,7 @@ var game = {
                 for (var i = 0, testMoves = this.illegalMovements[from], l = testMoves.length; i < l; i++) {
                     if (testMoves[i] == to) {
                         this.illegal("Sorry, you can't move there!");
-                        console.log("Attempted to move from: %s , To: %s", from, to);
+                        console.log("Attempted to move from %s to %s with player %s", from, to, player ? 'X' : 'O');
                         return;
                     }
                 }
@@ -252,6 +260,21 @@ var game = {
     //sets the location to look for icons
     save: function() {
         //save turn, save current moves, add last board state to moves, save names, save icons, save scores
+        if (!supportsLocalStorage()) {
+            return false;
+        }
+
+        localStorage.isPlaying = this.moves.length > 0 ? true : false;
+        //store things if game is in progress
+        localStorage.setObj('board', {
+            board: game.board
+        });
+        localStorage.turn = this.turns;
+        localStorage.setObj('moves', this.moves);
+        localStorage.setObj('icons', {
+            icons: game.icons,
+            iconPossibles: game.iconPossibles
+        });
 
 
     },
@@ -265,7 +288,18 @@ var game = {
     },
 
     load: function() {
-
+        if (!supportsLocalStorage() || (localStorage.isPlaying == "true") === false) {
+            return false;
+        }
+        this.board = localStorage.getObj('board');
+        this.turns = this.toInt(localStorage.turn);
+        this.moves = localStorage.getObj('moves');
+        var players = localStorage.getObj('players');
+        if (players !== null) {
+            this.setName(true, players[0]);
+            this.setName(false, players[1]);
+            this.score = players[2];
+        }
         //get the board last played on from local storage if it exists
         /* var board = /*whatever board that is */
         /* ;
@@ -307,9 +341,30 @@ var game = {
         });
     },
     //updates HUD to current values
+
+    score: [0, 0],
+    //scores of the two players
+
     saveScore: function(player) {
-        return player;
+        this.score[player ? 0 : 1] += 1;
+        //saves scores into scorearr
+        ractive.update('scores');
+
+        if (localStorage.getObj('players') === null) {
+            localStorage.setObj('players', [game.player1Name, game.player2Name, game.score]);
+        } else {
+            var players = localStorage.getObj('players');
+            for (var i = 0, l = localStorage.length; i < l; i + 3) {
+                if (players[i] == this.player1Name && players[i + 1] == this.player2Name) {
+                    players[i + 2][player ? 0 : 1] += 1;
+                    localStorage.setObj('players', players);
+                    return;
+                }
+            }
+            localStorage.setObj('players', [game.player1Name, game.player2Name, game.score].push(localStorage.getObj('players')));
+        }
     },
+
     newGame: function(player) {
         this.saveScore(player);
         this.init();
@@ -1027,6 +1082,7 @@ function buildractive() {
             player: 0,
             moveables: [],
             selected: -1,
+            score: game.score,
             isActive: function(num) {
                 for (var i = 0; i < this.get('moveables').length; i++) {
 
@@ -1050,8 +1106,6 @@ function buildractive() {
             icon: game.icon,
             iconPossibles: game.iconPossibles,
             player: 0,
-
-
         }
     });
     settings.observe('player1', function(newValue, oldValue) {
@@ -1065,11 +1119,48 @@ function buildractive() {
         settings.update();
     });
 }
+
+function makeEm() {
+
+    $('.draggable').draggable({
+        helper: function(ev, ui) {
+            if ($(this).text() !== (game.turns % 2)) {
+                //if its not that players turn give them nothing to drop;
+                return "<div></div>";
+            }
+            return "<span class='helperPick'>" + $(this).html() + "</span>";
+
+        },
+        cursor: "pointer",
+        cursorAt: {
+            left: $('.drop').width() / 2,
+            top: $('.drop').width() / 2
+        }
+    });
+
+    $(".drop").droppable({
+        accept: ".draggable",
+        drop: function(event, ui) {
+
+            if ($(this).children(".draggable").size() > 0 /*|| if not players truen*/ ) {
+
+                //cant aready something there
+                return false;
+
+            } else {
+
+                game.moveFromTo($(this), $(ui.draggable), false);
+
+            }
+
+        }
+    });
+
+}
 buildractive();
 game.init();
 $(document).ready(function() {
     $(".ripplelink").click(function(e) {
-        console.log('was calles');
 
         if ($(this).find(".ink").length === 0) {
             $(this).prepend("<span class='ink'></span>");
