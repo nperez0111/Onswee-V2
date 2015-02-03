@@ -37,6 +37,7 @@ function select(num) {
             game.illegal("It's " + game.getName(game.turns % 2 === 0) + "'s turn!");
             return;
         }
+
         var arr = [];
         for (var c = 0, all = game.allPosMoveLocs[num], cl = all.length; c < cl; c++) {
             if (game.board[all[c]] === null) {
@@ -47,12 +48,14 @@ function select(num) {
                 }
             }
         }
+
         if (arr.length === 0) {
             game.illegal("Can't move that piece anywhere!");
             return;
         }
         ractive.set('selected', num);
         ractive.set('moveables', arr);
+
     } else if (snum == num) {
         //deselect that board position and make those positions un special and set setts.selected to -1
         ractive.set('selected', -1);
@@ -266,15 +269,10 @@ var game = {
 
         localStorage.isPlaying = this.moves.length > 0 ? true : false;
         //store things if game is in progress
-        localStorage.setObj('board', {
-            board: game.board
-        });
+        localStorage.setObj('board', game.board);
         localStorage.turn = this.turns;
         localStorage.setObj('moves', this.moves);
-        localStorage.setObj('icons', {
-            icons: game.icons,
-            iconPossibles: game.iconPossibles
-        });
+        localStorage.setObj('icons', [game.icon, game.iconPossibles]);
 
 
     },
@@ -284,37 +282,28 @@ var game = {
     storeMoves: function(from, to) {
 
         this.moves.push([from, to]);
+        this.save();
 
     },
 
     load: function() {
-        if (!supportsLocalStorage() || (localStorage.isPlaying == "true") === false) {
+        if (!supportsLocalStorage() || !(localStorage.isPlaying)) {
             return false;
         }
         this.board = localStorage.getObj('board');
+        console.log(this.board);
+        console.log(game.board);
         this.turns = this.toInt(localStorage.turn);
         this.moves = localStorage.getObj('moves');
+        this.icon = localStorage.getObj('icons')[0];
+        this.iconPossibles = localStorage.getObj('icons')[1];
         var players = localStorage.getObj('players');
         if (players !== null) {
             this.setName(true, players[0]);
             this.setName(false, players[1]);
             this.score = players[2];
         }
-        //get the board last played on from local storage if it exists
-        /* var board = /*whatever board that is */
-        /* ;
-                for (var i = 0, l = board.length; i < l; i++) {
-                    if (board[i] || !board[i]) {
-                        this.placePiece(board[i], i);
-                    }
-                }
-                this.turns = /*however many turns were saved that round*/
-        /*;
-                this.setName(true, /*whateve name it was*/
-        /* );
-                this.setName(false, /*whateve name it was*/
-        /* );
-                this.updateHUD();*/
+        return true;
 
     },
     //loads last game played at last saved positions
@@ -337,7 +326,6 @@ var game = {
             player2: game.player2Name,
             icon: game.icon,
             moveables: [],
-            selected: -1,
         });
     },
     //updates HUD to current values
@@ -1069,94 +1057,94 @@ var game = {
 var ractive, settings;
 
 function buildractive() {
-    ractive = new Ractive({
-        el: 'gameBoard',
-        template: '#template',
-        data: {
-            board: game.board,
-            turn: game.turns > 5,
-            turns: game.turns,
-            player1: game.player1Name,
-            player2: game.player2Name,
-            icon: game.icon,
-            player: 0,
-            moveables: [],
-            selected: -1,
-            score: game.score,
-            isActive: function(num) {
-                for (var i = 0; i < this.get('moveables').length; i++) {
+        ractive = new Ractive({
+            el: 'gameBoard',
+            template: '#template',
+            data: {
+                board: game.board,
+                turn: game.turns > 5,
+                turns: game.turns,
+                player1: game.player1Name,
+                player2: game.player2Name,
+                icon: game.icon,
+                player: 0,
+                moveables: [],
+                selected: -1,
+                score: game.score,
+                isActive: function(num) {
+                    for (var i = 0; i < this.get('moveables').length; i++) {
 
-                    if (num == this.get('moveables')[i]) {
-                        return true;
+                        if (num == this.get('moveables')[i]) {
+                            return true;
+                        }
                     }
+
+                    return false;
                 }
 
-                return false;
-            }
-
-
-        }
-    });
-    settings = new Ractive({
-        el: 'settingsPage',
-        template: '#settings',
-        data: {
-            player1: game.player1Name,
-            player2: game.player2Name,
-            icon: game.icon,
-            iconPossibles: game.iconPossibles,
-            player: 0,
-        }
-    });
-    settings.observe('player1', function(newValue, oldValue) {
-        game.setName(newValue, true);
-        settings.set('player1', newValue);
-        settings.update();
-    });
-    settings.observe('player2', function(newValue, oldValue) {
-        game.setName(newValue, false);
-        settings.set('player2', newValue);
-        settings.update();
-    });
-}
-
-function makeEm() {
-
-    $('.draggable').draggable({
-        helper: function(ev, ui) {
-            if ($(this).text() !== (game.turns % 2)) {
-                //if its not that players turn give them nothing to drop;
-                return "<div></div>";
-            }
-            return "<span class='helperPick'>" + $(this).html() + "</span>";
-
-        },
-        cursor: "pointer",
-        cursorAt: {
-            left: $('.drop').width() / 2,
-            top: $('.drop').width() / 2
-        }
-    });
-
-    $(".drop").droppable({
-        accept: ".draggable",
-        drop: function(event, ui) {
-
-            if ($(this).children(".draggable").size() > 0 /*|| if not players truen*/ ) {
-
-                //cant aready something there
-                return false;
-
-            } else {
-
-                game.moveFromTo($(this), $(ui.draggable), false);
 
             }
+        });
+        settings = new Ractive({
+            el: 'settingsPage',
+            template: '#settings',
+            data: {
+                player1: game.player1Name,
+                player2: game.player2Name,
+                icon: game.icon,
+                iconPossibles: game.iconPossibles,
+                player: 0,
+            }
+        });
+        settings.observe('player1', function(newValue, oldValue) {
+            game.setName(newValue, true);
+            settings.set('player1', newValue);
+            settings.update();
+        });
+        settings.observe('player2', function(newValue, oldValue) {
+            game.setName(newValue, false);
+            settings.set('player2', newValue);
+            settings.update();
+        });
+    }
+    /*
+    function makeEm() {
 
-        }
-    });
+        $('.draggable').draggable({
+            helper: function(ev, ui) {
+                if ($(this).text() !== (game.turns % 2)) {
+                    //if its not that players turn give them nothing to drop;
+                    return "<div></div>";
+                }
+                return "<span class='helperPick'>" + $(this).html() + "</span>";
 
-}
+            },
+            cursor: "pointer",
+            cursorAt: {
+                left: $('.drop').width() / 2,
+                top: $('.drop').width() / 2
+            }
+        });
+
+        $(".drop").droppable({
+            accept: ".draggable",
+            drop: function(event, ui) {
+
+                if ($(this).children(".draggable").size() > 0 /*|| if not players truen* ) {
+
+                    //cant aready something there
+                    return false;
+
+                } else {
+
+                    game.moveFromTo($(this), $(ui.draggable), false);
+
+                }
+
+            }
+        });
+
+    }*/
 buildractive();
 game.init();
 $(document).ready(function() {
