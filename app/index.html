@@ -165,15 +165,15 @@
                     
                         {{#if (board[i] !== null)}}
                         
-                            <div class="{{board[i] ? 'P1':'P2'}}" id="drag{{i}}" draggable="{{turn}}" ondragstart="whichAmI(event)" onclick="select({{i}})" style="{{'background-image:url('+icon[board[i]?0:1]}})">
+                            <div class="{{board[i] ? 'P1':'P2'}} {{selected==i?'Active':''}}" id="drag{{i}}" draggable="{{turn}}" ondragstart="whichAmI(event)" onclick="select({{i}})" style="{{'background-image:url('+icon[board[i]?0:1]}})">
                             
-                                {{(board[i] ? 'P1:':'P2:')+(board[i] ? player1 : player2)}}
+                                <div><span class="inner">{{(board[i] ? 'P1:':'P2:')+(board[i] ? player1 : player2)}}</span></div>
                                 
                             </div>
 
                         {{else}}
                             {{#if isActive(i)}}
-                                <div class="empty Active" onclick="select({{i}})">Can move here</div>
+                                <div class="empty Active" onclick="select({{i}})"><div><span class="inner">Can move here</span></div></div>
                             {{/if}}
                             
                         {{/if}}
@@ -205,7 +205,7 @@
                         <span class="whosTurn">
                         
                             {{player2+(turns%2==1?"'s Turn":"")}}
-                            <span class="score">{{score[1]}}</span>
+                            <span class="score">{{score[1]}} Points</span>
                         </span>
                         
                     </div>

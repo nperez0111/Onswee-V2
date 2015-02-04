@@ -325,7 +325,7 @@ var game = {
             player1: game.player1Name,
             player2: game.player2Name,
             icon: game.icon,
-            moveables: [],
+
         });
     },
     //updates HUD to current values
