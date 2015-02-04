@@ -177,6 +177,7 @@ var game = {
                 }
                 this.newGame(player);
             }
+            this.save();
             return;
         } else {
             //Figure out what to do if its an invalid position
@@ -289,7 +290,7 @@ var game = {
     storeMoves: function(from, to) {
 
         this.moves.push([from, to]);
-        this.save();
+
 
     },
 
@@ -330,6 +331,7 @@ var game = {
             player1: game.player1Name,
             player2: game.player2Name,
             icon: game.icon,
+            score: game.score
 
         });
     },
@@ -341,13 +343,13 @@ var game = {
     saveScore: function(player) {
         this.score[player ? 0 : 1] += 1;
         //saves scores into scorearr
-        ractive.update('scores');
+        ractive.update('score');
 
         if (localStorage.getObj('players') === null) {
             localStorage.setObj('players', [game.player1Name, game.player2Name, game.score]);
         } else {
             var players = localStorage.getObj('players');
-            for (var i = 0, l = localStorage.length; i < l; i + 3) {
+            for (var i = 0, l = players.length; i < l; i + 3) {
                 if (players[i] == this.player1Name && players[i + 1] == this.player2Name) {
                     players[i + 2][player ? 0 : 1] += 1;
                     localStorage.setObj('players', players);
