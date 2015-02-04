@@ -29,6 +29,10 @@ Array.prototype.clone = function() {
     return this.slice(0);
 };
 //provides a clone method for arrays
+function setName(player) {
+    settings.set(player ? 'player1' : 'player2', $('#' + (player ? 'player1' : 'player2')).val());
+}
+
 function select(num) {
     var snum = ractive.get('selected');
     if (snum == -1) {
