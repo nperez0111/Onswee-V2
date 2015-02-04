@@ -1,6 +1,6 @@
 function supportsLocalStorage() {
     try {
-        return 'localStorage' in window && window.localStorage !== null;
+        return 'localStorage' in window && window.localStorage !== null
     } catch (e) {
         return false;
     }
@@ -124,7 +124,7 @@ var game = {
         this.board = daboard;
         this.turns = 0;
         this.moves = [];
-        if (this.load()) {
+        if (!this.justWon && this.load()) {
             //any post load
         } else {
             if (!supportsLocalStorage()) {
@@ -168,10 +168,10 @@ var game = {
             if (this.isWinIn(player, board)) {
                 console.log("%c%s Won!", "color:red;font-size:20px;", this.getName(player));
                 this.illegal(this.getName(player) + ' won!');
-                this.newGame(player);
                 if (this.justWon === false) {
                     this.justWon = true;
                 }
+                this.newGame(player);
             }
             return;
         } else {
@@ -183,7 +183,7 @@ var game = {
     // accepts player interger position from and to on the board and moves if no errors occur
     which: ['#gameBoard', '.game'],
 
-    justWon: null,
+    justWon: false,
     // to fix browser eager click post win 
 
     moveFromToWithRules: function(player, from, to) {
@@ -226,6 +226,9 @@ var game = {
             this.player1Name = str;
         } else {
             this.player2Name = str;
+        }
+        if (supportsLocalStorage() && localStorage.isPlaying) {
+            this.score = [0, 0];
         }
         this.updateHUD();
         this.save();
@@ -291,16 +294,14 @@ var game = {
             return false;
         }
         this.board = localStorage.getObj('board');
-        console.log(this.board);
-        console.log(game.board);
         this.turns = this.toInt(localStorage.turn);
         this.moves = localStorage.getObj('moves');
         this.icon = localStorage.getObj('icons')[0];
         this.iconPossibles = localStorage.getObj('icons')[1];
         var players = localStorage.getObj('players');
         if (players !== null) {
-            this.setName(true, players[0]);
-            this.setName(false, players[1]);
+            this.player1Name = players[0];
+            this.player2Name = players[1];
             this.score = players[2];
         }
         return true;
@@ -1145,8 +1146,8 @@ function buildractive() {
         });
 
     }*/
-buildractive();
 game.init();
+buildractive();
 $(document).ready(function() {
     $(".ripplelink").click(function(e) {
 

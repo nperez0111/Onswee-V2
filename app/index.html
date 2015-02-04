@@ -167,7 +167,7 @@
                         
                             <div class="{{board[i] ? 'P1':'P2'}} {{selected==i?'Active':''}}" id="drag{{i}}" draggable="{{turn}}" ondragstart="whichAmI(event)" onclick="select({{i}})" style="{{'background-image:url('+icon[board[i]?0:1]}})">
                             
-                                <div><span class="inner">{{(board[i] ? 'P1:':'P2:')+(board[i] ? player1 : player2)}}</span></div>
+                                
                                 
                             </div>
 
@@ -192,7 +192,7 @@
                         <span class="whosTurn">
                         
                             {{player1+(turns%2==0?"'s Turn":"")}}
-                            <span class="score">{{score[0]}} Points</span>
+                            <span class="score">{{score[0]==1?'1 Point':(score[0]+' Points')}}</span>
                         </span>
                         
                     </div> 
@@ -205,7 +205,7 @@
                         <span class="whosTurn">
                         
                             {{player2+(turns%2==1?"'s Turn":"")}}
-                            <span class="score">{{score[1]}} Points</span>
+                            <span class="score">{{score[1]==1?'1 Point':(score[1]+' Points')}}</span>
                         </span>
                         
                     </div>
