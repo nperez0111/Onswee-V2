@@ -278,10 +278,12 @@ var game = {
 
         localStorage.isPlaying = this.moves.length > 0 ? true : false;
         //store things if game is in progress
-        localStorage.setObj('board', game.board);
-        localStorage.turn = this.turns;
-        localStorage.setObj('moves', this.moves);
-        localStorage.setObj('icons', [game.icon, game.iconPossibles]);
+        if (localStorage.isPlaying) {
+            localStorage.setObj('board', game.board);
+            localStorage.turn = this.turns;
+            localStorage.setObj('moves', this.moves);
+            localStorage.setObj('icons', [game.icon, game.iconPossibles]);
+        }
 
 
     },
@@ -296,7 +298,7 @@ var game = {
     },
 
     load: function() {
-        if (!supportsLocalStorage() || !(localStorage.isPlaying)) {
+        if (!supportsLocalStorage() || (localStorage.isPlaying == 'false')) {
             return false;
         }
         this.board = localStorage.getObj('board');
@@ -362,6 +364,7 @@ var game = {
             }
             localStorage.setObj('players', [game.player1Name, game.player2Name, game.score].push(localStorage.getObj('players')));
         }
+        localStorage.isPlaying = false;
     },
 
     newGame: function(player) {
