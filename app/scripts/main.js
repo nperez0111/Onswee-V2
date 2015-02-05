@@ -232,8 +232,9 @@ var game = {
         } else {
             this.player2Name = str;
         }
-        if (supportsLocalStorage() && localStorage.isPlaying) {
-            this.score = [0, 0];
+        if (supportsLocalStorage() && this.moves.length > 1) {
+            this.init();
+            this.updateHUD();
         }
         this.updateHUD();
         this.save();
@@ -308,6 +309,8 @@ var game = {
             this.player1Name = players[0];
             this.player2Name = players[1];
             this.score = players[2];
+            console.log(players[2]);
+            console.log(this.score);
         }
         return true;
 
