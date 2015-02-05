@@ -304,13 +304,11 @@ var game = {
         this.moves = localStorage.getObj('moves');
         this.icon = localStorage.getObj('icons')[0];
         this.iconPossibles = localStorage.getObj('icons')[1];
+        this.score = localStorage.getObj('score');
         var players = localStorage.getObj('players');
         if (players !== null) {
             this.player1Name = players[0];
             this.player2Name = players[1];
-            this.score = players[2];
-            console.log(players[2]);
-            console.log(this.score);
         }
         return true;
 
@@ -347,7 +345,10 @@ var game = {
         this.score[player ? 0 : 1] += 1;
         //saves scores into scorearr
         ractive.update('score');
-
+        if (!supportsLocalStorage()) {
+            return;
+        }
+        localStorage.setObj('score', this.score);
         if (localStorage.getObj('players') === null) {
             localStorage.setObj('players', [game.player1Name, game.player2Name, game.score]);
         } else {
