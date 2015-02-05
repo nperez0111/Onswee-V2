@@ -30,7 +30,9 @@ Array.prototype.clone = function() {
 };
 //provides a clone method for arrays
 function setName(player) {
-    settings.set(player ? 'player1' : 'player2', $('#' + (player ? 'player1' : 'player2')).val());
+    var str = $('#' + (player ? 'player1' : 'player2')).val();
+    settings.set(player ? 'player1' : 'player2', str);
+    game.setName(str, player);
 }
 
 function select(num) {
@@ -233,6 +235,8 @@ var game = {
             this.player2Name = str;
         }
         if (supportsLocalStorage() && this.moves.length > 1) {
+            localStorage.isPlaying = false;
+            this.score = [0, 0];
             this.init();
             this.updateHUD();
         }
@@ -298,7 +302,7 @@ var game = {
     },
 
     load: function() {
-        if (!supportsLocalStorage() || (localStorage.isPlaying == 'false')) {
+        if (!supportsLocalStorage() || !(localStorage.isPlaying) || (localStorage.isPlaying == 'false')) {
             return false;
         }
         this.board = localStorage.getObj('board');
@@ -355,7 +359,7 @@ var game = {
             localStorage.setObj('players', [game.player1Name, game.player2Name, game.score]);
         } else {
             var players = localStorage.getObj('players');
-            for (var i = 0, l = players.length; i < l; i + 3) {
+            for (var i = 0, l = players.length; i < l; i += 3) {
                 if (players[i] == this.player1Name && players[i + 1] == this.player2Name) {
                     players[i + 2][player ? 0 : 1] += 1;
                     localStorage.setObj('players', players);
@@ -1197,8 +1201,9 @@ $(document).ready(function() {
         goTo('#rules', '.rules');
     });
 });
+/*
 game.setName("Juan Peperoni", true);
-game.setName("El Che de Barrio", false);
+game.setName("El Che de Barrio", false);*/
 /*game.placePiece(true, 2);
 game.placePiece(false, 1);
 game.placePiece(true, 4);
