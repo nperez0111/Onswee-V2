@@ -28,7 +28,35 @@ function compareNumber(a, b) {
 Array.prototype.clone = function() {
     return this.slice(0);
 };
-//provides a clone method for arrays
+
+function placePiece(player, num) {
+
+    if (game.turns > 5) {
+        return;
+    } else if (game.board[num] !== null) {
+        game.illegal('That position is taken');
+        return;
+    } else if (game.justWon) {
+        game.justWon = false;
+        return;
+    }
+    var board = game.board.clone();
+    board[num] = player;
+    if (game.hasIllegalLineIn(player, board)) {
+        return;
+    }
+
+    game.placePiece(player, num);
+
+    if (game.ai) {
+        game.aiTurn();
+    }
+}
+
+function setAI() {
+        game.ai = $('#ai').is(':checked');
+    }
+    //provides a clone method for arrays
 function setName(player) {
     var str = $('#' + (player ? 'player1' : 'player2')).val();
     settings.set(player ? 'player1' : 'player2', str);
@@ -73,6 +101,11 @@ function select(num) {
                 game.moveFromTo(game.board[snum], snum, num);
                 ractive.set('selected', -1);
                 ractive.set('moveables', []);
+                if (game.ai) {
+                    console.log('AI');
+                    game.aiTurn();
+                    console.log('EndAI');
+                }
                 return;
             }
         }
@@ -117,6 +150,9 @@ function drop(ev) {
         var drag = game.toInt(ev.dataTransfer.getData("which")),
             dropp = game.toInt(ev.target.id.replace(/^\D+/g, ""));
         game.moveFromTo(game.board[drag], drag, dropp);
+    }
+    if (game.ai) {
+        game.aiTurn();
     }
 }
 
@@ -287,6 +323,7 @@ var game = {
             localStorage.turn = this.turns;
             localStorage.setObj('moves', this.moves);
             localStorage.setObj('icons', [game.icon, game.iconPossibles]);
+            localStorage.ai = this.ai;
         }
 
 
@@ -300,11 +337,13 @@ var game = {
 
 
     },
-
+    ai: false,
+    //stores if ai is playing or not
     load: function() {
         if (!supportsLocalStorage() || !(localStorage.isPlaying) || (localStorage.isPlaying == 'false')) {
             return false;
         }
+        this.ai = localStorage.ai == 'true';
         this.board = localStorage.getObj('board');
         this.turns = this.toInt(localStorage.turn);
         this.moves = localStorage.getObj('moves');
@@ -560,11 +599,14 @@ var game = {
         if (board[this.center] === null) {
             return this.center;
         }
-        var pos = this.toInt(Math.random() * this.prefferedLocs.length);
-        if (board[this.prefferedLocs[pos]] !== null) {
-            this.choosePreffered(board);
+        var arr = [];
+        for (var i = 9; i--;) {
+            if (this.board[i] === null) {
+                arr.push(i);
+            }
         }
-        return this.prefferedLocs[pos];
+
+        return arr[this.toInt(Math.random() * arr.length)];
     },
     //chooses preffered location randomly returns integer position of empty space to put into
     toInt: function(inter) {
@@ -595,7 +637,17 @@ var game = {
 
         }
 
-        for (var il = 0, p = this.pairArrangements, b = board, le = p.length; il < le; il++) {
+        for (var il = 0, p = [
+                [4, 8],
+                [4, 7],
+                [4, 6],
+                [4, 5],
+                [0, 5],
+                [3, 4],
+                [4, 2],
+                [1, 4],
+                [0, 4],
+            ], b = board, le = p.length; il < le; il++) {
 
             if (b[p[il][0]] == player && b[p[il][1]] == player) {
                 //board positions value==player continue to check next
@@ -827,11 +879,6 @@ var game = {
     },
     //logs current board to console
     placePiece: function(player, pos) {
-        if (this.justWon) {
-            this.justWon = false;
-            //this is for browser clicking
-            return false;
-        }
         if (this.turns > 5) {
             return false;
         }
@@ -849,26 +896,26 @@ var game = {
     },
     //places Piece in Board if possible
     aiTurn: function() {
-
+        console.log('----------------AI Turn');
         if (this.turns > 5) {
 
-            this.chooseBestMove();
+            this.chooseBestMove(false, this.board);
 
         } else {
-
             this.placePiece(false, this.choosePreffered(this.board));
-
         }
         this.updateHUD();
+        console.log('-------------------End AI turn');
     },
     //AI's turn invoked after the user does their turn
     chooseBestMove: function(player, board) {
-        if (this.canCompleteALineIn(player, board)) {
+        var bool = this.turns > 11;
+        if (bool && this.canCompleteALineIn(player, board)) {
             //complete the line then!
             console.log("Let's Complete A line!");
             this.completeLineIn(player, board);
             return;
-        } else if (this.canCompleteALineIn(!player, board)) {
+        } else if (bool && this.canCompleteALineIn(!player, board)) {
             //block that!!
             console.log("Let's try to block em!");
             if (this.completeLineAgainst(player, board)) {
@@ -876,7 +923,7 @@ var game = {
                 return;
             }
             console.log("I think we may Lose that next turn :(");
-        } else if (this.ifCanTrap(player, board)) {
+        } else if (bool && this.ifCanTrap(player, board)) {
             console.log("We Trapped E'm");
             return;
         }
@@ -1112,6 +1159,7 @@ function buildractive() {
                 icon: game.icon,
                 iconPossibles: game.iconPossibles,
                 player: 0,
+                ai: game.ai,
             }
         });
         settings.observe('player1', function(newValue, oldValue) {

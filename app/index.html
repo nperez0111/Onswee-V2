@@ -102,6 +102,10 @@
                     </div>
                     
             </div>
+            <div id="IsAI">
+                <h2>Play AI?</h2>
+                    <input type='checkbox' id="ai" name="AI" onchange="setAI()">
+            </div>
             
 
             <div id="IconChooser">
@@ -161,7 +165,7 @@
                 
                     {{#each board:i}}
                     
-                    <div class="boardPlaceHolder b{{(i+1)}}" id="drop{{i}}" ondrop="drop(event)" ondragover="allowDrop(event)" onclick="game.placePiece(game.turns%2==0?true:false,{{i}})">
+                    <div class="boardPlaceHolder b{{(i+1)}}" id="drop{{i}}" ondrop="drop(event)" ondragover="allowDrop(event)" onclick="placePiece(game.turns%2==0?true:false,{{i}})">
                     
                         {{#if (board[i] !== null)}}
                         

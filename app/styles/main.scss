@@ -118,6 +118,9 @@ body {
     padding-left: 15px;
     padding-right: 15px;
 }
+.footer{
+    clear:both;
+}
 /* Custom page header */
 
 .header {
@@ -183,6 +186,9 @@ body {
 .group {
     position: relative;
     margin-bottom: 45px;
+    width:50%;
+    display: inline-block;
+    float:left;
 }
 input {
     font-size: 18px;
