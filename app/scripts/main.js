@@ -1245,6 +1245,9 @@ $(document).ready(function() {
     $('.rules').click(function() {
         goTo('#rules', '.rules');
     });
+    $(function() {
+    FastClick.attach(document.body);
+    });
 });
 /*
 game.setName("Juan Peperoni", true);
