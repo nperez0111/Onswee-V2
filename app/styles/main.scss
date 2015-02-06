@@ -49,13 +49,29 @@
     background-color: #FFF;
     border: 1px solid #000;
     color: #000;
+    -webkit-transition: all 300ms ease-in;
+    -moz-transition: all 300ms ease-in;
+    -ms-transition: all 300ms ease-in;
+    -o-transition: all 300ms ease-in;
+    transition: all 300ms ease-in;
+    &:hover{
+    background-color: #CCC;
+        -webkit-box-shadow:inset 0 0 10px 7px rgba(100,100,100,0.6);
+    box-shadow:inset 0 0 10px 7px rgba(100,100,100,0.6);
+    }
     &.b2, &.b4, &.b6, &.b8 {
         background-color: #555;
         color: #FFF;
+        &:hover{
+            background-color: #333;
+        }
     }
     &.b5 {
         background-color: #000;
         color: #FFF;
+        &:hover{
+            background-color: #333;
+        }
     }
     .P1,
     .P2,
@@ -68,6 +84,11 @@
         background-position: center center;
         -webkit-border-radius: 15px;
         border-radius: 15px;
+        cursor: pointer;
+        &:hover{
+        -webkit-box-shadow:inset 0 0 10px 7px rgba(100,100,100,0.6);
+    box-shadow:inset 0 0 10px 7px rgba(100,100,100,0.6);
+        }
         div{
             display:table;
             width:100%;
@@ -416,7 +437,12 @@ $pad: 10px;
 .col-1-8 {
   width: 12.5%;
 }
-
+.icoPossibles{
+    &:hover{
+    -webkit-box-shadow: 0 0 10px 7px #828282;
+box-shadow: 0 0 10px 7px #828282;
+    }
+}
 .Active{
     text-shadow: 2px 2px 3px #CCC;
     -webkit-box-shadow:inset 0 0 10px 7px rgba(100,100,100,0.6);
@@ -429,4 +455,68 @@ $pad: 10px;
 }
 .icons{
 width:100%;
+}
+.cursor{
+cursor: pointer;
+}
+
+#ai {
+  position: relative;
+  display: inline;
+    width:30px;
+    height:30px;
+    margin-left:20px;
+    line-height: 200%;
+  
+  cursor: pointer;
+  
+  &:before {
+		-webkit-transition: all 300ms ease-in-out;
+-moz-transition: all 300ms ease-in-out;
+-ms-transition: all 300ms ease-in-out;
+-o-transition: all 300ms ease-in-out;
+transition: all 300ms ease-in-out;
+    
+		content: "";
+    
+		position: absolute;
+		left: 0;
+		z-index: 1;
+  
+		width:30px;
+    height:30px;;
+    
+		border: 2px solid #f2f2f2; 
+  }
+  
+  &:checked {
+    &:before {
+       -moz-transform: rotate(-45deg);
+-webkit-transform: rotate(-45deg);
+-o-transform: rotate(-45deg);
+-ms-transform: rotate(-45deg);
+transform: rotate(-45deg);
+  
+  		
+    height:15px;
+  
+  		border-color: #bada55;
+  		border-top-style: none;
+  		border-right-style: none;
+    } 
+  }
+  
+  &:after {
+    content: "";
+    
+    position: absolute;
+    left: 0;
+    
+    width:32px;
+    height:32px;
+    
+    background: #fff;
+    
+    cursor: pointer;
+  }
 }

@@ -37,12 +37,14 @@ function placePiece(player, num) {
         game.illegal('That position is taken');
         return;
     } else if (game.justWon) {
+        //for eager click
         game.justWon = false;
         return;
     }
     var board = game.board.clone();
     board[num] = player;
     if (game.hasIllegalLineIn(player, board)) {
+        game.illegal("Can't make a line when placing");
         return;
     }
 
@@ -59,6 +61,7 @@ function setAI() {
             //if is player2 do the ai turn instead
             game.aiTurn();
         }
+        settings.set('ai', game.ai);
     }
     //provides a clone method for arrays
 function setName(player) {
@@ -273,12 +276,6 @@ var game = {
             this.player1Name = str;
         } else {
             this.player2Name = str;
-        }
-        if (supportsLocalStorage() && this.moves.length > 1) {
-            localStorage.isPlaying = false;
-            this.score = [0, 0];
-            this.init();
-            this.updateHUD();
         }
         this.updateHUD();
         this.save();
@@ -1116,95 +1113,99 @@ var game = {
 var ractive, settings;
 
 function buildractive() {
-        ractive = new Ractive({
-            el: 'gameBoard',
-            template: '#template',
-            data: {
-                board: game.board,
-                turn: game.turns > 5,
-                turns: game.turns,
-                player1: game.player1Name,
-                player2: game.player2Name,
-                icon: game.icon,
-                player: 0,
-                moveables: [],
-                selected: -1,
-                score: game.score,
-                isActive: function(num) {
-                    for (var i = 0; i < this.get('moveables').length; i++) {
+    ractive = new Ractive({
+        el: 'gameBoard',
+        template: '#template',
+        data: {
+            board: game.board,
+            turn: game.turns > 5,
+            turns: game.turns,
+            player1: game.player1Name,
+            player2: game.player2Name,
+            icon: game.icon,
+            player: 0,
+            moveables: [],
+            selected: -1,
+            score: game.score,
+            isActive: function(num) {
+                for (var i = 0; i < this.get('moveables').length; i++) {
 
-                        if (num == this.get('moveables')[i]) {
-                            return true;
-                        }
+                    if (num == this.get('moveables')[i]) {
+                        return true;
                     }
-
-                    return false;
                 }
 
-
+                return false;
             }
-        });
-        settings = new Ractive({
-            el: 'settingsPage',
-            template: '#settings',
-            data: {
-                player1: game.player1Name,
-                player2: game.player2Name,
-                icon: game.icon,
-                iconPossibles: game.iconPossibles,
-                player: 0,
-                ai: game.ai,
+
+
+        }
+    });
+    settings = new Ractive({
+        el: 'settingsPage',
+        template: '#settings',
+        data: {
+            player1: game.player1Name,
+            player2: game.player2Name,
+            icon: game.icon,
+            iconPossibles: game.iconPossibles,
+
+            player: 0,
+            ai: game.ai,
+        }
+    });
+    settings.observe('player1', function(newValue, oldValue) {
+        game.setName(newValue, true);
+        settings.set('player1', newValue);
+        settings.update();
+    });
+    settings.observe('player2', function(newValue, oldValue) {
+        game.setName(newValue, false);
+        settings.set('player2', newValue);
+        settings.update();
+    });
+}
+
+function makeEm() {
+
+    $('.draggable').draggable({
+        helper: function(ev, ui) {
+            if (game.turns % 2 == 1) {
+                //if its not that players turn give them nothing to drop;
+                return "<div></div>";
             }
-        });
-        settings.observe('player1', function(newValue, oldValue) {
-            game.setName(newValue, true);
-            settings.set('player1', newValue);
-            settings.update();
-        });
-        settings.observe('player2', function(newValue, oldValue) {
-            game.setName(newValue, false);
-            settings.set('player2', newValue);
-            settings.update();
-        });
-    }
-    /*
-    function makeEm() {
+            return "<span class='helperPick'>" + $(this).html() + "</span>";
 
-        $('.draggable').draggable({
-            helper: function(ev, ui) {
-                if ($(this).text() !== (game.turns % 2)) {
-                    //if its not that players turn give them nothing to drop;
-                    return "<div></div>";
-                }
-                return "<span class='helperPick'>" + $(this).html() + "</span>";
+        },
+        cursor: "pointer",
+        cursorAt: {
+            left: $('.drop').width() / 2,
+            top: $('.drop').width() / 2
+        }
+    });
 
-            },
-            cursor: "pointer",
-            cursorAt: {
-                left: $('.drop').width() / 2,
-                top: $('.drop').width() / 2
-            }
-        });
+    $(".drop").droppable({
+        /*
+                    accept: ".draggable",
+                    drop: function(event, ui) {
 
-        $(".drop").droppable({
-            accept: ".draggable",
-            drop: function(event, ui) {
+                        if ($(this).children(".draggable").size() > 0 ||
+                            if not players truen * ) {
 
-                if ($(this).children(".draggable").size() > 0 /*|| if not players truen* ) {
+                            //cant aready something there
+                            return false;
 
-                    //cant aready something there
-                    return false;
+                        } else {
 
-                } else {
+                            game.moveFromTo($(this), $(ui.draggable), false);
 
-                    game.moveFromTo($(this), $(ui.draggable), false);
+                        }
 
-                }
+                    
+        }*/
+    });
 
-            }
-        });
-
-    }*/
+}
 game.init();
 buildractive();
 $(document).ready(function() {

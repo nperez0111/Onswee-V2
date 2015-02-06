@@ -103,8 +103,8 @@
                     
             </div>
             <div id="IsAI">
-                <h2>Play AI?</h2>
-                    <input type='checkbox' id="ai" name="AI" onchange="setAI()">
+                <h2>Single Player Mode:</h2>
+                    <span>CPU is: {{ai?'On':'Off'}}</span><input type='checkbox' id="ai" name="AI" onchange="setAI()">
             </div>
             
 
@@ -145,7 +145,7 @@
                 <div class="grid">
                 {{#each iconPossibles:i}}
 
-                    <div onclick="game.setIcon({{player}},{{i}})" class="col-1-4">
+                    <div onclick="game.setIcon({{player}},{{i}})" class="col-1-4 icoPossibles">
 
                         <img src="{{iconPossibles[i]}}" alt="Icon Number {{i+3}}" class="icons">
 
@@ -165,11 +165,11 @@
                 
                     {{#each board:i}}
                     
-                    <div class="boardPlaceHolder b{{(i+1)}}" id="drop{{i}}" ondrop="drop(event)" ondragover="allowDrop(event)" onclick="placePiece(game.turns%2==0?true:false,{{i}})">
+                    <div class="boardPlaceHolder b{{(i+1)}} {{turn?'':'cursor'}}" id="drop{{i}}" ondrop="drop(event)" ondragover="allowDrop(event)" onclick="placePiece(game.turns%2==0?true:false,{{i}})">
                     
                         {{#if (board[i] !== null)}}
                         
-                            <div class="{{board[i] ? 'P1':'P2'}} {{selected==i?'Active':''}}" id="drag{{i}}" draggable="{{turn}}" ondragstart="whichAmI(event)" onclick="select({{i}})" style="{{'background-image:url('+icon[board[i]?0:1]}})">
+                            <div class="{{board[i] ? 'P1':'P2'}} {{selected==i?'Active':''}} draggable" id="drag{{i}}" draggable="{{turn}}" ondragstart="whichAmI(event)" onclick="select({{i}})" style="{{'background-image:url('+icon[board[i]?0:1]}})">
                             
                                 
                                 
