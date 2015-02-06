@@ -55,6 +55,10 @@ function placePiece(player, num) {
 
 function setAI() {
         game.ai = $('#ai').is(':checked');
+        if ((game.turns % 2 == 1)) {
+            //if is player2 do the ai turn instead
+            game.aiTurn();
+        }
     }
     //provides a clone method for arrays
 function setName(player) {
@@ -101,10 +105,10 @@ function select(num) {
                 game.moveFromTo(game.board[snum], snum, num);
                 ractive.set('selected', -1);
                 ractive.set('moveables', []);
-                if (game.ai) {
-                    console.log('AI');
+                if (!game.justWon && game.ai) {
+
                     game.aiTurn();
-                    console.log('EndAI');
+
                 }
                 return;
             }
@@ -151,7 +155,7 @@ function drop(ev) {
             dropp = game.toInt(ev.target.id.replace(/^\D+/g, ""));
         game.moveFromTo(game.board[drag], drag, dropp);
     }
-    if (game.ai) {
+    if (!game.justWon && game.ai) {
         game.aiTurn();
     }
 }
@@ -637,17 +641,7 @@ var game = {
 
         }
 
-        for (var il = 0, p = [
-                [4, 8],
-                [4, 7],
-                [4, 6],
-                [4, 5],
-                [0, 5],
-                [3, 4],
-                [4, 2],
-                [1, 4],
-                [0, 4],
-            ], b = board, le = p.length; il < le; il++) {
+        for (var il = 0, p = this.pairArrangements, b = board, le = p.length; il < le; il++) {
 
             if (b[p[il][0]] == player && b[p[il][1]] == player) {
                 //board positions value==player continue to check next
