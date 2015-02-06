@@ -33,7 +33,7 @@
     display: none;
     margin-bottom: 16px;
 }
-#settingsPage, #rules, .boardPlaceHolder{
+#settingsPage, #rules, #gameBoard{
     box-shadow: rgba(0, 0, 0, 0.3) 0 16px 16px 0;
     -webkit-box-shadow: rgba(0, 0, 0, 0.3) 0 16px 16px 0;
     -moz-box-shadow: rgba(0, 0, 0, 0.3) 0 16px 16px 0;
@@ -459,14 +459,13 @@ width:100%;
 .cursor{
 cursor: pointer;
 }
-
+$size:2.3em;
 #ai {
   position: relative;
   display: inline;
-    width:30px;
-    height:30px;
+    width:$size;
+    height:$size;
     margin-left:20px;
-    line-height: 200%;
   
   cursor: pointer;
   
@@ -483,8 +482,8 @@ transition: all 300ms ease-in-out;
 		left: 0;
 		z-index: 1;
   
-		width:30px;
-    height:30px;;
+		width:$size;
+    height:$size;
     
 		border: 2px solid #f2f2f2; 
   }
@@ -498,7 +497,7 @@ transition: all 300ms ease-in-out;
 transform: rotate(-45deg);
   
   		
-    height:15px;
+    height:($size/2);
   
   		border-color: #bada55;
   		border-top-style: none;
@@ -512,8 +511,8 @@ transform: rotate(-45deg);
     position: absolute;
     left: 0;
     
-    width:32px;
-    height:32px;
+    width:$size;
+    height:$size;
     
     background: #fff;
     

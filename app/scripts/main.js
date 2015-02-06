@@ -691,8 +691,9 @@ var game = {
         if (pairArrOutPut == 12) {
             return false;
         } else if (board[this.center] === null && (pairArrOutPut < 4)) {
+            console.log('um');
             return true;
-        } else if (board[this.pairCompleter[pairArrOutPut][0]] == player || board[this.pairCompleter[pairArrOutPut][1]] == player && board[this.pairArrangements[(pairArrOutPut % 2) === 0 ? pairArrOutPut + 1 : pairArrOutPut - 1][(pairArrOutPut % 2) === 0 ? 1 : 0]] === null) {
+        } else if (pairArrOutPut > 4 && (board[this.pairCompleter[pairArrOutPut][0]] == player || board[this.pairCompleter[pairArrOutPut][1]] == player && board[this.pairArrangements[(pairArrOutPut % 2) === 0 ? pairArrOutPut + 1 : pairArrOutPut - 1][(pairArrOutPut % 2) === 0 ? 1 : 0]] === null)) {
             return true;
         }
         return false;
@@ -712,6 +713,7 @@ var game = {
 
                 this.moveFromTo(player, possibles[i], this.pairArrangements[(pairArrOutPut % 2) === 0 ? pairArrOutPut + 1 : pairArrOutPut - 1][(pairArrOutPut % 2) === 0 ? 1 : 0]);
                 this.turns = 0;
+                return;
 
             }
         }
@@ -1079,7 +1081,7 @@ var game = {
     },
     //averages ranks for choose best move
     moveIntoAnyOpenPos: function(player) {
-
+        console.log('move into any open spot called');
         var possibles = this.findPlayersPosIn(player, this.board);
 
         for (var i = 0; i < possibles.length; i++) {
