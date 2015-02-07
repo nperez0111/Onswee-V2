@@ -54,7 +54,15 @@ function placePiece(player, num) {
         game.aiTurn();
     }
 }
-
+function resetMe(){
+    console.log('called');
+    game.turns=0;
+    game.justWon=true;
+    game.init();
+    game.justWon=false;
+    ractive.update();
+    game.save();
+}
 function setAI() {
         game.ai = $('#ai').is(':checked');
         if ((game.turns % 2 == 1)) {
@@ -319,13 +327,12 @@ var game = {
 
         localStorage.isPlaying = this.moves.length > 0 ? true : false;
         //store things if game is in progress
-        if (localStorage.isPlaying) {
             localStorage.setObj('board', game.board);
             localStorage.turn = this.turns;
             localStorage.setObj('moves', this.moves);
             localStorage.setObj('icons', [game.icon, game.iconPossibles]);
             localStorage.ai = this.ai;
-        }
+        
 
 
     },
