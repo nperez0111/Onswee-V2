@@ -325,7 +325,7 @@ var game = {
             return false;
         }
 
-        localStorage.isPlaying = this.moves.length > 0 ? true : false;
+        localStorage.isPlaying = this.turns > 0 ? true : false;
         //store things if game is in progress
             localStorage.setObj('board', game.board);
             localStorage.turn = this.turns;
@@ -889,6 +889,7 @@ var game = {
             if (this.turns == 5) {
                 this.moves[0] = this.board;
             }
+            this.save();
             return true;
         }
         this.illegal("Sorry that space is filled!");
