@@ -54,15 +54,17 @@ function placePiece(player, num) {
         game.aiTurn();
     }
 }
-function resetMe(){
+
+function resetMe() {
     console.log('called');
-    game.turns=0;
-    game.justWon=true;
+    game.turns = 0;
+    game.justWon = true;
     game.init();
-    game.justWon=false;
+    game.justWon = false;
     ractive.update();
     game.save();
 }
+
 function setAI() {
         game.ai = $('#ai').is(':checked');
         if ((game.turns % 2 == 1)) {
@@ -327,12 +329,12 @@ var game = {
 
         localStorage.isPlaying = this.turns > 0 ? true : false;
         //store things if game is in progress
-            localStorage.setObj('board', game.board);
-            localStorage.turn = this.turns;
-            localStorage.setObj('moves', this.moves);
-            localStorage.setObj('icons', [game.icon, game.iconPossibles]);
-            localStorage.ai = this.ai;
-        
+        localStorage.setObj('board', game.board);
+        localStorage.turn = this.turns;
+        localStorage.setObj('moves', this.moves);
+        localStorage.setObj('icons', [game.icon, game.iconPossibles]);
+        localStorage.ai = this.ai;
+
 
 
     },
@@ -698,9 +700,8 @@ var game = {
         if (pairArrOutPut == 12) {
             return false;
         } else if (board[this.center] === null && (pairArrOutPut < 4)) {
-            console.log('um');
             return true;
-        } else if (pairArrOutPut > 4 && (board[this.pairCompleter[pairArrOutPut][0]] == player || board[this.pairCompleter[pairArrOutPut][1]] == player && board[this.pairArrangements[(pairArrOutPut % 2) === 0 ? pairArrOutPut + 1 : pairArrOutPut - 1][(pairArrOutPut % 2) === 0 ? 1 : 0]] === null)) {
+        } else if (pairArrOutPut > 3 && (board[this.pairCompleter[pairArrOutPut][0]] == player || board[this.pairCompleter[pairArrOutPut][1]] == player && board[this.pairArrangements[(pairArrOutPut % 2) === 0 ? pairArrOutPut + 1 : pairArrOutPut - 1][(pairArrOutPut % 2) === 0 ? 1 : 0]] === null)) {
             return true;
         }
         return false;
@@ -1108,6 +1109,27 @@ var game = {
             }
 
         }
+        if (this.board[this.allPosMoveLocs[4][3]] === null) {
+            this.moveFromTo(player, 4, this.allPosMoveLocs[4][3]);
+            return;
+        } else if (this.board[this.allPosMoveLocs[4][4]] === null) {
+            this.moveFromTo(player, 4, this.allPosMoveLocs[4][4]);
+            return;
+        } else if (this.board[this.allPosMoveLocs[4][5]] === null) {
+            this.moveFromTo(player, 4, this.allPosMoveLocs[4][5]);
+            return;
+        } else if (this.board[this.allPosMoveLocs[4][6]] === null) {
+            this.moveFromTo(player, 4, this.allPosMoveLocs[4][6]);
+            return;
+        } else if (this.board[this.allPosMoveLocs[4][7]] === null) {
+            this.moveFromTo(player, 4, this.allPosMoveLocs[4][7]);
+            return;
+        } else if (this.board[this.allPosMoveLocs[4][8]] === null) {
+            this.moveFromTo(player, 4, this.allPosMoveLocs[4][8]);
+            return;
+        } else {
+            console.log('Error: No open position found or something is really messed up!');
+        }
 
     },
     findInArrOfArrs: function(num, arr) {
@@ -1254,7 +1276,7 @@ $(document).ready(function() {
         goTo('#rules', '.rules');
     });
     $(function() {
-    FastClick.attach(document.body);
+        FastClick.attach(document.body);
     });
 });
 /*

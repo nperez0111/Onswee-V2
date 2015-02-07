@@ -6,7 +6,7 @@ dist
 bower_components
 test/bower_components
 .thumbs
-.db
+*.db
 ehthumbs.db
 build/
 dist/
