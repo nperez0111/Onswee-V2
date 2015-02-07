@@ -101,7 +101,7 @@ function select(num) {
         }
 
         if (arr.length === 0) {
-            game.illegal("Can't move that piece anywhere!");
+            game.illegal("Can't make any straight lines in these turns");
             return;
         }
         ractive.set('selected', num);
@@ -288,7 +288,7 @@ var game = {
             this.player2Name = str;
         }
         this.updateHUD();
-        this.save();
+        this.saveScore(null);
         //reflect Name change to HUD
     },
     icon: ['images/x.png', 'images/o.png'],
@@ -397,27 +397,44 @@ var game = {
     //scores of the two players
 
     saveScore: function(player) {
-        this.score[player ? 0 : 1] += 1;
+        if (player !== null) {
+            this.score[player ? 0 : 1] += 1;
+        }
+        console.log('called save score');
         //saves scores into scorearr
         ractive.update('score');
         if (!supportsLocalStorage()) {
             return;
         }
+        var arr = [game.player1Name, game.player2Name, game.score];
         localStorage.setObj('score', this.score);
         if (localStorage.getObj('players') === null) {
-            localStorage.setObj('players', [game.player1Name, game.player2Name, game.score]);
+            localStorage.setObj('players', arr);
         } else {
             var players = localStorage.getObj('players');
-            for (var i = 0, l = players.length; i < l; i += 3) {
+            for (var i = 0, l = players.length, fl = this.player1Name.length, sl = this.player2Name.length; i < l; i += 3) {
                 if (players[i] == this.player1Name && players[i + 1] == this.player2Name) {
-                    players[i + 2][player ? 0 : 1] += 1;
+                    players[i + 2][player ? 0 : 1] += player === null ? 0 : 1;
                     localStorage.setObj('players', players);
                     return;
+                } else if (Math.abs(players[i].length - fl) == 1) {
+                    if (players[i] == this.player1Name.slice(0, players[i].length) || players[i].slice(0, fl) == this.player1Name) {
+                        players[i] = this.player1Name;
+                        localStorage.setObj('players', players);
+                        return;
+
+                    }
+                } else if (Math.abs(players[i + 1].length - sl) == 1) {
+                    if (players[i + 1] == this.player1Name.slice(0, players[i + 1].length) || players[i + 1].slice(0, sl) == this.player2Name) {
+                        players[i + 1] = this.player1Name;
+                        localStorage.setObj('players', players);
+                        return;
+                    }
                 }
             }
-            localStorage.setObj('players', [game.player1Name, game.player2Name, game.score].push(localStorage.getObj('players')));
+            localStorage.setObj('players', arr.concat(localStorage.getObj('players')));
         }
-        localStorage.isPlaying = false;
+        localStorage.isPlaying = (player === null);
     },
 
     newGame: function(player) {
