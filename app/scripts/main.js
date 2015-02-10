@@ -569,6 +569,22 @@ var game = {
         [
             [4, 6, 8],
             [3, 5, 7]
+        ],
+        [
+            [0, 2, 8],
+            [1, 4, 5]
+        ],
+        [
+            [0, 6, 8],
+            [3, 4, 7]
+        ],
+        [
+            [1, 6, 8],
+            [4, 5, 7]
+        ],
+        [
+            [2, 6, 8],
+            [4, 5, 7]
         ]
     ],
     //arrangements for trapping [0] is the other player who needs to move [1] is player checking
@@ -622,13 +638,15 @@ var game = {
         return count == 1 ? arr1[c] : -1;
     },
     //if two arrays are equal returns true
-    choosePreffered: function(board) {
+    choosePreffered: function(player, board) {
         if (board[this.center] === null) {
             return this.center;
         }
         var arr = [];
         for (var i = 9; i--;) {
-            if (this.board[i] === null) {
+            var bcopy = board.clone();
+            bcopy[i] = player;
+            if (board[i] === null && (this.turns < 4 || !this.hasIllegalLineIn(player, bcopy))) {
                 arr.push(i);
             }
         }
@@ -718,7 +736,8 @@ var game = {
             return false;
         } else if (board[this.center] === null && (pairArrOutPut < 4)) {
             return true;
-        } else if (pairArrOutPut > 3 && (board[this.pairCompleter[pairArrOutPut][0]] == player || board[this.pairCompleter[pairArrOutPut][1]] == player && board[this.pairArrangements[(pairArrOutPut % 2) === 0 ? pairArrOutPut + 1 : pairArrOutPut - 1][(pairArrOutPut % 2) === 0 ? 1 : 0]] === null)) {
+        } else if (pairArrOutPut > 3 && (board[this.pairCompleter[pairArrOutPut][0]] == player || board[this.pairCompleter[pairArrOutPut][1]] == player) && board[this.pairArrangements[(pairArrOutPut % 2) === 0 ? pairArrOutPut + 1 : pairArrOutPut - 1][(pairArrOutPut % 2) === 0 ? 1 : 0]] === null) {
+            console.log('Pairoutput at %s and bool is at %s', pairArrOutPut, this.pairArrangements[(pairArrOutPut % 2) === 0 ? pairArrOutPut + 1 : pairArrOutPut - 1][(pairArrOutPut % 2) === 0 ? 1 : 0]);
             return true;
         }
         return false;
@@ -921,7 +940,7 @@ var game = {
             this.chooseBestMove(false, this.board);
 
         } else {
-            this.placePiece(false, this.choosePreffered(this.board));
+            this.placePiece(false, this.choosePreffered(false, this.board));
         }
         this.updateHUD();
         console.log('-------------------End AI turn');
