@@ -959,10 +959,10 @@ var game = {
         if (this.hasCenterIn(!player, board)) {
             rank -= 10;
         }
-        if (this.ifCanTrap(player, board)) {
+        if (this.ifCanTrap(player, board) !== null) {
             rank += 200;
         }
-        if (this.ifCanTrap(!player, board)) {
+        if (this.ifCanTrap(!player, board) !== null) {
             rank -= 125;
         }
         //this.trackcurrent(board);
@@ -1329,24 +1329,25 @@ function makeEm() {
     });
 
     $(".drop").droppable({
-        /*
-                    accept: ".draggable",
-                    drop: function(event, ui) {
 
-                        if ($(this).children(".draggable").size() > 0 ||
-                            if not players truen * ) {
+        accept: ".draggable",
+        drop: function(event, ui) {
 
-                            //cant aready something there
-                            return false;
+            if ($(this).children(".draggable").size() > 0 ||
+                game.board[0]) {
+                /*get the number of the droppable*/
 
-                        } else {
+                //cant already something there
+                return false;
 
-                            game.moveFromTo($(this), $(ui.draggable), false);
+            } else {
 
-                        }
+                game.moveFromTo(game.turns % 2 === 0, 2 /*draggable num*/ , 2 /*droppable num*/ );
 
-                    
-        }*/
+            }
+
+
+        }
     });
 
 }
