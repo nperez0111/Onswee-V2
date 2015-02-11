@@ -670,15 +670,15 @@ var game = {
 
                 for (var c = this.allPosMoveLocs[to].length - 1; c--;) {
                     if (board[this.allPosMoveLocs[to][c]] == player) {
-                        this.moveFromTo(player, this.allPosMoveLocs[to][c], to);
-                        return true;
+
+                        return [this.allPosMoveLocs[to][c], to];
                     }
                 }
 
             }
 
         }
-        return false;
+        return null;
     },
     //tests if the player can trap the other player within a board
     arraysEqual: function(arr1, arr2) {
@@ -959,6 +959,12 @@ var game = {
         if (this.hasCenterIn(!player, board)) {
             rank -= 10;
         }
+        if (this.ifCanTrap(player, board)) {
+            rank += 200;
+        }
+        if (this.ifCanTrap(!player, board)) {
+            rank -= 125;
+        }
         //this.trackcurrent(board);
         //console.log("Rank of: "+rank+", For: "+this.getName(player)+" As: "+(player?'X':'O'));
         return rank;
@@ -1016,7 +1022,8 @@ var game = {
     },
     //AI's turn invoked after the user does their turn
     chooseBestMove: function(player, board) {
-        var bool = this.turns > 11;
+        var bool = this.turns > 11,
+            canTrap = this.ifCanTrap(player, board);
         if (bool && this.canCompleteALineIn(player, board)) {
             //complete the line then!
             console.log("Let's Complete A line!");
@@ -1030,8 +1037,8 @@ var game = {
                 return;
             }
             console.log("I think we may Lose that next turn :(");
-        } else if (bool && this.ifCanTrap(player, board)) {
-            console.log("We Trapped E'm");
+        } else if (bool && canTrap !== null) {
+            this.moveFromTo(player, canTrap[0], canTrap[1]);
             return;
         }
 
