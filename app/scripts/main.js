@@ -569,23 +569,106 @@ var game = {
         [
             [4, 6, 8],
             [3, 5, 7]
-        ],
+        ], //end of edge traps
         [
             [0, 2, 8],
             [1, 4, 5]
+
         ],
         [
             [0, 6, 8],
             [3, 4, 7]
+
         ],
         [
-            [1, 6, 8],
-            [4, 5, 7]
+            [1, 3, 4],
+            [0, 2, 6]
+
         ],
         [
             [2, 6, 8],
             [4, 5, 7]
-        ]
+
+        ], //end of corner traps
+        [
+            [0, 4, 5],
+            [1, 2, 3]
+
+        ],
+        [
+            [1, 2, 3],
+            [0, 4, 5]
+
+        ],
+        [
+            [2, 3, 4],
+            [0, 1, 5]
+
+        ],
+        [
+            [0, 1, 5],
+            [2, 3, 4]
+
+        ],
+        [
+            [2, 4, 7],
+            [1, 5, 8]
+
+        ],
+        [
+            [2, 4, 7],
+            [1, 5, 8]
+        ],
+        [
+            [1, 4, 8],
+            [2, 5, 7]
+
+        ],
+        [
+            [2, 5, 7],
+            [1, 4, 8]
+
+        ],
+        [
+            [5, 6, 7],
+            [3, 4, 8]
+
+        ],
+        [
+            [3, 4, 8],
+            [5, 6, 7]
+
+        ],
+        [
+            [3, 7, 8],
+            [4, 5, 6]
+
+        ],
+        [
+            [4, 5, 6],
+            [3, 7, 8]
+
+        ],
+        [
+            [2, 3, 6],
+            [0, 4, 7]
+
+        ],
+        [
+            [0, 4, 7],
+            [2, 3, 6]
+
+        ],
+        [
+            [0, 3, 7],
+            [1, 4, 6]
+
+        ],
+        [
+            [1, 4, 6],
+            [0, 3, 7]
+
+        ] //end of side traps
     ],
     //arrangements for trapping [0] is the other player who needs to move [1] is player checking
 
@@ -593,13 +676,13 @@ var game = {
         var myplayer = this.findPlayersPosIn(player, board).sort(compareNumber),
             myOpponent = this.findPlayersPosIn(!player, board).sort(compareNumber);
 
-        for (var r = 0, rl = this.trapArrangements.length; r < rl; r++) {
+        for (var r = this.trapArrangements.length - 1; r--;) {
             var to = this.twoOutOfThree(this.trapArrangements[r][1], myplayer);
 
             if (to > -1 && this.arraysEqual(this.trapArrangements[r][0], myOpponent)) {
 
 
-                for (var c = 0, cl = this.allPosMoveLocs[to].length; c < cl; c++) {
+                for (var c = this.allPosMoveLocs[to].length - 1; c--;) {
                     if (board[this.allPosMoveLocs[to][c]] == player) {
                         this.moveFromTo(player, this.allPosMoveLocs[to][c], to);
                         return true;
@@ -643,7 +726,7 @@ var game = {
             return this.center;
         }
         var arr = [];
-        for (var i = 9; i--;) {
+        for (var i = 8; i--;) {
             var bcopy = board.clone();
             bcopy[i] = player;
             if (board[i] === null && (this.turns < 4 || !this.hasIllegalLineIn(player, bcopy))) {
@@ -737,7 +820,7 @@ var game = {
         } else if (board[this.center] === null && (pairArrOutPut < 4)) {
             return true;
         } else if (pairArrOutPut > 3 && (board[this.pairCompleter[pairArrOutPut][0]] == player || board[this.pairCompleter[pairArrOutPut][1]] == player) && board[this.pairArrangements[(pairArrOutPut % 2) === 0 ? pairArrOutPut + 1 : pairArrOutPut - 1][(pairArrOutPut % 2) === 0 ? 1 : 0]] === null) {
-            console.log('Pairoutput at %s and bool is at %s', pairArrOutPut, this.pairArrangements[(pairArrOutPut % 2) === 0 ? pairArrOutPut + 1 : pairArrOutPut - 1][(pairArrOutPut % 2) === 0 ? 1 : 0]);
+
             return true;
         }
         return false;
