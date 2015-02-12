@@ -56,7 +56,7 @@ function placePiece(player, num) {
 }
 
 function resetMe() {
-    console.log('called');
+    console.log('Resetting...');
     game.turns = 0;
     game.justWon = true;
     game.init();
@@ -390,6 +390,7 @@ var game = {
             score: game.score
 
         });
+        makeEm();
     },
     //updates HUD to current values
 
@@ -1313,36 +1314,43 @@ function buildractive() {
 function makeEm() {
 
     $('.draggable').draggable({
-        helper: function(ev, ui) {
-            if (game.turns % 2 == 1) {
+        /*helper: function(ev, ui) {
+            var dragNum = $(this).attr('id').replace(/^\D+/g, "");
+
+            console.log('dragging number: %s', dragNum);
+
+            if ((game.turns % 2 === 0) !== game.board[dragNum]) {
                 //if its not that players turn give them nothing to drop;
+                game.illegal('Not your turn!');
                 return "<div></div>";
             }
-            return "<span class='helperPick'>" + $(this).html() + "</span>";
+            return "<span class='helperPick'>" + $(this).parent().get(dragNum).html() + "</span>";
 
-        },
+        },*/
         cursor: "pointer",
-        cursorAt: {
-            left: $('.drop').width() / 2,
-            top: $('.drop').width() / 2
-        }
+        /*cursorAt: {
+            left: $(this).width() / 2,
+            top: $(this).width() / 2
+        }*/
     });
 
     $(".drop").droppable({
 
         accept: ".draggable",
         drop: function(event, ui) {
-
-            if ($(this).children(".draggable").size() > 0 ||
-                game.board[0]) {
-                /*get the number of the droppable*/
-
-                //cant already something there
+            var dropNum = game.toInt($(this).attr('id').replace(/^\D+/g, "")),
+                dragNum = game.toInt($(ui.draggable).attr('id').replace(/^\D+/g, ""));
+            if ((game.turns % 2 === 0) !== game.board[dragNum]) {
+                game.illegal("Sorry %s, it's %s's turn!", game.getName(game.board[dragNum]), game.getName(!game.board[dragNum]));
+            }
+            if (game.board[dropNum] !== null) {
+                //Something there
+                game.illegal('Something already there!');
                 return false;
 
             } else {
 
-                game.moveFromTo(game.turns % 2 === 0, 2 /*draggable num*/ , 2 /*droppable num*/ );
+                game.moveFromTo(game.turns % 2 === 0, dragNum, dropNum);
 
             }
 
@@ -1391,6 +1399,7 @@ $(document).ready(function() {
     $(function() {
         FastClick.attach(document.body);
     });
+    makeEm();
 });
 /*
 game.setName("Juan Peperoni", true);
