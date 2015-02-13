@@ -1335,7 +1335,7 @@ function makeEm() {
         revert: function(drag) {
             //if it is not the players turn then send the draggable to where it was
             if (((game.turns % 2 === 0) !== game.board[game.toInt($(drag).attr('id').replace(/^\D+/g, ""))]) || (game.board[game.toInt($(drag).attr('id').replace(/^\D+/g, ""))] !== null)) {
-                game.dontSelect = true;
+                game.dontSelect = (game.board[game.toInt($(drag).attr('id').replace(/^\D+/g, ""))] !== null);
                 return true;
             }
 
