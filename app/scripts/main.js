@@ -1,6 +1,6 @@
 function supportsLocalStorage() {
     try {
-        return 'localStorage' in window && window.localStorage !== null
+        return 'localStorage' in window && window.localStorage !== null;
     } catch (e) {
         return false;
     }
@@ -61,6 +61,7 @@ function resetMe() {
     game.justWon = true;
     game.init();
     game.justWon = false;
+    localStorage.clear();
     ractive.update();
     game.save();
 }
@@ -81,6 +82,10 @@ function setName(player) {
 }
 
 function select(num) {
+    if (game.dontSelect) {
+        game.dontSelect = false;
+        return;
+    }
     var snum = ractive.get('selected');
     if (snum == -1) {
         //is not set so let's set current num to special and possible move locs to activated
@@ -267,7 +272,7 @@ var game = {
 
     player1Name: "Player 1",
     player2Name: "Player 2",
-
+    dontSelect: false,
     turns: 0,
     //Saves current turn, (turn%2==0) gives current players turn
 
@@ -445,9 +450,6 @@ var game = {
     },
     //Resets all settings to default and updates HUd to reflect a wiped game
 
-    speed: 1500,
-    //Set how long the message stay
-
     animationIsGoing: false,
     //to prevent browser eagerclick
 
@@ -458,8 +460,8 @@ var game = {
         this.animationIsGoing = true;
         console.log(errorMsg);
         $('#messageArea').text(errorMsg);
-        $('#messageArea').slideDown('slow', function() {
-            $('#messageArea').delay(game.speed).slideUp('slow', function() {
+        $('#messageArea').show('size', {}, 800, function() {
+            $('#messageArea').delay(1900).hide('drop', {}, 1000, function() {
                 $('#messageArea').text('');
                 game.animationIsGoing = false;
             });
@@ -1327,7 +1329,19 @@ function makeEm() {
             return "<span class='helperPick'>" + $(this).parent().get(dragNum).html() + "</span>";
 
         },*/
+        containment: $('#gameBoard'),
         cursor: "pointer",
+        opacity: 0.8,
+        revert: function(drag) {
+            //if it is not the players turn then send the draggable to where it was
+            if (((game.turns % 2 === 0) !== game.board[game.toInt($(drag).attr('id').replace(/^\D+/g, ""))]) || (game.board[game.toInt($(drag).attr('id').replace(/^\D+/g, ""))] !== null)) {
+                game.dontSelect = true;
+                return true;
+            }
+
+            return false;
+        },
+        revertDuration: 1200,
         /*cursorAt: {
             left: $(this).width() / 2,
             top: $(this).width() / 2
@@ -1341,7 +1355,11 @@ function makeEm() {
             var dropNum = game.toInt($(this).attr('id').replace(/^\D+/g, "")),
                 dragNum = game.toInt($(ui.draggable).attr('id').replace(/^\D+/g, ""));
             if ((game.turns % 2 === 0) !== game.board[dragNum]) {
-                game.illegal("Sorry %s, it's %s's turn!", game.getName(game.board[dragNum]), game.getName(!game.board[dragNum]));
+                game.illegal("Sorry " + game.getName(game.board[dragNum]) + ", it's " + game.getName(!game.board[dragNum]) + "'s turn!");
+                return;
+            }
+            if (dragNum == dropNum) {
+                return false;
             }
             if (game.board[dropNum] !== null) {
                 //Something there
