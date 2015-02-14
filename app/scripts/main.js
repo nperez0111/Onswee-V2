@@ -64,6 +64,7 @@ function resetMe() {
     localStorage.clear();
     ractive.update();
     game.save();
+    game.updateHUD();
 }
 
 function setAI() {
