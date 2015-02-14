@@ -1357,6 +1357,11 @@ function makeEm() {
             } else {
 
                 game.moveFromTo(game.turns % 2 === 0, dragNum, dropNum);
+                if (game.ai) {
+
+                    game.aiTurn();
+
+                }
 
             }
 

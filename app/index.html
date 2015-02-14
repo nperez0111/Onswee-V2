@@ -167,7 +167,7 @@
                 
                     {{#each board:i}}
                     
-                    <div class="boardPlaceHolder b{{(i+1)}} {{!turn || (turn&&board[i]!==null) ||isActive(i)?'clickable':''}} {{turn?'':'cursor'}} drop" id="drop{{i}}" onclick="placePiece(game.turns%2==0?true:false,{{i}})">
+                    <div class="boardPlaceHolder b{{(i+1)}} {{!turn || (turn&&board[i]!==null) ||isActive(i)?'clickable':''}} {{turn?'':'cursor'}} drop" id="drop{{i}}" onclick="placePiece(game.turns%2==0?true:false,{{i}})"><div class="wrap">
                     
                         {{#if (board[i] !== null)}}
                         
@@ -184,7 +184,8 @@
                             
                         {{/if}}
                         
-                    </div>
+                    
+                    </div></div>
                     
                     {{/each}}
 

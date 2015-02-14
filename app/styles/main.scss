@@ -10,6 +10,9 @@
     -ms-user-select: none;
     user-select: none;
 }
+$break-small: 320px;
+$break-med: 640px;
+$break-tab: 800px;
 * {
     box-sizing: border-box;
     -webkit-box-sizing: border-box;
@@ -23,7 +26,7 @@
     padding: 0.2em 0;
 }
 #outermessage{
-height:3em;
+    min-height:3em;
     display:block;
 }
 #messageArea {
@@ -48,7 +51,9 @@ height:3em;
 .boardPlaceHolder {
     display: inline-block;
     width: 33.333%;
-    height: 200px;//set this dynamically with ractive
+    position: relative;
+    height: 0;//set this dynamically with ractive
+    padding-bottom: 33.333%;
     float: left;
     text-align: center;
     background-color: #FFF;
@@ -78,34 +83,42 @@ height:3em;
             background-color: #333;
         }
     }
-    .P1,
-    .P2,
-    .empty {
-        @include noselect();
-        height: 70%;
-        width: 70%;
-        margin: 15% auto;
-        background-size: cover;
-        background-position: center center;
-        -webkit-border-radius: 15px;
-        border-radius: 15px;
-        cursor: pointer;
-        &:hover{
-        -webkit-box-shadow:inset 0 0 10px 7px rgba(100,100,100,0.6);
-    box-shadow:inset 0 0 10px 7px rgba(100,100,100,0.6);
-        }
-        div{
-            display:table;
-            width:100%;
-            height:100%;
-                .inner{
-                    display: table-cell;
-                    vertical-align: middle;
-                    width: 100%;
-                    margin: 0 auto;
-                    text-align: center;
-                    
-                }
+    .wrap{
+        position: absolute;
+        top:0;
+        left:0;
+        bottom: 0;
+        right: 0;
+        
+        .P1,
+        .P2,
+        .empty {
+            @include noselect();
+            height: 70%;
+            width: 70%;
+            margin: 15% auto;
+            background-size: cover;
+            background-position: center center;
+            -webkit-border-radius: 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            &:hover{
+            -webkit-box-shadow:inset 0 0 10px 7px rgba(100,100,100,0.6);
+        box-shadow:inset 0 0 10px 7px rgba(100,100,100,0.6);
+            }
+            div{
+                display:table;
+                width:100%;
+                height:100%;
+                    .inner{
+                        display: table-cell;
+                        vertical-align: middle;
+                        width: 100%;
+                        margin: 0 auto;
+                        text-align: center;
+
+                    }
+            }
         }
     }
     .empty{
@@ -330,9 +343,7 @@ input:focus ~ .highlight {
 .whosTurn, .icoChoice {
     -webkit-border-radius: 15px;
     border-radius: 15px;
-    display: inline-block;
-    float: left;
-    width: 49.6%;
+    display: block;
     margin: 0.2%;
     line-height: 2.5em;
     text-align: center;
@@ -340,8 +351,19 @@ input:focus ~ .highlight {
     text-decoration: none;
     position: relative;
     overflow: hidden;
+    @media screen and (min-width: $break-med) {
+        float: left;
+        width: 49.6%;
+        display: inline-block;
+    }
+    @media screen and (min-width:$break-small) {
+        display: inline-block;
+    }
     .score{
-    display: block;
+    display: inline;
+        @media screen and (min-width: $break-med) {
+        display:block;
+        }
     }
 }
 .ripplelink {
@@ -523,4 +545,7 @@ transform: rotate(-45deg);
     
     cursor: pointer;
   }
+}
+#curTurn{
+clear:both;
 }
