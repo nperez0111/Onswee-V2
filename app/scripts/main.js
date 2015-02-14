@@ -1314,21 +1314,11 @@ function buildractive() {
 }
 
 function makeEm() {
-
+    if (game.turns < 6) {
+        $('.draggable').draggable("disable");
+        return;
+    }
     $('.draggable').draggable({
-        /*helper: function(ev, ui) {
-            var dragNum = $(this).attr('id').replace(/^\D+/g, "");
-
-            console.log('dragging number: %s', dragNum);
-
-            if ((game.turns % 2 === 0) !== game.board[dragNum]) {
-                //if its not that players turn give them nothing to drop;
-                game.illegal('Not your turn!');
-                return "<div></div>";
-            }
-            return "<span class='helperPick'>" + $(this).parent().get(dragNum).html() + "</span>";
-
-        },*/
         containment: $('#gameBoard'),
         cursor: "pointer",
         opacity: 0.8,
@@ -1342,15 +1332,13 @@ function makeEm() {
             return false;
         },
         revertDuration: 1200,
-        /*cursorAt: {
-            left: $(this).width() / 2,
-            top: $(this).width() / 2
-        }*/
+        delay: 200,
     });
 
     $(".drop").droppable({
 
         accept: ".draggable",
+        tolerance: "pointer",
         drop: function(event, ui) {
             var dropNum = game.toInt($(this).attr('id').replace(/^\D+/g, "")),
                 dragNum = game.toInt($(ui.draggable).attr('id').replace(/^\D+/g, ""));
@@ -1373,7 +1361,13 @@ function makeEm() {
             }
 
 
-        }
+        },
+        over: function(event, ui) {
+            $(this).addClass('Active');
+        },
+        out: function(event, ui) {
+            $(this).removeClass('Active');
+        },
     });
 
 }
