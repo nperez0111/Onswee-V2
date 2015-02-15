@@ -353,13 +353,26 @@ var game = {
 
 
     },
+    undo: function() {
+
+        if (this.moves.length < 2) {
+            return false;
+        }
+
+        var last = this.moves.pop();
+        this.turns--;
+        this.moveFromTo(this.turns % 2 === 0, last[1], last[0]);
+        this.save();
+        this.updateHUD();
+
+    },
     ai: false,
     //stores if ai is playing or not
     load: function() {
         if (!supportsLocalStorage() || !(localStorage.isPlaying) || (localStorage.isPlaying == 'false')) {
             return false;
         }
-        this.ai = localStorage.ai == 'true';
+        this.ai = (localStorage.ai == 'true');
         this.board = localStorage.getObj('board');
         this.turns = this.toInt(localStorage.turn);
         this.moves = localStorage.getObj('moves');
