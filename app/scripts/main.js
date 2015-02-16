@@ -36,8 +36,8 @@ function placePiece(player, num) {
     } else if (game.board[num] !== null) {
         game.illegal('That position is taken');
         return;
-    } else if (game.justWon) {
-        //for eager click
+    }
+    if (game.justWon) {
         game.justWon = false;
         return;
     }
@@ -121,14 +121,19 @@ function select(num) {
         //move to num if it is one of the move locs
         for (var co = 0, allo = game.allPosMoveLocs[snum], clo = allo.length; co < clo; co++) {
             if (game.board[allo[co]] === null) {
-                game.moveFromTo(game.board[snum], snum, num);
-                ractive.set('selected', -1);
-                ractive.set('moveables', []);
-                if (!game.justWon && game.ai) {
+                game.animateTo($('.draggable').get(snum), snum, num, function() {
+                    game.moveFromTo(game.board[snum], snum, num);
+                    ractive.set('selected', -1);
+                    ractive.set('moveables', []);
+                    if (game.board == [null, null, null, null, null, null, null, null, null]) {
+                        game.justWon = true;
+                        return;
+                    } else if (game.ai) {
 
-                    game.aiTurn();
+                        game.aiTurn();
 
-                }
+                    }
+                })
                 return;
             }
         }
@@ -182,11 +187,7 @@ function drop(ev) {
 var game = {
 
     init: function() {
-        var daboard = this.board;
-        for (var i = 0; i < 9; i++) {
-            daboard[i] = null;
-        }
-        this.board = daboard;
+        this.board = [null, null, null, null, null, null, null, null, null];
         this.turns = 0;
         this.moves = [];
         if (!this.justWon && this.load()) {
@@ -233,9 +234,6 @@ var game = {
             if (this.isWinIn(player, board)) {
                 console.log("%c%s Won!", "color:red;font-size:20px;", this.getName(player));
                 this.illegal(this.getName(player) + ' won!');
-                if (this.justWon === false) {
-                    this.justWon = true;
-                }
                 this.newGame(player);
             }
             this.save();
@@ -388,7 +386,23 @@ var game = {
 
     },
     //loads last game played at last saved positions
-
+    coordinates: [
+        [0, 0],
+        [0, 1],
+        [0, 2],
+        [1, 0],
+        [1, 1],
+        [1, 2],
+        [2, 0],
+        [2, 1],
+        [2, 2]
+    ],
+    //coordinates[to]-coordinates[from] is how far from should move to get to to in form [verticalshift,horizontalshift]
+    animateTo: function(el, from, to, callback) {
+        var distanceX = this.coordinates[to][1] - this.coordinates[from][1],
+            distanceY = this.coordinates[to][0] - this.coordinates[from][0];
+        callback();
+    },
     updateHUD: function() {
         this.trackcurrent(this.board);
         /*this.wipeBoard();
@@ -459,7 +473,9 @@ var game = {
 
     newGame: function(player) {
         this.saveScore(player);
+        game.justWon = true;
         this.init();
+        game.justWon = false;
         this.updateHUD();
     },
     //Resets all settings to default and updates HUd to reflect a wiped game
@@ -804,7 +820,9 @@ var game = {
     //returns true if specified player has a line through the center in the specified board
 
     hasIllegalLineIn: function(player, board) {
-
+        if (this.turns > 12) {
+            return false;
+        }
         for (var i = 0, b = board, line = this.winningArrangements.concat(this.illegalArrangements), l = line.length; i < l; i++) {
             if (b[line[i][0]] == player && b[line[i][1]] == player && b[line[i][2]] == player) {
                 return true;
@@ -1067,7 +1085,6 @@ var game = {
             futureMoveRankings = [];
 
         if (InitialMovesPossible.length === 0) {
-
             this.moveIntoAnyOpenPos(player);
             console.log("Welp We Lost :(");
             return;
@@ -1224,36 +1241,36 @@ var game = {
 
         for (var i = 0; i < possibles.length; i++) {
 
-            if (this.board[this.allPosMoveLocs[possibles[i]][0]] === null) {
+            if (this.board[this.allPosMoveLocs[possibles[i]][0]] === null && !this.hasIllegalLineIn(player, this.hypotheticalMoveInFromTo(player, this.board, possibles[i], this.allPosMoveLocs[possibles[i]][0]))) {
                 this.moveFromTo(player, possibles[i], this.allPosMoveLocs[possibles[i]][0]);
                 return;
             }
-            if (this.board[this.allPosMoveLocs[possibles[i]][1]] === null) {
+            if (this.board[this.allPosMoveLocs[possibles[i]][1]] === null && !this.hasIllegalLineIn(player, this.hypotheticalMoveInFromTo(player, this.board, possibles[i], this.allPosMoveLocs[possibles[i]][1]))) {
                 this.moveFromTo(player, possibles[i], this.allPosMoveLocs[possibles[i]][1]);
                 return;
             }
-            if (this.board[this.allPosMoveLocs[possibles[i]][2]] === null) {
+            if (this.board[this.allPosMoveLocs[possibles[i]][2]] === null && !this.hasIllegalLineIn(player, this.hypotheticalMoveInFromTo(player, this.board, possibles[i], this.allPosMoveLocs[possibles[i]][2]))) {
                 this.moveFromTo(player, possibles[i], this.allPosMoveLocs[possibles[i]][2]);
                 return;
             }
 
         }
-        if (this.board[this.allPosMoveLocs[4][3]] === null) {
+        if (this.board[this.allPosMoveLocs[4][3]] === null && !this.hasIllegalLineIn(player, this.hypotheticalMoveInFromTo(player, this.board, 4, 3))) {
             this.moveFromTo(player, 4, this.allPosMoveLocs[4][3]);
             return;
-        } else if (this.board[this.allPosMoveLocs[4][4]] === null) {
+        } else if (this.board[this.allPosMoveLocs[4][4]] === null && !this.hasIllegalLineIn(player, this.hypotheticalMoveInFromTo(player, this.board, 4, 4))) {
             this.moveFromTo(player, 4, this.allPosMoveLocs[4][4]);
             return;
-        } else if (this.board[this.allPosMoveLocs[4][5]] === null) {
+        } else if (this.board[this.allPosMoveLocs[4][5]] === null && !this.hasIllegalLineIn(player, this.hypotheticalMoveInFromTo(player, this.board, 4, 5))) {
             this.moveFromTo(player, 4, this.allPosMoveLocs[4][5]);
             return;
-        } else if (this.board[this.allPosMoveLocs[4][6]] === null) {
+        } else if (this.board[this.allPosMoveLocs[4][6]] === null && !this.hasIllegalLineIn(player, this.hypotheticalMoveInFromTo(player, this.board, 4, 6))) {
             this.moveFromTo(player, 4, this.allPosMoveLocs[4][6]);
             return;
-        } else if (this.board[this.allPosMoveLocs[4][7]] === null) {
+        } else if (this.board[this.allPosMoveLocs[4][7]] === null && !this.hasIllegalLineIn(player, this.hypotheticalMoveInFromTo(player, this.board, 4, 7))) {
             this.moveFromTo(player, 4, this.allPosMoveLocs[4][7]);
             return;
-        } else if (this.board[this.allPosMoveLocs[4][8]] === null) {
+        } else if (this.board[this.allPosMoveLocs[4][8]] === null && !this.hasIllegalLineIn(player, this.hypotheticalMoveInFromTo(player, this.board, 4, 8))) {
             this.moveFromTo(player, 4, this.allPosMoveLocs[4][8]);
             return;
         } else {
@@ -1329,7 +1346,9 @@ function buildractive() {
 
 function makeEm() {
     if (game.turns < 6) {
-        $('.draggable').draggable("disable");
+        if ($(".draggable").draggable("instance")) {
+            $('.draggable').draggable("disable");
+        }
         return;
     }
     $('.draggable').draggable({
@@ -1347,6 +1366,7 @@ function makeEm() {
         },
         revertDuration: 1200,
         delay: 200,
+        zIndex: 100
     });
 
     $(".drop").droppable({
@@ -1361,6 +1381,7 @@ function makeEm() {
                 return;
             }
             if (dragNum == dropNum) {
+                $(this).removeClass('Active');
                 return false;
             }
             if (game.board[dropNum] !== null) {
