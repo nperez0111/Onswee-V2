@@ -4,7 +4,10 @@
   "dependencies": {
     "bootstrap-sass-official": "~3.1.0",
     "jquery": "~1.11.0",
-    "ractive": "~0.6.1"
+    "ractive": "~0.6.1",
+    "jquery.transit": "~0.9.12",
+    "normalize.css": "~3.0.2",
+    "jquery.ui": "~1.11.3"
   },
   "devDependencies": {}
 }

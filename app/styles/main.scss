@@ -1,5 +1,5 @@
 // bower:scss
-@import "../../bower_components/bootstrap-sass-official/vendor/assets/stylesheets/bootstrap.scss";
+@import "../bower_components/bootstrap-sass-official/vendor/assets/stylesheets/bootstrap.scss";
 // endbower
 @import "../../bower_components/normalize.css/nomalize.css";
 @mixin noselect() {
@@ -553,6 +553,7 @@ clear:both;
 
 }
 .draggable{
+    z-index: 100;
   animation: dragEntrance ease-in-out 1s;
   animation-iteration-count: 1;
   transform-origin: 50% 50%;

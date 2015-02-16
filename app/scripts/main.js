@@ -87,7 +87,7 @@ function select(num) {
         game.dontSelect = false;
         return;
     }
-    var snum = ractive.get('selected');
+    var snum = game.toInt(ractive.get('selected'));
     if (snum == -1) {
         //is not set so let's set current num to special and possible move locs to activated
         if (game.board[num] == (game.turns % 2 == 1)) {
@@ -121,19 +121,19 @@ function select(num) {
         //move to num if it is one of the move locs
         for (var co = 0, allo = game.allPosMoveLocs[snum], clo = allo.length; co < clo; co++) {
             if (game.board[allo[co]] === null) {
-                game.animateTo($('.draggable').get(snum), snum, num, function() {
-                    game.moveFromTo(game.board[snum], snum, num);
-                    ractive.set('selected', -1);
-                    ractive.set('moveables', []);
-                    if (game.board == [null, null, null, null, null, null, null, null, null]) {
-                        game.justWon = true;
-                        return;
-                    } else if (game.ai) {
 
-                        game.aiTurn();
+                game.moveFromTo(game.board[snum], snum, num);
+                ractive.set('selected', -1);
+                ractive.set('moveables', []);
+                if (game.board == [null, null, null, null, null, null, null, null, null]) {
+                    game.justWon = true;
+                    return;
+                }
+                /*else if (game.ai) {
 
-                    }
-                })
+                                    game.aiTurn();
+
+                                }*/
                 return;
             }
         }
@@ -179,9 +179,7 @@ function drop(ev) {
             dropp = game.toInt(ev.target.id.replace(/^\D+/g, ""));
         game.moveFromTo(game.board[drag], drag, dropp);
     }
-    if (!game.justWon && game.ai) {
-        game.aiTurn();
-    }
+
 }
 
 var game = {
@@ -224,19 +222,31 @@ var game = {
                     }
                 }
             }
-            this.board[from] = null;
-            this.board[to] = player;
-            this.turns++;
-            this.storeMoves(from, to);
-            console.log("Successful Movement, From: %s To: %s For %s", from, to, player ? 'X' : 'O');
-            this.trackcurrent(this.board);
-            this.updateHUD();
-            if (this.isWinIn(player, board)) {
-                console.log("%c%s Won!", "color:red;font-size:20px;", this.getName(player));
-                this.illegal(this.getName(player) + ' won!');
-                this.newGame(player);
-            }
-            this.save();
+
+
+
+            this.animateTo(from, to, function(thi, from, to) {
+
+                thi.board[to] = thi.board[from];
+                thi.board[from] = null;
+                thi.turns++;
+                thi.storeMoves(from, to);
+                console.log("Successful Movement, From: %s To: %s For %s", from, to, thi.board[to] ? 'X' : 'O');
+                thi.trackcurrent(thi.board);
+                thi.updateHUD();
+
+                if (thi.isWinIn(thi.board[to], thi.board)) {
+                    console.log("%c%s Won!", "color:red;font-size:20px;", thi.getName(player));
+                    thi.illegal(thi.getName(thi.board[to]) + ' won!');
+                    thi.newGame(thi.board[to]);
+                } else if (thi.ai && (thi.turns % 2 === 1)) {
+                    setTimeout(function() {
+                        game.aiTurn();
+                    }, 2000);
+                }
+                thi.save();
+            });
+
             return;
         } else {
             //Figure out what to do if its an invalid position
@@ -398,10 +408,21 @@ var game = {
         [2, 2]
     ],
     //coordinates[to]-coordinates[from] is how far from should move to get to to in form [verticalshift,horizontalshift]
-    animateTo: function(el, from, to, callback) {
+    animateTo: function(from, to, callback) {
         var distanceX = this.coordinates[to][1] - this.coordinates[from][1],
-            distanceY = this.coordinates[to][0] - this.coordinates[from][0];
-        callback();
+            distanceY = this.coordinates[to][0] - this.coordinates[from][0],
+            el = '#drag' + from;
+        $(el).css('position', 'relative');
+        $(el).animate({
+            left: (distanceX * $('.boardPlaceHolder').outerWidth() + 'px'),
+            top: (distanceY * $('.boardPlaceHolder').outerHeight() + 'px')
+        }, {
+            duration: 1000,
+            complete: function() {
+                callback(game, from, to);
+            }
+        });
+
     },
     updateHUD: function() {
         this.trackcurrent(this.board);
@@ -1206,6 +1227,9 @@ var game = {
         var moves = this.moves,
             l = moves.length - 2,
             change = this.changeBetween(this.board, board);
+        if (l < 7) {
+            return false;
+        }
         if (moves[l][0] == change[1] && moves[l][1] == change[0]) {
             return true;
         }
@@ -1392,11 +1416,11 @@ function makeEm() {
             } else {
 
                 game.moveFromTo(game.turns % 2 === 0, dragNum, dropNum);
-                if (game.ai) {
+                /*if (game.ai) {
 
                     game.aiTurn();
 
-                }
+                }*/
 
             }
 
