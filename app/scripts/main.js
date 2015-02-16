@@ -1379,10 +1379,10 @@ function makeEm() {
         containment: $('#gameBoard'),
         cursor: "pointer",
         opacity: 0.8,
-        revert: function(drag) {
+        revert: function(dropped) {
             //if it is not the players turn then send the draggable to where it was
-            if (((game.turns % 2 === 0) !== game.board[game.toInt($(drag).attr('id').replace(/^\D+/g, ""))]) || (game.board[game.toInt($(drag).attr('id').replace(/^\D+/g, ""))] !== null)) {
-                game.dontSelect = (game.board[game.toInt($(drag).attr('id').replace(/^\D+/g, ""))] !== null);
+            if (((game.turns % 2 === 0) !== game.board[game.toInt($(this).attr('id').replace(/^\D+/g, ""))]) || (game.board[game.toInt($(this).attr('id').replace(/^\D+/g, ""))] !== null) || !dropped) {
+                game.dontSelect = (game.board[game.toInt($(this).attr('id').replace(/^\D+/g, ""))] !== null);
                 return true;
             }
 
@@ -1411,16 +1411,12 @@ function makeEm() {
             if (game.board[dropNum] !== null) {
                 //Something there
                 game.illegal('Something already there!');
+                $(this).removeClass('Active');
                 return false;
 
             } else {
 
                 game.moveFromTo(game.turns % 2 === 0, dragNum, dropNum);
-                /*if (game.ai) {
-
-                    game.aiTurn();
-
-                }*/
 
             }
 
@@ -1477,24 +1473,3 @@ $(document).ready(function() {
     });
     makeEm();
 });
-/*
-game.setName("Juan Peperoni", true);
-game.setName("El Che de Barrio", false);*/
-/*game.placePiece(true, 2);
-game.placePiece(false, 1);
-game.placePiece(true, 4);
-game.placePiece(false, 0);
-game.placePiece(true, 7);
-game.placePiece(false, 8);
-game.moveFromTo(true, 2, 5);
-/*game.moveFromTo(false, 0, 3);
-console.time("Lets see how long it takes");
-game.chooseBestMove(true, game.board);
-console.timeEnd("Lets see how long it takes");
-var c = 0;
-while (game.turns !== 0 && c < 10) {
-    game.chooseBestMove(c % 2 == 1, game.board);
-    c++;
-}
-console.log("It took %s rounds to win using the AI against itself!", game.toInt(c / 2));
-*/
