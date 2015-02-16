@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <title>OnSwee V2</title>
-        <meta name="description" content="">
+        <meta name="description" content="Tic-Tac-Toe like game made by Nick the Sick">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-title" content="OnSwee">
         <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -167,7 +167,6 @@
 
         </script>
 
-
         <script id='template' type='text/ractive'>
                 <div id="hud">
                     <span id="turn">Round: {{((~~(turns / 2))+1)}}</span>
@@ -240,6 +239,7 @@
 
         <!-- build:js({app,.tmp}) scripts/main.js -->
         <script src="scripts/fastclick.js"></script>
+        <script src="scripts/jquery.ui.touch-punch.min.js"></script>
         <script src="scripts/main.js"></script>
         <!-- endbuild -->
     </body>

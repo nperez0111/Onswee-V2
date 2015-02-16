@@ -307,7 +307,7 @@ var game = {
     },
     icon: ['images/x.png', 'images/o.png'],
     //default icons and who it is set to
-    iconPossibles: ['default3.png', 'default4.png', 'default5.png', 'default6.png', 'default7.png', 'default8.png'],
+    iconPossibles: ['images/default3.png', 'images/default4.png', 'images/default5.png', 'images/default6.png', 'images/default7.png', 'images/default8.png'],
     //these are all of the possible icons to choose from
     getIcon: function(player) {
         return this.icon[player ? 0 : 1];
@@ -510,6 +510,7 @@ var game = {
         }
         this.animationIsGoing = true;
         console.log(errorMsg);
+
         $('#messageArea').text(errorMsg);
         $('#messageArea').show('size', {}, 800, function() {
             $('#messageArea').delay(1900).hide('drop', {}, 1000, function() {
@@ -1351,7 +1352,6 @@ function buildractive() {
             player2: game.player2Name,
             icon: game.icon,
             iconPossibles: game.iconPossibles,
-
             player: 0,
             ai: game.ai,
         }
@@ -1369,12 +1369,7 @@ function buildractive() {
 }
 
 function makeEm() {
-    if (game.turns < 6) {
-        if ($(".draggable").draggable("instance")) {
-            $('.draggable').draggable("disable");
-        }
-        return;
-    }
+
     $('.draggable').draggable({
         containment: $('#gameBoard'),
         cursor: "pointer",
@@ -1429,7 +1424,10 @@ function makeEm() {
             $(this).removeClass('Active');
         },
     });
-
+    if (game.turns < 6) {
+        $('.draggable').draggable("disable");
+        return;
+    }
 }
 game.init();
 buildractive();

@@ -7,7 +7,7 @@
 // use this if you want to recursively match all subfolders:
 // 'test/spec/**/*.js'
 
-module.exports = function (grunt) {
+module.exports = function(grunt) {
 
     // Load grunt tasks automatically
     require('load-grunt-tasks')(grunt);
@@ -34,7 +34,7 @@ module.exports = function (grunt) {
                 tasks: ['bowerInstall']
             },
             js: {
-                files: ['<%= config.app %>/scripts/{,*/}*.js'],
+                files: ['<%= config.app %>/scripts/main.js'],
                 tasks: ['jshint'],
                 options: {
                     livereload: true
@@ -282,28 +282,28 @@ module.exports = function (grunt) {
         // By default, your `index.html`'s <!-- Usemin block --> will take care of
         // minification. These next options are pre-configured if you do not wish
         // to use the Usemin blocks.
-         cssmin: {
-             dist: {
-                 files: {
-                     '<%= config.dist %>/styles/main.css': [
-                         '.tmp/styles/{,*/}*.css',
-                         '<%= config.app %>/styles/{,*/}*.css'
-                     ]
-                 }
-             }
-         },
-         uglify: {
-             dist: {
-                 files: {
-                     '<%= config.dist %>/scripts/main.js': [
-                         '<%= config.dist %>/scripts/main.js'
-                     ]
-                 }
-             }
-         },
-         concat: {
-             dist: {}
-         },
+        cssmin: {
+            dist: {
+                files: {
+                    '<%= config.dist %>/styles/main.css': [
+                        '.tmp/styles/{,*/}*.css',
+                        '<%= config.app %>/styles/{,*/}*.css'
+                    ]
+                }
+            }
+        },
+        uglify: {
+            dist: {
+                files: {
+                    '<%= config.dist %>/scripts/main.js': [
+                        '<%= config.dist %>/scripts/main.js'
+                    ]
+                }
+            }
+        },
+        concat: {
+            dist: {}
+        },
 
         // Copies remaining files to places other tasks can use
         copy: {
@@ -356,7 +356,7 @@ module.exports = function (grunt) {
     });
 
 
-    grunt.registerTask('serve', function (target) {
+    grunt.registerTask('serve', function(target) {
         if (target === 'dist') {
             return grunt.task.run(['build', 'connect:dist:keepalive']);
         }
@@ -370,12 +370,12 @@ module.exports = function (grunt) {
         ]);
     });
 
-    grunt.registerTask('server', function (target) {
+    grunt.registerTask('server', function(target) {
         grunt.log.warn('The `server` task has been deprecated. Use `grunt serve` to start a server.');
         grunt.task.run([target ? ('serve:' + target) : 'serve']);
     });
 
-    grunt.registerTask('test', function (target) {
+    grunt.registerTask('test', function(target) {
         if (target !== 'watch') {
             grunt.task.run([
                 'clean:server',
