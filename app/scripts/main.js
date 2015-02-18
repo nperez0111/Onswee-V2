@@ -444,7 +444,7 @@ var game = {
             score: game.score
 
         });
-        makeEm();
+        dragAndDrop();
     },
     //updates HUD to current values
 
@@ -1368,7 +1368,7 @@ function buildractive() {
     });
 }
 
-function makeEm() {
+function dragAndDrop() {
 
     $('.draggable').draggable({
         containment: $('#gameBoard'),
@@ -1376,16 +1376,16 @@ function makeEm() {
         opacity: 0.8,
         revert: function(dropped) {
             //if it is not the players turn then send the draggable to where it was
-            if (((game.turns % 2 === 0) !== game.board[game.toInt($(this).attr('id').replace(/^\D+/g, ""))]) || (game.board[game.toInt($(this).attr('id').replace(/^\D+/g, ""))] !== null) || !dropped) {
+            if ((game.board[game.toInt($(this).attr('id').replace(/^\D+/g, ""))] !== null) || !dropped) {
                 game.dontSelect = (game.board[game.toInt($(this).attr('id').replace(/^\D+/g, ""))] !== null);
                 return true;
             }
 
             return false;
         },
-        revertDuration: 1200,
+        revertDuration: 1000,
         delay: 200,
-        zIndex: 100
+        zIndex: 120
     });
 
     $(".drop").droppable({
@@ -1397,15 +1397,19 @@ function makeEm() {
                 dragNum = game.toInt($(ui.draggable).attr('id').replace(/^\D+/g, ""));
             if ((game.turns % 2 === 0) !== game.board[dragNum]) {
                 game.illegal("Sorry " + game.getName(game.board[dragNum]) + ", it's " + game.getName(!game.board[dragNum]) + "'s turn!");
-                return;
-            }
-            if (dragNum == dropNum) {
+                return false;
+            } else if (dragNum == dropNum) {
                 $(this).removeClass('Active');
                 return false;
-            }
-            if (game.board[dropNum] !== null) {
+            } else if (game.board[dropNum] !== null) {
                 //Something there
                 game.illegal('Something already there!');
+                $(this).removeClass('Active');
+                return false;
+
+            } else if (!game.canMoveFromTo(game.board[dragNum], game.board.clone(), dragNum, dropNum)) {
+
+                game.illegal("Sorry that's too far to move to!");
                 $(this).removeClass('Active');
                 return false;
 
@@ -1469,5 +1473,5 @@ $(document).ready(function() {
     $(function() {
         FastClick.attach(document.body);
     });
-    makeEm();
+    dragAndDrop();
 });
