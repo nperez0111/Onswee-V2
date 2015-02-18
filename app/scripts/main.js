@@ -480,8 +480,8 @@ var game = {
 
                     }
                 } else if (Math.abs(players[i + 1].length - sl) == 1) {
-                    if (players[i + 1] == this.player1Name.slice(0, players[i + 1].length) || players[i + 1].slice(0, sl) == this.player2Name) {
-                        players[i + 1] = this.player1Name;
+                    if (players[i + 1] == this.player2Name.slice(0, players[i + 1].length) || players[i + 1].slice(0, sl) == this.player2Name) {
+                        players[i + 1] = this.player2Name;
                         localStorage.setObj('players', players);
                         return;
                     }
