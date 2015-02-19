@@ -160,7 +160,7 @@ module.exports = function(grunt) {
                     expand: true,
                     cwd: '<%= config.app %>/styles',
                     src: ['*.scss'],
-                    dest: '.tmp/styles',
+                    dest: '<%= config.app %>/styles',
                     ext: '.css'
                 }]
             },
@@ -169,7 +169,7 @@ module.exports = function(grunt) {
                     expand: true,
                     cwd: '<%= config.app %>/styles',
                     src: ['*.scss'],
-                    dest: '.tmp/styles',
+                    dest: '<%= config.app %>/styles',
                     ext: '.css'
                 }]
             }
@@ -183,9 +183,9 @@ module.exports = function(grunt) {
             dist: {
                 files: [{
                     expand: true,
-                    cwd: '.tmp/styles/',
+                    cwd: '<%= config.app %>/styles/',
                     src: '{,*/}*.css',
-                    dest: '.tmp/styles/'
+                    dest: '<%= config.app %>/styles/'
                 }]
             }
         },
@@ -286,7 +286,7 @@ module.exports = function(grunt) {
             dist: {
                 files: {
                     '<%= config.dist %>/styles/main.css': [
-                        '.tmp/styles/{,*/}*.css',
+                        '<%= config.app %>/styles/{,*/}*.css',
                         '<%= config.app %>/styles/{,*/}*.css'
                     ]
                 }
@@ -332,7 +332,7 @@ module.exports = function(grunt) {
                 expand: true,
                 dot: true,
                 cwd: '<%= config.app %>/styles',
-                dest: '.tmp/styles/',
+                dest: '<%= config.app %>/styles/',
                 src: '{,*/}*.css'
             }
         },
@@ -352,6 +352,27 @@ module.exports = function(grunt) {
                 'imagemin',
                 'svgmin'
             ]
+        },
+        browserSync: {
+            files: {
+                src: [
+                    '<%= config.app %>/*.html',
+                    '<%= config.app %>/styles/{,*/}*.css',
+                    '<%= config.app %>/scripts/{,*/}*.js',
+                    '<%= config.app %>/images/{,*/}*.{gif,jpeg,jpg,png,svg,webp}'
+                ],
+            },
+            options: {
+                watchTask: true,
+                ghostMode: {
+                    scroll: true,
+                    links: true,
+                    forms: true
+                },
+                server: {
+                    baseDir: '<%= config.app %>'
+                }
+            }
         }
     });
 
@@ -366,6 +387,7 @@ module.exports = function(grunt) {
             'concurrent:server',
             'autoprefixer',
             'connect:livereload',
+            'browserSync',
             'watch'
         ]);
     });

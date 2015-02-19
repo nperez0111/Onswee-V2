@@ -384,8 +384,8 @@ var game = {
         this.board = localStorage.getObj('board');
         this.turns = this.toInt(localStorage.turn);
         this.moves = localStorage.getObj('moves');
-        this.icon = localStorage.getObj('icons')[0];
-        this.iconPossibles = localStorage.getObj('icons')[1];
+        this.icon = localStorage.getObj('icons') ? localStorage.getObj('icons')[0] : this.icon;
+        this.iconPossibles = localStorage.getObj('icons') ? localStorage.getObj('icons')[1] : this.iconPossibles;
         this.score = localStorage.getObj('score');
         var players = localStorage.getObj('players');
         if (players !== null) {
@@ -409,8 +409,8 @@ var game = {
     ],
     //coordinates[to]-coordinates[from] is how far from should move to get to to in form [verticalshift,horizontalshift]
     animateTo: function(from, to, callback) {
-        var distanceX = this.coordinates[to][1] - this.coordinates[from][1],
-            distanceY = this.coordinates[to][0] - this.coordinates[from][0],
+        var distanceX = this.toInt(to % 3) - this.toInt(from % 3),
+            distanceY = this.toInt(to / 3) - this.toInt(from / 3),
             el = '#drag' + from;
         $(el).css('position', 'relative');
         $(el).animate({
@@ -426,8 +426,6 @@ var game = {
     },
     updateHUD: function() {
         this.trackcurrent(this.board);
-        /*this.wipeBoard();
-        this.fillBoard();*/
         ractive.update();
         settings.update();
         settings.set({
@@ -454,6 +452,7 @@ var game = {
     saveScore: function(player) {
         if (player !== null) {
             this.score[player ? 0 : 1] += 1;
+            localStorage.setObj('score', this.score);
         }
         console.log('called save score');
         //saves scores into scorearr
@@ -462,7 +461,6 @@ var game = {
             return;
         }
         var arr = [game.player1Name, game.player2Name, game.score];
-        localStorage.setObj('score', this.score);
         if (localStorage.getObj('players') === null) {
             localStorage.setObj('players', arr);
         } else {
@@ -489,7 +487,7 @@ var game = {
             }
             localStorage.setObj('players', arr.concat(localStorage.getObj('players')));
         }
-        localStorage.isPlaying = (player === null);
+        localStorage.isPlaying = (player !== null);
     },
 
     newGame: function(player) {
