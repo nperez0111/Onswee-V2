@@ -1,6 +1,7 @@
 {
     "jscodehints.detectedExclusions": [
         "C:/Users/npere_000/Documents/GitHub/Onswee-V2/bower_components/ractive/ractive.runtime.min.js",
-        "C:/Users/npere_000/Documents/GitHub/Onswee-V2/bower_components/jquery/src/outro.js"
+        "C:/Users/npere_000/Documents/GitHub/Onswee-V2/bower_components/jquery/src/outro.js",
+        "C:/Users/npere_000/Documents/GitHub/Onswee-V2/app/bower_components/jquery/src/outro.js"
     ]
 }

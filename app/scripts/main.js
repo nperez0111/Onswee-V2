@@ -396,18 +396,8 @@ var game = {
 
     },
     //loads last game played at last saved positions
-    coordinates: [
-        [0, 0],
-        [0, 1],
-        [0, 2],
-        [1, 0],
-        [1, 1],
-        [1, 2],
-        [2, 0],
-        [2, 1],
-        [2, 2]
-    ],
-    //coordinates[to]-coordinates[from] is how far from should move to get to to in form [verticalshift,horizontalshift]
+
+
     animateTo: function(from, to, callback) {
         var distanceX = this.toInt(to % 3) - this.toInt(from % 3),
             distanceY = this.toInt(to / 3) - this.toInt(from / 3),

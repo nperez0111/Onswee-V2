@@ -1,0 +1,18 @@
+CACHE MANIFEST
+#v2.0
+CACHE:
+/favicon.ico
+index.html
+404.html
+images/x.png
+images/o.png
+images/default3.png
+images/default4.png
+images/default5.png
+images/default6.png
+images/default7.png
+images/default8.png
+scripts/main.js
+scripts/vendor.js
+styles/main.css
+styles/vendor.css
