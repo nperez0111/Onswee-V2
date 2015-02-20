@@ -34,7 +34,7 @@ function placePiece(player, num) {
     if (game.turns > 5) {
         return;
     } else if (game.board[num] !== null) {
-        game.illegal('That position is taken');
+        game.illegal('Sorry, that position is taken');
         return;
     }
     if (game.justWon) {
@@ -44,7 +44,7 @@ function placePiece(player, num) {
     var board = game.board.clone();
     board[num] = player;
     if (game.hasIllegalLineIn(player, board)) {
-        game.illegal("Can't make a line when placing");
+        game.illegal("Sorry, you can't make a line when placing");
         return;
     }
 
@@ -56,7 +56,7 @@ function placePiece(player, num) {
 }
 
 function resetMe() {
-    console.log('Resetting...');
+    game.illegal('Resetting...');
     game.turns = 0;
     localStorage.clear();
     game.justWon = true;
@@ -128,13 +128,7 @@ function select(num) {
                 ractive.set('moveables', []);
                 if (game.board == [null, null, null, null, null, null, null, null, null]) {
                     game.justWon = true;
-                    return;
                 }
-                /*else if (game.ai) {
-
-                                    game.aiTurn();
-
-                                }*/
                 return;
             }
         }
@@ -421,8 +415,9 @@ var game = {
         } else if (this.turns == 6) {
             this.illegal("Remember: You can't make any straight lines yet!");
         } else if (this.turns == 12) {
-            this.illegal("You can make lines now!");
+            this.illegal("You can finally make lines!");
         }
+
         this.trackcurrent(this.board);
         ractive.update();
         settings.update();
@@ -430,6 +425,7 @@ var game = {
             player1: game.player1Name,
             player2: game.player2Name
         });
+
         ractive.set({
             board: game.board,
             turn: game.turns > 5,
@@ -440,7 +436,9 @@ var game = {
             score: game.score
 
         });
+
         dragAndDrop();
+
     },
     //updates HUD to current values
 
@@ -453,7 +451,7 @@ var game = {
             localStorage.setObj('score', this.score);
         }
         console.log('called save score');
-        //saves scores into scorearr
+        //saves scores into score array
         ractive.update('score');
         if (!supportsLocalStorage()) {
             return;
