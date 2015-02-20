@@ -58,12 +58,13 @@ function placePiece(player, num) {
 function resetMe() {
     console.log('Resetting...');
     game.turns = 0;
+    localStorage.clear();
     game.justWon = true;
     game.init();
     game.justWon = false;
-    localStorage.clear();
     ractive.update();
     game.save();
+    game.score = [0, 0];
     game.updateHUD();
 }
 
@@ -359,7 +360,6 @@ var game = {
 
         this.moves.push([from, to]);
 
-
     },
     undo: function() {
 
@@ -415,6 +415,14 @@ var game = {
 
     },
     updateHUD: function() {
+
+        if (this.turns == 4) {
+            this.illegal("Remember: You can't place in a line yet!");
+        } else if (this.turns == 6) {
+            this.illegal("Remember: You can't make any straight lines yet!");
+        } else if (this.turns == 12) {
+            this.illegal("You can make lines now!");
+        }
         this.trackcurrent(this.board);
         ractive.update();
         settings.update();
