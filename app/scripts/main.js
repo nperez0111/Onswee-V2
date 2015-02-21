@@ -56,7 +56,7 @@ function placePiece(player, num) {
 }
 
 function resetMe() {
-    game.illegal('Resetting...');
+    game.illegal('Reset Complete!');
     game.turns = 0;
     localStorage.clear();
     game.justWon = true;

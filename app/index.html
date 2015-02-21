@@ -203,9 +203,9 @@
                         <img src="{{icon[0]}}" alt="Player 1 Icon" />
                         
                         
-                        <span class="whosTurn">
+                        <span class="whosTurn inner">
                         
-                            {{player1+(turns%2==0?"'s Turn":"")}}
+                            {{player1+(turns%2==0?"'s Turn ":"")}} : 
                             <span class="score">{{score[0]==1?'1 Point':(score[0]+' Points')}}</span>
                         </span>
                         
@@ -216,9 +216,9 @@
                         <img src="{{icon[1]}}" alt="Player 2 Icon" />
                         
                         
-                        <span class="whosTurn">
+                        <span class="whosTurn inner">
                         
-                            {{player2+(turns%2==1?"'s Turn":"")}}
+                            {{player2+(turns%2==1?"'s Turn ":"")}} : 
                             <span class="score">{{score[1]==1?'1 Point':(score[1]+' Points')}}</span>
                         </span>
                         
