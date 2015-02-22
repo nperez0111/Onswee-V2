@@ -174,11 +174,13 @@
                 
                     {{#each board:i}}
                     
-                    <div class="boardPlaceHolder b{{(i+1)}} {{turn?'':'cursor'}} drop" id="drop{{i}}" onclick="placePiece(game.turns%2==0?true:false,{{i}})"><div class="wrap  {{!turn || (turn&&board[i]!==null) || isActive(i) ? 'ripplelink overHide' : ''}}">
+                    <div class="boardPlaceHolder b{{(i+1)}} {{turn?'':'cursor'}} drop" id="drop{{i}}" onclick="placePiece(game.turns%2==0?true:false,{{i}})">
+                    
+                    <div class="wrap  {{!turn || (turn&&board[i]!==null) || isActive(i) ? 'ripplelink' : ''}} overHide">
                     
                         {{#if (board[i] !== null)}}
                         
-                            <div class="{{board[i] ? 'P1':'P2'}} {{selected==i?'Active':''}} draggable  {{isActive(i) || board[i]==(turns%2==0) ? 'ripplelinked' : ''}}" id="drag{{i}}" onclick="select({{i}})" style="{{'background-image:url('+icon[board[i]?0:1]}})">
+                            <div class="{{board[i] ? 'P1':'P2'}} {{selected==i?'Active clickable':''}} draggable  {{isActive(i) || (selected==-1&&board[i]==(turns%2==0)) ? 'clickable' : 'notClickable'}}" id="drag{{i}}" onclick="select({{i}})" style="{{'background-image:url('+icon[board[i]?0:1]}})">
                             
                                 
                                 
@@ -186,13 +188,14 @@
 
                         {{else}}
                             {{#if isActive(i)}}
-                                <div class="empty Active ripplelinked" onclick="select({{i}})"><div><span class="inner">Can move here</span></div></div>
+                                <div class="empty Active clickable overHide" onclick="select({{i}})"><div><span class="inner">Can move here</span></div></div>
                             {{/if}}
                             
                         {{/if}}
                         
                     
-                    </div></div>
+                    </div>
+            </div>
                     
                     {{/each}}
 

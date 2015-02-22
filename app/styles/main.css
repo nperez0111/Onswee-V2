@@ -4516,11 +4516,16 @@ button.close {
     -webkit-transform: scale(1);
     transform: scale(1); } }
 
-.ripplelinked:hover {
+.clickable, .clickable:hover {
   background-color: #CCC;
   /*bouncing animation to show that its clickable*/
-  -webkit-animation: bounce 2.5s infinite;
-  animation: bounce 2.5s infinite; }
+  -webkit-animation: bounce 2.5s infinite !important;
+  animation: bounce 2.5s infinite !important;
+  animation-delay: 0.5s;
+  -webkit-animation-delay: 0.5s; }
+
+.notClickable {
+  cursor: auto !important; }
 
 .overHide {
   overflow: hidden; }

@@ -1399,22 +1399,20 @@ function dragAndDrop() {
         drop: function(event, ui) {
             var dropNum = game.toInt($(this).attr('id').replace(/^\D+/g, "")),
                 dragNum = game.toInt($(ui.draggable).attr('id').replace(/^\D+/g, ""));
+            $(this).removeClass('Active');
             if ((game.turns % 2 === 0) !== game.board[dragNum]) {
                 game.illegal("Sorry " + game.getName(game.board[dragNum]) + ", it's " + game.getName(!game.board[dragNum]) + "'s turn!");
                 return false;
             } else if (dragNum == dropNum) {
-                $(this).removeClass('Active');
                 return false;
             } else if (game.board[dropNum] !== null) {
                 //Something there
                 game.illegal('Something already there!');
-                $(this).removeClass('Active');
                 return false;
 
             } else if (!game.canMoveFromTo(game.board[dragNum], game.board.clone(), dragNum, dropNum)) {
 
                 game.illegal("Sorry that's too far to move to!");
-                $(this).removeClass('Active');
                 return false;
 
             } else {
@@ -1448,10 +1446,9 @@ function dragAndDrop() {
             $(this).prepend("<span class='ink'></span>");
 
         }
-        /*console.log($(this));
-        if ($(this).find(".inner").length == 1) {
-            console.log('fired');
-            $(this).removeClass('overHide');
+        /*if ($(this).find("span").length == 1) {
+            console.log('Set the clicked el to be hidden');
+            $(this).addClass('overHide');
         }*/
         var ink = $(this).find(".ink");
         ink.removeClass("animate");
