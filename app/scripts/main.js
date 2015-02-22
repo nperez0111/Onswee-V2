@@ -123,8 +123,6 @@ function select(num) {
 
         for (var co = 0, allo = game.allPosMoveLocs[snum], clo = allo.length; co < clo; co++) {
             if (game.board[allo[co]] === null) {
-                /////////////////debug
-                $("div[onclick='select(" + num + ")']").parent().addClass('overHide');
                 game.moveFromTo(game.board[snum], snum, num);
                 ractive.set('selected', -1);
                 ractive.set('moveables', []);
@@ -399,8 +397,8 @@ var game = {
             distanceY = this.toInt(to / 3) - this.toInt(from / 3),
             el = '#drag' + from;
         $(el).css('position', 'relative');
-        ////////////debug
-        $(el).parent().removeClass('overHide');
+        //this is for ripplelink
+        $("#drop" + from).removeClass('overHide');
         $(el).animate({
             left: (distanceX * $('.boardPlaceHolder').outerWidth() + 'px'),
             top: (distanceY * $('.boardPlaceHolder').outerHeight() + 'px')
@@ -1436,20 +1434,12 @@ function dragAndDrop() {
     }
     $(".ripplelink").click(function(e) {
 
-        /*if(game.turns>6 && true/*is active*/
-        /*){
-        	return false;
-        	}*/
 
         if ($(this).find(".ink").length === 0) {
 
             $(this).prepend("<span class='ink'></span>");
 
         }
-        /*if ($(this).find("span").length == 1) {
-            console.log('Set the clicked el to be hidden');
-            $(this).addClass('overHide');
-        }*/
         var ink = $(this).find(".ink");
         ink.removeClass("animate");
 

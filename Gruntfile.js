@@ -131,10 +131,11 @@ module.exports = function(grunt) {
                 reporter: require('jshint-stylish')
             },
             all: [
-                'Gruntfile.js',
-                '<%= config.app %>/scripts/{,*/}*.js',
-                '!<%= config.app %>/scripts/vendor/*',
-                'test/spec/{,*/}*.js'
+                '<%= config.app %>/scripts/main.js'
+                /*,
+                                '!<%= config.app %>/scripts/vendor/*',
+                                'test/spec/{,*/
+                /*}*.js'*/
             ]
         },
 
@@ -376,13 +377,13 @@ module.exports = function(grunt) {
         },
         notify_hooks: {
             options: {
-              enabled: true,
-              max_jshint_notifications: 30, // maximum number of notifications from jshint output
-              title: "Onswee", // defaults to the name in package.json, or will use project directory's name
-              success: false, // whether successful grunt executions should be notified automatically
-              duration: 5 // the duration of notification in seconds, for `notify-send only
+                enabled: true,
+                max_jshint_notifications: 30, // maximum number of notifications from jshint output
+                title: "Onswee", // defaults to the name in package.json, or will use project directory's name
+                success: false, // whether successful grunt executions should be notified automatically
+                duration: 5 // the duration of notification in seconds, for `notify-send only
             }
-          }
+        }
     });
 
 

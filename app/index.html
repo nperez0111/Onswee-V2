@@ -174,9 +174,9 @@
                 
                     {{#each board:i}}
                     
-                    <div class="boardPlaceHolder b{{(i+1)}} {{turn?'':'cursor'}} drop" id="drop{{i}}" onclick="placePiece(game.turns%2==0?true:false,{{i}})">
+                    <div class="boardPlaceHolder overHide b{{(i+1)}} {{turn?'':'cursor'}} drop" id="drop{{i}}" onclick="placePiece(game.turns%2==0?true:false,{{i}})">
                     
-                    <div class="wrap  {{!turn || (turn&&board[i]!==null) || isActive(i) ? 'ripplelink' : ''}} overHide">
+                    <div class="wrap  {{(turn&&board[i]!==null) || isActive(i) ? 'ripplelink' : ''}}">
                     
                         {{#if (board[i] !== null)}}
                         

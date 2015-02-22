@@ -4807,8 +4807,7 @@ input:focus ~ .highlight {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  transition: all 0.2s ease;
-  z-index: 0; }
+  transition: all 0.2s ease; }
   .ripplelink.icoChoice {
     margin-bottom: 16px; }
   .ripplelink img {
