@@ -84,6 +84,9 @@ function setName(player) {
 }
 
 function select(num) {
+    if (game.turns < 6) {
+        return;
+    }
     if (game.dontSelect) {
         game.dontSelect = false;
         return;
@@ -414,12 +417,12 @@ var game = {
     },
     updateHUD: function() {
 
-        if (this.turns == 4) {
+        if (this.turns == 4 && this.score == [0, 0]) {
             this.illegal("Remember: You can't place in a line yet!");
-        } else if (this.turns == 6) {
+        } else if (this.turns == 6 && this.score == [0, 0]) {
             this.illegal("Remember: You can't make any straight lines yet!");
         } else if (this.turns == 12) {
-            this.illegal("You can finally make lines!");
+            this.illegal("You can make lines!");
         }
 
         this.trackcurrent(this.board);
@@ -1389,6 +1392,9 @@ function dragAndDrop() {
                 $(this).parent().parent().removeClass('overHide');
                 hadnt = false;
             }
+            /*
+	compensate to remove any active class that may have been triggered and removes its own active class if set
+            */
         }
     });
 
