@@ -178,7 +178,7 @@
                     
                         {{#if (board[i] !== null)}}
                         
-                            <div class="{{board[i] ? 'P1':'P2'}} {{selected==i?'Active':''}} draggable  {{!turn || (turn&&board[i]!==null) || isActive(i) ? 'ripplelinked' : ''}}" id="drag{{i}}" onclick="select({{i}})" style="{{'background-image:url('+icon[board[i]?0:1]}})">
+                            <div class="{{board[i] ? 'P1':'P2'}} {{selected==i?'Active':''}} draggable  {{isActive(i) || board[i]==(turns%2==0) ? 'ripplelinked' : ''}}" id="drag{{i}}" onclick="select({{i}})" style="{{'background-image:url('+icon[board[i]?0:1]}})">
                             
                                 
                                 
@@ -186,7 +186,7 @@
 
                         {{else}}
                             {{#if isActive(i)}}
-                                <div class="empty Active" onclick="select({{i}})"><div><span class="inner">Can move here</span></div></div>
+                                <div class="empty Active ripplelinked" onclick="select({{i}})"><div><span class="inner">Can move here</span></div></div>
                             {{/if}}
                             
                         {{/if}}

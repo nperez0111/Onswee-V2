@@ -4494,27 +4494,33 @@ button.close {
   margin-bottom: 16px; }
 
 @-webkit-keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
-    -webkit-transform: translateY(0); }
+  0% {
+    -webkit-transform: scale(1); }
 
-  40% {
-    -webkit-transform: translateY(-30px); }
+  50% {
+    -webkit-transform: scale(1.1); }
 
-  60% {
-    -webkit-transform: translateY(-15px); } }
+  100% {
+    -webkit-transform: scale(1); } }
 
 @keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
-    -webkit-transform: translateY(0);
-    transform: translateY(0); }
+  0% {
+    -webkit-transform: scale(1);
+    transform: scale(1); }
 
-  40% {
-    -webkit-transform: translateY(-30px);
-    transform: translateY(-30px); }
+  50% {
+    -webkit-transform: scale(1.1);
+    transform: scale(1.1); }
 
-  60% {
-    -webkit-transform: translateY(-15px);
-    transform: translateY(-15px); } }
+  100% {
+    -webkit-transform: scale(1);
+    transform: scale(1); } }
+
+.ripplelinked:hover {
+  background-color: #CCC;
+  /*bouncing animation to show that its clickable*/
+  -webkit-animation: bounce 2.5s infinite;
+  animation: bounce 2.5s infinite; }
 
 .overHide {
   overflow: hidden; }
@@ -4531,11 +4537,6 @@ button.close {
   border: 1px solid #000;
   color: #000;
   transition: all 300ms ease-in; }
-  .boardPlaceHolder.ripplinked:hover {
-    background-color: #CCC;
-    /*bouncing animation to show that its clickable*/
-    -webkit-animation-name: bounce 1s infinite;
-    animation-name: bounce 1s infinite; }
   .boardPlaceHolder.b2, .boardPlaceHolder.b4, .boardPlaceHolder.b6, .boardPlaceHolder.b8 {
     background-color: #555;
     color: #FFF; }
