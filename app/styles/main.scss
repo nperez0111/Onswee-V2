@@ -41,6 +41,12 @@ $break-tab: 800px;
     display: none;
     margin-bottom: 16px;
 }
+#rules,#gameBoard{
+    @media screen and (min-width: 768px) {
+        padding-left:5%;
+        padding-right:5%;
+    }
+}
 #settingsPage, #rules, #gameBoard{
     box-shadow: rgba(0, 0, 0, 0.3) 0 16px 16px 0;
     -webkit-box-shadow: rgba(0, 0, 0, 0.3) 0 16px 16px 0;
@@ -213,27 +219,35 @@ body {
         padding-left: 0;
         padding-right: 0;
     }
-    /* Space out the masthead */
-    .header {
-        margin-bottom: 30px;
-    }
     /* Remove the bottom border on the jumbotron for visual effect */
     .jumbotron {
         border-bottom: 0;
     }
 }
+#IsAI, #IconChooser{
+    width:95%;
+    margin-left: 2.5%;
+    margin-right: 2.5%;
+}
 .group {
     position: relative;
     margin-bottom: 45px;
-    width:50%;
+    width:90%;
+    margin-left: 5%;
+    margin-right: 5%;
     display: inline-block;
     float:left;
+    @media screen and (min-width:$break-med) {
+        width:45%;
+        margin-left: 2.5%;
+        margin-right: 2.5%;
+    }
 }
 input {
     font-size: 18px;
     padding: 10px 10px 10px 5px;
     display: block;
-    width: 300px;
+    width: 100%;
     border: none;
     border-bottom: 1px solid #757575;
 }
@@ -364,6 +378,12 @@ input:focus ~ .highlight {
         width: 100%;
         }
     }
+    img{
+        float:right;
+        @media screen and (min-width: 360px) and (max-width:$break-med) {
+        float:none;
+        }
+    }
     .score{
     display: inline;
         @media screen and (min-width: $break-med) {
@@ -470,6 +490,11 @@ $pad: 10px;
   width: 12.5%;
 }
 .icoPossibles{
+    -webkit-transition: all 500ms ease-in;
+    -moz-transition: all 500ms ease-in;
+    -ms-transition: all 500ms ease-in;
+    -o-transition: all 500ms ease-in;
+    transition: all 500ms ease-in;
     &:hover{
     -webkit-box-shadow: 0 0 10px 7px #828282;
 box-shadow: 0 0 10px 7px #828282;

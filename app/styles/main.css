@@ -4480,6 +4480,11 @@ button.close {
   display: none;
   margin-bottom: 16px; }
 
+@media screen and (min-width: 768px) {
+  #rules, #gameBoard {
+    padding-left: 5%;
+    padding-right: 5%; } }
+
 #settingsPage, #rules, #gameBoard {
   box-shadow: rgba(0, 0, 0, 0.3) 0 16px 16px 0;
   -webkit-box-shadow: rgba(0, 0, 0, 0.3) 0 16px 16px 0;
@@ -4613,30 +4618,39 @@ body {
 /* Responsive: Portrait tablets and up */
 @media screen and (min-width: 768px) {
   /* Remove the padding we set earlier */
-  /* Space out the masthead */
   /* Remove the bottom border on the jumbotron for visual effect */
   .container {
     max-width: 730px; }
   .header, .marketing, .footer {
     padding-left: 0;
     padding-right: 0; }
-  .header {
-    margin-bottom: 30px; }
   .jumbotron {
     border-bottom: 0; } }
+
+#IsAI, #IconChooser {
+  width: 95%;
+  margin-left: 2.5%;
+  margin-right: 2.5%; }
 
 .group {
   position: relative;
   margin-bottom: 45px;
-  width: 50%;
+  width: 90%;
+  margin-left: 5%;
+  margin-right: 5%;
   display: inline-block;
   float: left; }
+  @media screen and (min-width: 640px) {
+    .group {
+      width: 45%;
+      margin-left: 2.5%;
+      margin-right: 2.5%; } }
 
 input {
   font-size: 18px;
   padding: 10px 10px 10px 5px;
   display: block;
-  width: 300px;
+  width: 100%;
   border: none;
   border-bottom: 1px solid #757575; }
 
@@ -4743,6 +4757,11 @@ input:focus ~ .highlight {
       width: 49.6%; }
       .whosTurn.inner, .icoChoice.inner {
         width: 100%; } }
+  .whosTurn img, .icoChoice img {
+    float: right; }
+    @media screen and (min-width: 360px) and (max-width: 640px) {
+      .whosTurn img, .icoChoice img {
+        float: none; } }
   .whosTurn .score, .icoChoice .score {
     display: inline; }
     @media screen and (min-width: 640px) {
@@ -4825,8 +4844,10 @@ input:focus ~ .highlight {
 .col-1-8 {
   width: 12.5%; }
 
-.icoPossibles:hover {
-  box-shadow: 0 0 10px 7px #828282; }
+.icoPossibles {
+  transition: all 500ms ease-in; }
+  .icoPossibles:hover {
+    box-shadow: 0 0 10px 7px #828282; }
 
 .Active {
   text-shadow: 2px 2px 3px #CCC;
