@@ -4530,6 +4530,9 @@ button.close {
 .overHide {
   overflow: hidden; }
 
+.overShow {
+  overflow: initial; }
+
 .boardPlaceHolder {
   display: inline-block;
   width: 33.333%;

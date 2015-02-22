@@ -81,6 +81,9 @@ cursor: auto !important;
 .overHide{
 overflow: hidden;
 }
+.overShow{
+overflow: initial;
+}
 
 .boardPlaceHolder {
     display: inline-block;
@@ -98,6 +101,7 @@ overflow: hidden;
     -ms-transition: all 300ms ease-in;
     -o-transition: all 300ms ease-in;
     transition: all 300ms ease-in;
+        
     &.b2, &.b4, &.b6, &.b8 {
         background-color: #555;
         color: #FFF;

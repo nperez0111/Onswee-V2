@@ -398,7 +398,9 @@ var game = {
             el = '#drag' + from;
         $(el).css('position', 'relative');
         //this is for ripplelink
-        $("#drop" + from).removeClass('overHide');
+        console.log($("#drop" + from));
+        $("#drop" + from).addClass('overShow').removeClass('overHide');
+        console.log($("#drop" + from).css('overflow'));
         $(el).animate({
             left: (distanceX * $('.boardPlaceHolder').outerWidth() + 'px'),
             top: (distanceY * $('.boardPlaceHolder').outerHeight() + 'px')
@@ -1384,7 +1386,7 @@ function dragAndDrop() {
         zIndex: 120,
         drag: function(event, ui) {
             if (hadnt) {
-                $(this).parent().removeClass('overHide');
+                $(this).parent().parent().removeClass('overHide');
                 hadnt = false;
             }
         }
