@@ -4493,6 +4493,32 @@ button.close {
 .b7, .b8, .b9 {
   margin-bottom: 16px; }
 
+@-webkit-keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    -webkit-transform: translateY(0); }
+
+  40% {
+    -webkit-transform: translateY(-30px); }
+
+  60% {
+    -webkit-transform: translateY(-15px); } }
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    -webkit-transform: translateY(0);
+    transform: translateY(0); }
+
+  40% {
+    -webkit-transform: translateY(-30px);
+    transform: translateY(-30px); }
+
+  60% {
+    -webkit-transform: translateY(-15px);
+    transform: translateY(-15px); } }
+
+.overHide {
+  overflow: hidden; }
+
 .boardPlaceHolder {
   display: inline-block;
   width: 33.333%;
@@ -4505,18 +4531,20 @@ button.close {
   border: 1px solid #000;
   color: #000;
   transition: all 300ms ease-in; }
-  .boardPlaceHolder.clickable:hover {
+  .boardPlaceHolder.ripplinked:hover {
     background-color: #CCC;
-    box-shadow: inset 0 0 10px 7px rgba(100, 100, 100, 0.6); }
+    /*bouncing animation to show that its clickable*/
+    -webkit-animation-name: bounce 1s infinite;
+    animation-name: bounce 1s infinite; }
   .boardPlaceHolder.b2, .boardPlaceHolder.b4, .boardPlaceHolder.b6, .boardPlaceHolder.b8 {
     background-color: #555;
     color: #FFF; }
-    .boardPlaceHolder.b2.clickable:hover, .boardPlaceHolder.b4.clickable:hover, .boardPlaceHolder.b6.clickable:hover, .boardPlaceHolder.b8.clickable:hover {
+    .boardPlaceHolder.b2.ripplelinked:hover, .boardPlaceHolder.b4.ripplelinked:hover, .boardPlaceHolder.b6.ripplelinked:hover, .boardPlaceHolder.b8.ripplelinked:hover {
       background-color: #333; }
   .boardPlaceHolder.b5 {
     background-color: #000;
     color: #FFF; }
-    .boardPlaceHolder.b5.clickable:hover {
+    .boardPlaceHolder.b5.ripplelinked:hover {
       background-color: #333; }
   .boardPlaceHolder .wrap {
     position: absolute;
@@ -4538,8 +4566,6 @@ button.close {
       background-position: center center;
       border-radius: 15px;
       cursor: pointer; }
-      .boardPlaceHolder .wrap .P1:hover, .boardPlaceHolder .wrap .P2:hover, .boardPlaceHolder .wrap .empty:hover {
-        box-shadow: inset 0 0 10px 7px rgba(100, 100, 100, 0.6); }
       .boardPlaceHolder .wrap .P1 div, .boardPlaceHolder .wrap .P2 div, .boardPlaceHolder .wrap .empty div {
         display: table;
         width: 100%;
@@ -4776,8 +4802,9 @@ input:focus ~ .highlight {
   -ms-user-select: none;
   user-select: none;
   transition: all 0.2s ease;
-  z-index: 0;
-  margin-bottom: 16px; }
+  z-index: 0; }
+  .ripplelink.icoChoice {
+    margin-bottom: 16px; }
   .ripplelink img {
     width: 5em;
     display: inline; }

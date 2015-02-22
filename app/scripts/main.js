@@ -120,9 +120,11 @@ function select(num) {
         ractive.set('moveables', []);
     } else if (num === ractive.get('moveables')[0] || num === ractive.get('moveables')[1] || num === ractive.get('moveables')[2]) {
         //move to num if it is one of the move locs
+
         for (var co = 0, allo = game.allPosMoveLocs[snum], clo = allo.length; co < clo; co++) {
             if (game.board[allo[co]] === null) {
-
+                /////////////////debug
+                $("div[onclick='select(" + num + ")']").parent().addClass('overHide');
                 game.moveFromTo(game.board[snum], snum, num);
                 ractive.set('selected', -1);
                 ractive.set('moveables', []);
@@ -380,7 +382,7 @@ var game = {
         this.moves = localStorage.getObj('moves');
         this.icon = localStorage.getObj('icons') ? localStorage.getObj('icons')[0] : this.icon;
         this.iconPossibles = localStorage.getObj('icons') ? localStorage.getObj('icons')[1] : this.iconPossibles;
-        this.score = localStorage.getObj('score');
+        this.score = localStorage.getObj('score') ? localStorage.getObj('score') : [0, 0];
         var players = localStorage.getObj('players');
         if (players !== null) {
             this.player1Name = players[0];
@@ -397,6 +399,8 @@ var game = {
             distanceY = this.toInt(to / 3) - this.toInt(from / 3),
             el = '#drag' + from;
         $(el).css('position', 'relative');
+        ////////////debug
+        $(el).parent().removeClass('overHide');
         $(el).animate({
             left: (distanceX * $('.boardPlaceHolder').outerWidth() + 'px'),
             top: (distanceY * $('.boardPlaceHolder').outerHeight() + 'px')
@@ -1363,7 +1367,7 @@ function buildractive() {
 }
 
 function dragAndDrop() {
-
+    var hadnt = true;
     $('.draggable').draggable({
         containment: $('#gameBoard'),
         cursor: "pointer",
@@ -1379,7 +1383,13 @@ function dragAndDrop() {
         },
         revertDuration: 1000,
         delay: 200,
-        zIndex: 120
+        zIndex: 120,
+        drag: function(event, ui) {
+            if (hadnt) {
+                $(this).parent().removeClass('overHide');
+                hadnt = false;
+            }
+        }
     });
 
     $(".drop").droppable({
@@ -1426,16 +1436,23 @@ function dragAndDrop() {
         $('.draggable').draggable("disable");
         return;
     }
-}
-game.init();
-buildractive();
-$(document).ready(function() {
     $(".ripplelink").click(function(e) {
 
-        if ($(this).find(".ink").length === 0) {
-            $(this).prepend("<span class='ink'></span>");
-        }
+        /*if(game.turns>6 && true/*is active*/
+        /*){
+        	return false;
+        	}*/
 
+        if ($(this).find(".ink").length === 0) {
+
+            $(this).prepend("<span class='ink'></span>");
+
+        }
+        /*console.log($(this));
+        if ($(this).find(".inner").length == 1) {
+            console.log('fired');
+            $(this).removeClass('overHide');
+        }*/
         var ink = $(this).find(".ink");
         ink.removeClass("animate");
 
@@ -1455,6 +1472,11 @@ $(document).ready(function() {
             left: x + 'px'
         }).addClass("animate");
     });
+}
+game.init();
+buildractive();
+$(document).ready(function() {
+
     $('.game').click(function() {
         goTo('#gameBoard', '.game');
     });

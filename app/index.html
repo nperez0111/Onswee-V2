@@ -174,11 +174,11 @@
                 
                     {{#each board:i}}
                     
-                    <div class="boardPlaceHolder b{{(i+1)}} {{!turn || (turn&&board[i]!==null) ||isActive(i)?'clickable':''}} {{turn?'':'cursor'}} drop" id="drop{{i}}" onclick="placePiece(game.turns%2==0?true:false,{{i}})"><div class="wrap">
+                    <div class="boardPlaceHolder b{{(i+1)}} {{turn?'':'cursor'}} drop" id="drop{{i}}" onclick="placePiece(game.turns%2==0?true:false,{{i}})"><div class="wrap  {{!turn || (turn&&board[i]!==null) || isActive(i) ? 'ripplelink overHide' : ''}}">
                     
                         {{#if (board[i] !== null)}}
                         
-                            <div class="{{board[i] ? 'P1':'P2'}} {{selected==i?'Active':''}} draggable" id="drag{{i}}" onclick="select({{i}})" style="{{'background-image:url('+icon[board[i]?0:1]}})">
+                            <div class="{{board[i] ? 'P1':'P2'}} {{selected==i?'Active':''}} draggable  {{!turn || (turn&&board[i]!==null) || isActive(i) ? 'ripplelinked' : ''}}" id="drag{{i}}" onclick="select({{i}})" style="{{'background-image:url('+icon[board[i]?0:1]}})">
                             
                                 
                                 
