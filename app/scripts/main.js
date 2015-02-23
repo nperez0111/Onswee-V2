@@ -400,10 +400,10 @@ var game = {
             distanceY = this.toInt(to / 3) - this.toInt(from / 3),
             el = '#drag' + from;
         $(el).css('position', 'relative');
+
         //this is for ripplelink
-        console.log($("#drop" + from));
         $("#drop" + from).addClass('overShow').removeClass('overHide');
-        console.log($("#drop" + from).css('overflow'));
+
         $(el).animate({
             left: (distanceX * $('.boardPlaceHolder').outerWidth() + 'px'),
             top: (distanceY * $('.boardPlaceHolder').outerHeight() + 'px')
@@ -1391,10 +1391,13 @@ function dragAndDrop() {
             if (hadnt) {
                 $(this).parent().parent().removeClass('overHide');
                 hadnt = false;
+                if (ractive.get('selected') > -1) {
+                    $(this).removeClass('Active');
+                    ractive.set('selected', -1);
+                    ractive.set('moveables', []);
+                }
             }
-            /*
-	compensate to remove any active class that may have been triggered and removes its own active class if set
-            */
+
         }
     });
 
