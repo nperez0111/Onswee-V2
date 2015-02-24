@@ -1487,14 +1487,15 @@ $(document).ready(function() {
     $(function() {
         FastClick.attach(document.body);
     });
+
     dragAndDrop();
+
     if (document.location.hash) {
         var which = [
             ['g', '.game'],
             ['s', '.settings'],
             ['r', '.rules']
         ];
-        console.log(document.location.hash);
         for (var i = which.length;; i--) {
             if ((document.location.hash + "").slice(1, 2) == which[i - 1][0]) {
                 goTo(document.location.hash, which[i - 1][1]);
