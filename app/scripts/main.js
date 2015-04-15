@@ -91,8 +91,13 @@ function select(num) {
         game.dontSelect = false;
         return;
     }
-    var snum = game.toInt(ractive.get('selected'));
-    if (snum == -1) {
+    var snum = game.toInt(ractive.get('selected')),
+        bool = num === ractive.get('moveables')[0] || num === ractive.get('moveables')[1] || num === ractive.get('moveables')[2];
+    if (snum == num) {
+        //deselect that board position and make those positions un special and set setts.selected to -1
+        ractive.set('selected', -1);
+        ractive.set('moveables', []);
+    } else if (snum == -1 || !bool) {
         //is not set so let's set current num to special and possible move locs to activated
         if (game.board[num] == (game.turns % 2 == 1)) {
             game.illegal("It's " + game.getName(game.turns % 2 === 0) + "'s turn!");
@@ -117,11 +122,7 @@ function select(num) {
         ractive.set('selected', num);
         ractive.set('moveables', arr);
 
-    } else if (snum == num) {
-        //deselect that board position and make those positions un special and set setts.selected to -1
-        ractive.set('selected', -1);
-        ractive.set('moveables', []);
-    } else if (num === ractive.get('moveables')[0] || num === ractive.get('moveables')[1] || num === ractive.get('moveables')[2]) {
+    } else if (bool) {
         //move to num if it is one of the move locs
 
         for (var co = 0, allo = game.allPosMoveLocs[snum], clo = allo.length; co < clo; co++) {
@@ -1487,15 +1488,14 @@ $(document).ready(function() {
     $(function() {
         FastClick.attach(document.body);
     });
-
     dragAndDrop();
-
     if (document.location.hash) {
         var which = [
             ['g', '.game'],
             ['s', '.settings'],
             ['r', '.rules']
         ];
+        console.log(document.location.hash);
         for (var i = which.length;; i--) {
             if ((document.location.hash + "").slice(1, 2) == which[i - 1][0]) {
                 goTo(document.location.hash, which[i - 1][1]);

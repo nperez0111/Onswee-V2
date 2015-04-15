@@ -4533,6 +4533,10 @@ button.close {
 .overShow {
   overflow: initial; }
 
+#undo {
+  float: right;
+  cursor: pointer; }
+
 .boardPlaceHolder {
   display: inline-block;
   width: 33.333%;
@@ -4597,8 +4601,8 @@ button.close {
       /* IE10+ */
       background: radial-gradient(ellipse at center, rgba(100, 100, 100, 0.65) 0%, rgba(0, 0, 0, 0) 100%);
       /* W3C */
-      filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6646464', endColorstr='#00000000',GradientType=1 );
-      /* IE6-8 fallback on horizontal gradient */ }
+      /*filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='#a6646464', endColorstr='#00000000', GradientType=1);
+             IE6-8 fallback on horizontal gradient */ }
   .boardPlaceHolder .P1 {
     background-color: rgba(255, 0, 0, 0.6); }
   .boardPlaceHolder .P2 {
@@ -4610,12 +4614,16 @@ body {
   padding-bottom: 20px; }
 
 /* Everything but the jumbotron gets side spacing for mobile first views */
-.header, .marketing, .footer {
+.header, .marketing, footer {
   padding-left: 15px;
   padding-right: 15px; }
 
-.footer {
-  clear: both; }
+footer {
+  clear: both;
+  padding-top: 20px; }
+
+footer p {
+  text-align: center; }
 
 /* Custom page header */
 .header {
@@ -4662,7 +4670,7 @@ body {
   .jumbotron {
     border-bottom: 0; } }
 
-#IsAI, #IconChooser {
+#IsAI, #IconChooser, #NameChooser {
   width: 95%;
   margin-left: 2.5%;
   margin-right: 2.5%; }
@@ -4678,8 +4686,8 @@ body {
   @media screen and (min-width: 640px) {
     .group {
       width: 45%;
-      margin-left: 2.5%;
-      margin-right: 2.5%; } }
+      margin-right: 5%;
+      margin-left: 0; } }
 
 input {
   font-size: 18px;
@@ -4872,7 +4880,10 @@ input:focus ~ .highlight {
   width: 50%; }
 
 .col-1-4 {
-  width: 25%; }
+  width: 22%;
+  margin-left: 1.5%;
+  margin-right: 1.5%;
+  margin-bottom: 3%; }
   .col-1-4:nth-child(1) {
     clear: left; }
 
@@ -4880,9 +4891,11 @@ input:focus ~ .highlight {
   width: 12.5%; }
 
 .icoPossibles {
-  transition: all 500ms ease-in; }
+  transition: all 500ms ease-in;
+  cursor: pointer;
+  box-shadow: 0 1.5px 4px rgba(0, 0, 0, 0.24), 0 1.5px 6px rgba(0, 0, 0, 0.12); }
   .icoPossibles:hover {
-    box-shadow: 0 0 10px 7px #828282; }
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.23), 0 3px 12px rgba(0, 0, 0, 0.16); }
 
 .Active {
   text-shadow: 2px 2px 3px #CCC;
@@ -5148,3 +5161,8 @@ input:focus ~ .highlight {
   100% {
     -webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
     transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); } }
+
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait) {
+  html, body {
+    overflow: hidden;
+    padding: 0; } }

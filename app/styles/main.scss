@@ -10,10 +10,10 @@
     -ms-user-select: none;
     user-select: none;
 }
-$break-small:320px;
- $break-med:640px;
- $break-tab:800px;
- * {
+$break-small: 320px;
+$break-med: 640px;
+$break-tab: 800px;
+* {
     box-sizing: border-box;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -37,28 +37,22 @@ $break-small:320px;
     text-align: center;
     background-color: rgb(255, 255, 102);
 }
-#settingsPage,
-#rules {
+#settingsPage, #rules {
     display: none;
     margin-bottom: 16px;
 }
-#rules,
-#gameBoard {
+#rules, #gameBoard {
     @media screen and (min-width: 768px) {
         padding-left: 5%;
         padding-right: 5%;
     }
 }
-#settingsPage,
-#rules,
-#gameBoard {
+#settingsPage, #rules, #gameBoard {
     box-shadow: rgba(0, 0, 0, 0.3) 0 16px 16px 0;
     -webkit-box-shadow: rgba(0, 0, 0, 0.3) 0 16px 16px 0;
     -moz-box-shadow: rgba(0, 0, 0, 0.3) 0 16px 16px 0;
 }
-.b7,
-.b8,
-.b9 {
+.b7, .b8, .b9 {
     margin-bottom: 16px;
 }
 @-webkit-keyframes bounce {
@@ -83,10 +77,10 @@ $break-small:320px;
         transform: scale(1);
     }
 }
-.clickable,
-.clickable:hover {
+.clickable, .clickable:hover {
     background-color: #CCC;
     /*bouncing animation to show that its clickable*/
+    
     -webkit-animation: bounce 2.5s infinite !important;
     animation: bounce 2.5s infinite !important;
     animation-delay: 0.5s;
@@ -101,11 +95,15 @@ $break-small:320px;
 .overShow {
     overflow: initial;
 }
+#undo {
+    float: right;
+    cursor: pointer;
+}
 .boardPlaceHolder {
     display: inline-block;
     width: 33.333%;
     position: relative;
-    height: 0;//set this dynamically with ractive
+    height: 0; //set this dynamically with ractive
     padding-bottom: 33.333%;
     float: left;
     text-align: center;
@@ -120,14 +118,14 @@ $break-small:320px;
     &.b2, &.b4, &.b6, &.b8 {
         background-color: #555;
         color: #FFF;
-        &.ripplelinked: hover {
+        &.ripplelinked:hover {
             background-color: #333;
         }
     }
     &.b5 {
         background-color: #000;
         color: #FFF;
-        &.ripplelinked: hover {
+        &.ripplelinked:hover {
             background-color: #333;
         }
     }
@@ -165,21 +163,27 @@ $break-small:320px;
         color: #000;
         div .inner {
             /* IE9 SVG, needs conditional override of 'filter' to 'none' */
+            
             background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPHJhZGlhbEdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY3g9IjUwJSIgY3k9IjUwJSIgcj0iNzUlIj4KICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM2NDY0NjQiIHN0b3Atb3BhY2l0eT0iMC42NSIvPgogICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMDAwMDAwIiBzdG9wLW9wYWNpdHk9IjAiLz4KICA8L3JhZGlhbEdyYWRpZW50PgogIDxyZWN0IHg9Ii01MCIgeT0iLTUwIiB3aWR0aD0iMTAxIiBoZWlnaHQ9IjEwMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
             background: -moz-radial-gradient(center, ellipse cover, rgba(100, 100, 100, 0.65) 0%, rgba(0, 0, 0, 0) 100%);
             /* FF3.6+ */
+            
             background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, rgba(100, 100, 100, 0.65)), color-stop(100%, rgba(0, 0, 0, 0)));
             /* Chrome,Safari4+ */
+            
             background: -webkit-radial-gradient(center, ellipse cover, rgba(100, 100, 100, 0.65) 0%, rgba(0, 0, 0, 0) 100%);
             /* Chrome10+,Safari5.1+ */
+            
             background: -o-radial-gradient(center, ellipse cover, rgba(100, 100, 100, 0.65) 0%, rgba(0, 0, 0, 0) 100%);
             /* Opera 12+ */
+            
             background: -ms-radial-gradient(center, ellipse cover, rgba(100, 100, 100, 0.65) 0%, rgba(0, 0, 0, 0) 100%);
             /* IE10+ */
+            
             background: radial-gradient(ellipse at center, rgba(100, 100, 100, 0.65) 0%, rgba(0, 0, 0, 0) 100%);
             /* W3C */
-            filter: progid: DXImageTransform.Microsoft.gradient(startColorstr='#a6646464', endColorstr='#00000000', GradientType=1);
-            /* IE6-8 fallback on horizontal gradient */
+            /*filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='#a6646464', endColorstr='#00000000', GradientType=1);
+             IE6-8 fallback on horizontal gradient */
         }
     }
     .P1 {
@@ -197,20 +201,23 @@ body {
 }
 /* Everything but the jumbotron gets side spacing for mobile first views */
 
-.header,
-.marketing,
-.footer {
+.header, .marketing, footer {
     padding-left: 15px;
     padding-right: 15px;
 }
-.footer {
+footer {
     clear: both;
+    padding-top: 20px;
+}
+footer p {
+    text-align: center;
 }
 /* Custom page header */
 
 .header {
     border-bottom: 1px solid #e5e5e5;
     /* Make the masthead heading the same height as the navigation */
+    
     h3 {
         margin-top: 0;
         margin-bottom: 0;
@@ -253,19 +260,18 @@ body {
         max-width: 730px;
     }
     /* Remove the padding we set earlier */
-    .header,
-    .marketing,
-    .footer {
+    
+    .header, .marketing, .footer {
         padding-left: 0;
         padding-right: 0;
     }
     /* Remove the bottom border on the jumbotron for visual effect */
+    
     .jumbotron {
         border-bottom: 0;
     }
 }
-#IsAI,
-#IconChooser {
+#IsAI, #IconChooser, #NameChooser {
     width: 95%;
     margin-left: 2.5%;
     margin-right: 2.5%;
@@ -280,8 +286,8 @@ body {
     float: left;
     @media screen and (min-width: $break-med) {
         width: 45%;
-        margin-left: 2.5%;
-        margin-right: 2.5%;
+        margin-right: 5%;
+        margin-left: 0;
     }
 }
 input {
@@ -311,8 +317,7 @@ label {
 }
 /* active state */
 
-input:focus ~ label,
-input:valid ~ label {
+input:focus ~ label, input:valid ~ label {
     top: -20px;
     font-size: 14px;
     color: #5264AE;
@@ -324,8 +329,7 @@ input:valid ~ label {
     display: block;
     width: 300px;
 }
-.bar:before,
-.bar:after {
+.bar:before, .bar:after {
     content: '';
     height: 2px;
     width: 0;
@@ -344,8 +348,7 @@ input:valid ~ label {
 }
 /* active state */
 
-input:focus ~ .bar:before,
-input:focus ~ .bar:after {
+input:focus ~ .bar:before, input:focus ~ .bar:after {
     width: 50%;
 }
 /* HIGHLIGHTER ================================== */
@@ -395,8 +398,7 @@ input:focus ~ .highlight {
         background: transparent;
     }
 }
-.whosTurn,
-.icoChoice {
+.whosTurn, .icoChoice {
     -webkit-border-radius: 15px;
     border-radius: 15px;
     display: block;
@@ -494,12 +496,13 @@ input:focus ~ .highlight {
         transform: scale(2.5);
     }
 }
-$pad:10px;
- .grid {
+$pad: 10px;
+.grid {
     background: white;
     margin: 0 0 $pad 0;
-    &: after {
+    &:after {
         /* Or @extend clearfix */
+        
         content: "";
         display: table;
         clear: both;
@@ -521,8 +524,11 @@ $pad:10px;
     width: 50%;
 }
 .col-1-4 {
-    width: 25%;
-    &: nth-child(1) {
+    width: 22%;
+    margin-left: 1.5%;
+    margin-right: 1.5%;
+    margin-bottom: 3%;
+    &:nth-child(1) {
         clear: left;
     }
 }
@@ -535,9 +541,11 @@ $pad:10px;
     -ms-transition: all 500ms ease-in;
     -o-transition: all 500ms ease-in;
     transition: all 500ms ease-in;
-    &: hover {
-        -webkit-box-shadow: 0 0 10px 7px #828282;
-        box-shadow: 0 0 10px 7px #828282;
+    cursor: pointer;
+    box-shadow: 0 1.5px 4px rgba(0, 0, 0, 0.24), 0 1.5px 6px rgba(0, 0, 0, 0.12);
+    &:hover {
+        -webkit-box-shadow: 0 3px 12px rgba(0, 0, 0, 0.23), 0 3px 12px rgba(0, 0, 0, 0.16);
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.23), 0 3px 12px rgba(0, 0, 0, 0.16);
     }
 }
 .Active {
@@ -554,14 +562,14 @@ $pad:10px;
     cursor: pointer;
 }
 $size:2.3em;
- #ai {
+#ai {
     position: relative;
     display: inline;
     width: $size;
     height: $size;
     margin-left: 20px;
     cursor: pointer;
-    &: before {
+    &:before {
         -webkit-transition: all 300ms ease-in-out;
         -moz-transition: all 300ms ease-in-out;
         -ms-transition: all 300ms ease-in-out;
@@ -576,7 +584,7 @@ $size:2.3em;
         border: 2px solid #f2f2f2;
     }
     &:checked {
-        &: before {
+        &:before {
             -moz-transform: rotate(-45deg);
             -webkit-transform: rotate(-45deg);
             -o-transform: rotate(-45deg);
@@ -818,5 +826,11 @@ $size:2.3em;
     100% {
         -webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
         transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+    }
+}
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait) {
+    html, body {
+        overflow: hidden;
+        padding: 0;
     }
 }
