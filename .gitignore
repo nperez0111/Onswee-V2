@@ -9,4 +9,3 @@ test/bower_components
 *.db
 ehthumbs.db
 build/
-dist/
