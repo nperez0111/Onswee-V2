@@ -210,16 +210,16 @@ var game = {
         }
         var board = this.board;
         if ( board[ from ] == player && board[ to ] === null ) {
-            if ( from == this.center ) {
-
-            } else {
-                for ( var i = 0, testMoves = this.illegalMovements[ from ], l = testMoves.length; i < l; i++ ) {
-                    if ( testMoves[ i ] == to ) {
+            if ( from !== this.center ) {
+                var flag=false;
+                this.illegalMovements[ from ].foreach(function( cur ) {
+                    if ( cur == to ) {
                         this.illegal( "Sorry, you can't move there!" );
                         console.log( "Attempted to move from %s to %s with player %s", from, to, player ? 'X' : 'O' );
-                        return;
+                        flag=true;
                     }
-                }
+                });
+                if(flag){return;}
             }
 
 
