@@ -1,7 +1,8 @@
+$icon-font-path: "../bower_components/bootstrap-sass/assets/fonts/bootstrap/";
+$brand-primary:#456;
 // bower:scss
-@import "../bower_components/bootstrap-sass-official/vendor/assets/stylesheets/bootstrap.scss";
+@import "bower_components/bootstrap-sass/assets/stylesheets/_bootstrap.scss";
 // endbower
-@import "../bower_components/normalize.css/nomalize.css";
 @mixin noselect() {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
