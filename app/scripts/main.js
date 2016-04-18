@@ -1216,14 +1216,13 @@ var game = {
     },
     //chooses Best Location to move to for a player
     trimArrangements: function ( player, board ) {
-        var boardy = board.clone(),
-            bool = this.turns < 12;
-        for ( var i = boardy.length; i--; ) {
-            if ( this.canCompleteALineIn( !player, boardy[ i ] ) || ( bool && this.hasIllegalLineIn( player, boardy[ i ] ) ) || this.isSameMoveAsLastTime( player, boardy[ i ] ) ) {
-                boardy.splice( i, 1 );
+        var bool = this.turns < 12;
+        board.filter( function ( cur ) {
+            if ( this.canCompleteALineIn( !player, cur ) || ( bool && this.hasIllegalLineIn( player, cur ) ) || this.isSameMoveAsLastTime( player, cur ) ) {
+                return false;
             }
-        }
-        return boardy;
+            return true;
+        } );
     },
     //trims down unneccesary arrangements
     isSameMoveAsLastTime: function ( player, board ) {
@@ -1241,25 +1240,14 @@ var game = {
     findBestAverage: function ( choiceInFirstRound, thirdRoundArr ) {
         var c = 0,
             b = 0;
-
-        for ( var i = 0, playersFutureMoves = thirdRoundArr, l = playersFutureMoves.length; i < l; i++ ) {
-            if ( playersFutureMoves[ i ][ 1 ] == choiceInFirstRound ) {
-                c += playersFutureMoves[ i ][ 0 ];
-                b++;
-            }
-        }
-        return this.toInt( c / b );
+        return this.averageArr( thirdRoundArr.filter( function ( cur ) {
+            return cur[ 1 ] == choiceInFirstRound;
+        } ) );
     },
     averageArr: function ( arr ) {
-        var c = 0,
-            b = 0;
-        for ( var i = 0, array = arr, l = array.length; i < l; i++ ) {
-            c += array[ i ][ 0 ];
-            b++;
-        }
-
-        return this.toInt( c / b );
-
+        return this.toInt( arr.reduce( function ( prev, cur, i, arr ) {
+            return prev + cur[ 0 ];
+        }, 0 ) / arr.length );
     },
     //averages ranks for choose best move
     moveIntoAnyOpenPos: function ( player ) {
@@ -1306,13 +1294,10 @@ var game = {
 
     },
     findInArrOfArrs: function ( num, arr ) {
-        for ( var r = 0, lr = arr.length; r < lr; r++ ) {
-
-            if ( arr[ r ][ 0 ] == num ) {
-                return arr[ r ][ 1 ];
-            }
-
-        }
+        var ret = arr.filter( function ( cur, i ) {
+            return cur[ 0 ] == num
+        } )[ 0 ];
+        return ret ? ret[ 1 ] : ret;
     }
 };
 var ractive, settings;
@@ -1333,14 +1318,10 @@ function buildractive() {
             selected: -1,
             score: game.score,
             isActive: function ( num ) {
-                for ( var i = 0; i < this.get( 'moveables' ).length; i++ ) {
+                return this.get( 'moveables' ).filter( function ( cur ) {
+                    return cur == num;
+                } ).length > 0;
 
-                    if ( num == this.get( 'moveables' )[ i ] ) {
-                        return true;
-                    }
-                }
-
-                return false;
             }
 
 
