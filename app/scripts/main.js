@@ -124,17 +124,22 @@ function select( num ) {
 
     } else if ( bool ) {
         //move to num if it is one of the move locs
-
-        for ( var co = 0, allo = game.allPosMoveLocs[ snum ], clo = allo.length; co < clo; co++ ) {
-            if ( game.board[ allo[ co ] ] === null ) {
+        var flag = false;
+        game.allPosMoveLocs[ snum ].forEach( function ( cur, i ) {
+            if ( game.board[ cur ] === null ) {
                 game.moveFromTo( game.board[ snum ], snum, num );
                 ractive.set( 'selected', -1 );
                 ractive.set( 'moveables', [] );
-                if ( game.board == [ null, null, null, null, null, null, null, null, null ] ) {
+                if ( game.board.every( function ( a ) {
+                        return a == null;
+                    } ) ) {
                     game.justWon = true;
                 }
-                return;
+                flag = true;
             }
+        } );
+        if ( flag ) {
+            return;
         }
 
     }
@@ -211,15 +216,17 @@ var game = {
         var board = this.board;
         if ( board[ from ] == player && board[ to ] === null ) {
             if ( from !== this.center ) {
-                var flag=false;
-                this.illegalMovements[ from ].foreach(function( cur ) {
+                var flag = false;
+                this.illegalMovements[ from ].forEach( function ( cur ) {
                     if ( cur == to ) {
                         this.illegal( "Sorry, you can't move there!" );
                         console.log( "Attempted to move from %s to %s with player %s", from, to, player ? 'X' : 'O' );
-                        flag=true;
+                        flag = true;
                     }
-                });
-                if(flag){return;}
+                } );
+                if ( flag ) {
+                    return;
+                }
             }
 
 
@@ -512,11 +519,11 @@ var game = {
         }
         this.animationIsGoing = true;
         console.log( errorMsg );
-
-        $( '#messageArea' ).text( errorMsg );
-        $( '#messageArea' ).show( 'size', {}, 800, function () {
-            $( '#messageArea' ).delay( 1900 ).hide( 'drop', {}, 1000, function () {
-                $( '#messageArea' ).text( '' );
+        var $el = $( '#messageArea' );
+        $el.text( errorMsg );
+        $el.show( 800, 'swing', function () {
+            $el.delay( 1900 ).hide( 'drop', {}, 1000, function () {
+                $el.text( '' );
                 game.animationIsGoing = false;
             } );
 
@@ -742,26 +749,22 @@ var game = {
         if ( arr1.length !== arr2.length ) {
             return false;
         }
-        for ( var i = arr1.length; i--; ) {
-            if ( arr1[ i ] !== arr2[ i ] ) {
-                return false;
-            }
-        }
-
-        return true;
+        return arr1.every( function ( x, i ) {
+            return x == arr2[ i ];
+        } );
     },
     //if two arrays are equal returns true
     twoOutOfThree: function ( arr1, arr2 ) {
         var count = 0,
             c = 0;
-        for ( var i = arr1.length; i--; ) {
-            if ( arr1[ i ] !== arr2[ i ] ) {
+        arr1.clone().reverse().forEach( function ( cur, i ) {
+            if ( cur !== arr2[ i ] ) {
                 count++;
-                c = i;
+                c = cur;
             }
-        }
+        } )
 
-        return count == 1 ? arr1[ c ] : -1;
+        return count == 1 ? c : -1;
     },
     //if two arrays are equal returns true
     choosePreffered: function ( player, board ) {
@@ -960,16 +963,17 @@ var game = {
 
     changeBetween: function ( prev, newy ) {
         var re = [];
-        for ( var p = 0, pl = prev.length; p < pl; p++ ) {
 
-            if ( prev[ p ] === null && prev[ p ] !== newy[ p ] ) {
-                re[ 1 ] = p;
+        prev.forEach( function ( cur, i ) {
+            if ( cur !== newy[ i ] ) {
+                if ( cur === null ) {
+                    re[ 1 ] = i;
+                }
+                if ( cur !== null ) {
+                    re[ 0 ] = i;
+                }
             }
-            if ( prev[ p ] !== null && prev[ p ] !== newy[ p ] ) {
-                re[ 0 ] = p;
-            }
-
-        }
+        } );
         return re;
     },
     //returns the changebetween two boards returned in format [from,to]
@@ -1295,7 +1299,7 @@ var game = {
     },
     findInArrOfArrs: function ( num, arr ) {
         var ret = arr.filter( function ( cur, i ) {
-            return cur[ 0 ] == num
+            return cur[ 0 ] == num;
         } )[ 0 ];
         return ret ? ret[ 1 ] : ret;
     }
