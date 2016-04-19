@@ -1334,6 +1334,18 @@ function buildractive() {
     settings = new Ractive( {
         el: 'settingsPage',
         template: '#settings',
+        oninit: function () {
+            settings.observe( 'player1', function ( newValue, oldValue ) {
+                game.setName( newValue, true );
+                settings.set( 'player1', newValue );
+                settings.update();
+            } );
+            settings.observe( 'player2', function ( newValue, oldValue ) {
+                game.setName( newValue, false );
+                settings.set( 'player2', newValue );
+                settings.update();
+            } );
+        },
         data: {
             player1: game.player1Name,
             player2: game.player2Name,
@@ -1343,16 +1355,7 @@ function buildractive() {
             ai: game.ai,
         }
     } );
-    settings.observe( 'player1', function ( newValue, oldValue ) {
-        game.setName( newValue, true );
-        settings.set( 'player1', newValue );
-        settings.update();
-    } );
-    settings.observe( 'player2', function ( newValue, oldValue ) {
-        game.setName( newValue, false );
-        settings.set( 'player2', newValue );
-        settings.update();
-    } );
+
 }
 
 function dragAndDrop() {
