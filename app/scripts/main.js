@@ -125,20 +125,19 @@ function select( num ) {
     } else if ( bool ) {
         //move to num if it is one of the move locs
         var flag = false;
-        game.allPosMoveLocs[ snum ].forEach( function ( cur, i ) {
-            if ( game.board[ cur ] === null ) {
-                game.moveFromTo( game.board[ snum ], snum, num );
-                ractive.set( 'selected', -1 );
-                ractive.set( 'moveables', [] );
-                if ( game.board.every( function ( a ) {
-                        return a == null;
-                    } ) ) {
-                    game.justWon = true;
+        if ( game.retRes( game.allPosMoveLocs[ snum ], ( function ( cur, i ) {
+                if ( game.board[ cur ] === null ) {
+                    game.moveFromTo( game.board[ snum ], snum, num );
+                    ractive.set( 'selected', -1 );
+                    ractive.set( 'moveables', [] );
+                    if ( game.board.every( function ( a ) {
+                            return a == null;
+                        } ) ) {
+                        game.justWon = true;
+                    }
+                    return true;
                 }
-                flag = true;
-            }
-        } );
-        if ( flag ) {
+            } ) ) ) {
             return;
         }
 
@@ -216,15 +215,13 @@ var game = {
         var board = this.board;
         if ( board[ from ] == player && board[ to ] === null ) {
             if ( from !== this.center ) {
-                var flag = false;
-                this.illegalMovements[ from ].forEach( function ( cur ) {
-                    if ( cur == to ) {
-                        this.illegal( "Sorry, you can't move there!" );
-                        console.log( "Attempted to move from %s to %s with player %s", from, to, player ? 'X' : 'O' );
-                        flag = true;
-                    }
-                } );
-                if ( flag ) {
+                if ( this.retRes( this.illegalMovements[ from ], ( ( cur ) => {
+                        if ( cur == to ) {
+                            this.illegal( "Sorry, you can't move there!" );
+                            console.log( "Attempted to move from %s to %s with player %s", from, to, player ? 'X' : 'O' );
+                            return true;
+                        }
+                    } ) ) ) {
                     return;
                 }
             }
@@ -720,6 +717,16 @@ var game = {
             [ 1, 4, 6 ]
         ] //end of side traps
     ],
+    retRes: function ( arr, func ) {
+        var ret = false;
+        arr.forEach( ( cur, i, arr ) => {
+            var temp = func( cur, i, arr );
+            if ( temp ) {
+                ret = temp;
+            }
+        } );
+        return ret;
+    },
     //arrangements for trapping [0] is the other player who needs to move [1] is player checking
 
     ifCanTrap: function ( player, board ) {
@@ -771,14 +778,9 @@ var game = {
         if ( board[ this.center ] === null ) {
             return this.center;
         }
-        var arr = [];
-        for ( var i = 8; i--; ) {
-            var bcopy = board.clone();
-            bcopy[ i ] = player;
-            if ( board[ i ] === null && ( this.turns < 4 || !this.hasIllegalLineIn( player, bcopy ) ) ) {
-                arr.push( i );
-            }
-        }
+        var arr = board.filter( ( cur, i ) => {
+            return ( cur === null && ( this.turns < 4 || !this.hasIllegalLineIn( player, board.clone() ) ) );
+        } );
 
         return arr[ this.toInt( Math.random() * arr.length ) ];
     },
@@ -789,37 +791,28 @@ var game = {
     //converts to int
 
     hasPossibleLineIn: function ( player, board ) {
+        var c = false;
         if ( this.hasCenterIn( player, board ) ) {
-            var pos = this.findPlayersPosIn( player, board );
-            for ( var i = 0, l = pos.length; i < l; i++ ) {
-                if ( pos[ i ] !== this.center ) {
-                    for ( var val = 4, lval = this.pairArrangements.length; val < lval; val++ ) {
-                        if ( board[ this.pairArrangements[ val ][ 0 ] ] == player && board[ this.pairArrangements[ val ][ 1 ] ] == player ) {
-                            if ( val % 2 === 0 ) {
-                                if ( board[ this.pairArrangements[ val + 1 ][ 1 ] ] === null ) {
-                                    return val;
-                                }
-                            } else {
-                                if ( board[ this.pairArrangements[ val - 1 ][ 0 ] ] === null ) {
-                                    return val;
-                                }
-                            }
-                        }
+            c = this.retRes( this.pairArrangements.filter( ( c, i ) => {
+                return i > 3;
+            } ), ( cur, i ) => {
+                var val = 4 + i;
+                if ( board[ cur[ 0 ] ] == player && board[ cur[ 1 ] ] == player ) {
+
+                    if ( board[ this.pairArrangements[ -2 * ( val % 2 ) + val + 1 ][ -2 * ( val % 2 ) + 1 ] ] === null ) {
+                        return val;
                     }
                 }
-            }
+            } );
+
 
         }
-
-        for ( var il = 0, p = this.pairArrangements, b = board, le = p.length; il < le; il++ ) {
-
-            if ( b[ p[ il ][ 0 ] ] == player && b[ p[ il ][ 1 ] ] == player ) {
-                //board positions value==player continue to check next
-                return il;
+        return c != false ? c : false || this.retRes( this.pairArrangements, ( cur, i ) => {
+            if ( board[ cur[ 0 ] ] == player && board[ cur[ 1 ] ] == player ) {
+                return i;
             }
+        } ) || 12;
 
-        }
-        return 12;
     },
     //player is player board is in what board, returns the index at which the pairArrangment is found or 12 if none is found if the player being questioned has two in a line on the board
 
@@ -838,10 +831,7 @@ var game = {
 
         var cur = this.winningArrangements[ pos[ 0 ] ];
 
-        if ( cur[ 1 ] == pos[ 1 ] && cur[ 2 ] == pos[ 2 ] ) {
-            return true;
-        }
-        return false;
+        return ( cur[ 1 ] == pos[ 1 ] && cur[ 2 ] == pos[ 2 ] );
 
     },
     //returns true if specified player has a line through the center in the specified board
