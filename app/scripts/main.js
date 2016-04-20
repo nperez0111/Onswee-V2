@@ -717,9 +717,12 @@ var game = {
             [ 1, 4, 6 ]
         ] //end of side traps
     ],
-    retRes: function ( arr, func ) {
+    retRes: function ( arr, func, brek = false ) {
         var ret = false;
         arr.forEach( ( cur, i, arr ) => {
+            if ( brek && ret !== false ) {
+                return;
+            }
             var temp = func( cur, i, arr );
             if ( temp ) {
                 ret = temp;
@@ -969,19 +972,15 @@ var game = {
     //returns the changebetween two boards returned in format [from,to]
 
     getPossibleBoardArrangementsFrom: function ( player, board ) {
-        var arr = [];
-        for ( var i = 0, piecesPos = this.findPlayersPosIn( player, board ), l = piecesPos.length; i < l; i++ ) {
-
-            for ( var m = 0, moveLocs = this.allPosMoveLocs[ piecesPos[ i ] ], length = moveLocs.length; m < length; m++ ) {
-                if ( this.canMoveFromTo( player, board, piecesPos[ i ], moveLocs[ m ] ) ) {
-                    var curBoard = this.hypotheticalMoveInFromTo( player, board, piecesPos[ i ], moveLocs[ m ] );
-                    //this.trackcurrent(curBoard);
-                    arr.push( curBoard );
-                }
-            }
-
-        }
-        return arr;
+        return this.findPlayersPosIn( player, board ).map( ( from ) => {
+            return this.allPosMoveLocs[ from ].filter( to => {
+                return this.canMoveFromTo( player, board, from, to );
+            } ).map( to => {
+                return this.hypotheticalMoveInFromTo( player, board, from, to );
+            } )
+        } ).reduce( ( prev, newy ) => {
+            return prev.concat( newy );
+        }, [] );
 
     },
     //returns an array of possible board arrangements
@@ -1226,10 +1225,7 @@ var game = {
         if ( l < 7 ) {
             return false;
         }
-        if ( moves[ l ][ 0 ] == change[ 1 ] && moves[ l ][ 1 ] == change[ 0 ] ) {
-            return true;
-        }
-        return false;
+        return ( moves[ l ][ 0 ] == change[ 1 ] && moves[ l ][ 1 ] == change[ 0 ] );
     },
     findBestAverage: function ( choiceInFirstRound, thirdRoundArr ) {
         var c = 0,
@@ -1245,45 +1241,29 @@ var game = {
     },
     //averages ranks for choose best move
     moveIntoAnyOpenPos: function ( player ) {
-        console.log( 'move into any open spot called' );
-        var possibles = this.findPlayersPosIn( player, this.board );
+        console.log( 'Move into any Open Position Called.' );
 
-        for ( var i = 0; i < possibles.length; i++ ) {
-
-            if ( this.board[ this.allPosMoveLocs[ possibles[ i ] ][ 0 ] ] === null && !this.hasIllegalLineIn( player, this.hypotheticalMoveInFromTo( player, this.board, possibles[ i ], this.allPosMoveLocs[ possibles[ i ] ][ 0 ] ) ) ) {
-                this.moveFromTo( player, possibles[ i ], this.allPosMoveLocs[ possibles[ i ] ][ 0 ] );
-                return;
-            }
-            if ( this.board[ this.allPosMoveLocs[ possibles[ i ] ][ 1 ] ] === null && !this.hasIllegalLineIn( player, this.hypotheticalMoveInFromTo( player, this.board, possibles[ i ], this.allPosMoveLocs[ possibles[ i ] ][ 1 ] ) ) ) {
-                this.moveFromTo( player, possibles[ i ], this.allPosMoveLocs[ possibles[ i ] ][ 1 ] );
-                return;
-            }
-            if ( this.board[ this.allPosMoveLocs[ possibles[ i ] ][ 2 ] ] === null && !this.hasIllegalLineIn( player, this.hypotheticalMoveInFromTo( player, this.board, possibles[ i ], this.allPosMoveLocs[ possibles[ i ] ][ 2 ] ) ) ) {
-                this.moveFromTo( player, possibles[ i ], this.allPosMoveLocs[ possibles[ i ] ][ 2 ] );
-                return;
-            }
-
+        if ( this.retRes( this.findPlayersPosIn( player, this.board ), ( ( cur, i ) => {
+                if ( this.retRes( [ 0, 1, 2 ], num => {
+                        if ( this.board[ this.allPosMoveLocs[ cur ][ num ] ] === null && !this.hasIllegalLineIn( player, this.hypotheticalMoveInFromTo( player, this.board, cur, this.allPosMoveLocs[ cur ][ num ] ) ) ) {
+                            this.moveFromTo( player, cur, this.allPosMoveLocs[ cur ][ num ] );
+                            return true;
+                        }
+                    }, true ) ) {
+                    return true;
+                }
+            } ), true ) ) {
+            return true;
         }
-        if ( this.board[ this.allPosMoveLocs[ 4 ][ 3 ] ] === null && !this.hasIllegalLineIn( player, this.hypotheticalMoveInFromTo( player, this.board, 4, 3 ) ) ) {
-            this.moveFromTo( player, 4, this.allPosMoveLocs[ 4 ][ 3 ] );
-            return;
-        } else if ( this.board[ this.allPosMoveLocs[ 4 ][ 4 ] ] === null && !this.hasIllegalLineIn( player, this.hypotheticalMoveInFromTo( player, this.board, 4, 4 ) ) ) {
-            this.moveFromTo( player, 4, this.allPosMoveLocs[ 4 ][ 4 ] );
-            return;
-        } else if ( this.board[ this.allPosMoveLocs[ 4 ][ 5 ] ] === null && !this.hasIllegalLineIn( player, this.hypotheticalMoveInFromTo( player, this.board, 4, 5 ) ) ) {
-            this.moveFromTo( player, 4, this.allPosMoveLocs[ 4 ][ 5 ] );
-            return;
-        } else if ( this.board[ this.allPosMoveLocs[ 4 ][ 6 ] ] === null && !this.hasIllegalLineIn( player, this.hypotheticalMoveInFromTo( player, this.board, 4, 6 ) ) ) {
-            this.moveFromTo( player, 4, this.allPosMoveLocs[ 4 ][ 6 ] );
-            return;
-        } else if ( this.board[ this.allPosMoveLocs[ 4 ][ 7 ] ] === null && !this.hasIllegalLineIn( player, this.hypotheticalMoveInFromTo( player, this.board, 4, 7 ) ) ) {
-            this.moveFromTo( player, 4, this.allPosMoveLocs[ 4 ][ 7 ] );
-            return;
-        } else if ( this.board[ this.allPosMoveLocs[ 4 ][ 8 ] ] === null && !this.hasIllegalLineIn( player, this.hypotheticalMoveInFromTo( player, this.board, 4, 8 ) ) ) {
-            this.moveFromTo( player, 4, this.allPosMoveLocs[ 4 ][ 8 ] );
-            return;
+        var f = [ 3, 4, 5, 6, 7, 8 ].filter( cur => {
+            return this.board[ this.allPosMoveLocs[ 4 ][ cur ] ] === null && !this.hasIllegalLineIn( player, this.hypotheticalMoveInFromTo( player, this.board, 4, cur ) )
+        } )[ 0 ];
+        if ( f ) {
+            this.moveFromTo( player, 4, this.allPosMoveLocs[ 4 ][ f ] );
+            return true;
         } else {
-            console.log( 'Error: No open position found or something is really messed up!' );
+            console.warn( 'Error: No open position found or something is really messed up!' );
+            return false;
         }
 
     },
@@ -1325,15 +1305,15 @@ function buildractive() {
         el: 'settingsPage',
         template: '#settings',
         oninit: function () {
-            settings.observe( 'player1', function ( newValue, oldValue ) {
+            this.observe( 'player1', function ( newValue, oldValue ) {
                 game.setName( newValue, true );
                 settings.set( 'player1', newValue );
-                settings.update();
+                this.update();
             } );
-            settings.observe( 'player2', function ( newValue, oldValue ) {
+            this.observe( 'player2', function ( newValue, oldValue ) {
                 game.setName( newValue, false );
-                settings.set( 'player2', newValue );
-                settings.update();
+                this.set( 'player2', newValue );
+                this.update();
             } );
         },
         data: {
