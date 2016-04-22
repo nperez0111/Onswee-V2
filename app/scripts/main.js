@@ -184,14 +184,13 @@ function drop( ev ) {
     }
 
 }
-
-var game = {
+var game = Ractive.extend( {
 
     init: function () {
-        this.board = [ null, null, null, null, null, null, null, null, null ];
-        this.turns = 0;
-        this.moves = [];
-        if ( !this.justWon && this.load() ) {
+        this.set( "board", [ null, null, null, null, null, null, null, null, null ] );
+        this.set( "turns", 0 );
+        this.set( "moves", [] );
+        if ( !this.get( "justWon" ) && this.load() ) {
             //any post load
         } else {
             if ( !supportsLocalStorage() ) {
@@ -205,14 +204,14 @@ var game = {
     board: [ null, null, null, null, null, null, null, null, null ],
     //9 possible positions Null==Empty, True==Player1, False==Player2
     getEmpties: function () {
-        var b = this.board;
+        var b = this.get( "board" );
         return [ b[ 0 ] !== null, b[ 1 ] !== null, b[ 2 ] !== null, b[ 3 ] !== null, b[ 4 ] !== null, b[ 5 ] !== null, b[ 6 ] !== null, b[ 7 ] !== null, b[ 8 ] !== null ];
     },
     moveFromTo: function ( player, from, to ) {
-        if ( this.turns < 12 && this.moveFromToWithRules( player, from, to ) === false ) {
+        if ( this.get( "turns" ) < 12 && this.moveFromToWithRules( player, from, to ) === false ) {
             return false;
         }
-        var board = this.board;
+        var board = this.get( "board" );
         if ( board[ from ] == player && board[ to ] === null ) {
             if ( from !== this.center ) {
                 if ( this.retRes( this.illegalMovements[ from ], ( ( cur ) => {
@@ -264,7 +263,7 @@ var game = {
     // to fix browser eager click post win 
 
     moveFromToWithRules: function ( player, from, to ) {
-        if ( this.hasIllegalLineIn( player, this.hypotheticalMoveInFromTo( player, this.board, from, to ) ) ) {
+        if ( this.hasIllegalLineIn( player, this.hypotheticalMoveInFromTo( player, this.get( "board" ), from, to ) ) ) {
             this.illegal( "Sorry, during these turns you can't make a line of any kind" );
 
             return false;
@@ -344,11 +343,11 @@ var game = {
             return false;
         }
 
-        localStorage.isPlaying = this.turns > 0 ? true : false;
+        localStorage.isPlaying = this.get( "turns" ) > 0 ? true : false;
         //store things if game is in progress
         localStorage.setObj( 'board', game.board );
-        localStorage.turn = this.turns;
-        localStorage.setObj( 'moves', this.moves );
+        localStorage.turn = this.get( "turns" );
+        localStorage.setObj( 'moves', this.get( "moves" ) );
         localStorage.setObj( 'icons', [ game.icon, game.iconPossibles ] );
         localStorage.ai = this.ai;
 
@@ -360,18 +359,18 @@ var game = {
     //contains all moves within a game for storage and playback on reset, first element contains the initial board on which to apply the moves, moves.length+4 is how many turns passed in the game
     storeMoves: function ( from, to ) {
 
-        this.moves.push( [ from, to ] );
+        this.get( "moves" ).push( [ from, to ] );
 
     },
     undo: function () {
 
-        if ( this.moves.length < 2 ) {
+        if ( this.get( "moves" ).length < 2 ) {
             return false;
         }
 
-        var last = this.moves.pop();
-        this.turns--;
-        this.moveFromTo( this.turns % 2 === 0, last[ 1 ], last[ 0 ] );
+        var last = this.get( "moves" ).pop();
+        this.get( "turns" ) --;
+        this.moveFromTo( this.get( "turns" ) % 2 === 0, last[ 1 ], last[ 0 ] );
         this.save();
         this.updateHUD();
 
@@ -383,9 +382,9 @@ var game = {
             return false;
         }
         this.ai = ( localStorage.ai == 'true' );
-        this.board = localStorage.getObj( 'board' );
-        this.turns = this.toInt( localStorage.turn );
-        this.moves = localStorage.getObj( 'moves' );
+        this.get( "board" ) = localStorage.getObj( 'board' );
+        this.get( "turns" ) = this.toInt( localStorage.turn );
+        this.get( "moves" ) = localStorage.getObj( 'moves' );
         this.icon = localStorage.getObj( 'icons' ) ? localStorage.getObj( 'icons' )[ 0 ] : this.icon;
         this.iconPossibles = localStorage.getObj( 'icons' ) ? localStorage.getObj( 'icons' )[ 1 ] : this.iconPossibles;
         this.score = localStorage.getObj( 'score' ) ? localStorage.getObj( 'score' ) : [ 0, 0 ];
@@ -422,15 +421,15 @@ var game = {
     },
     updateHUD: function () {
 
-        if ( this.turns == 4 && this.score == [ 0, 0 ] ) {
+        if ( this.get( "turns" ) == 4 && this.score == [ 0, 0 ] ) {
             this.illegal( "Remember: You can't place in a line yet!" );
-        } else if ( this.turns == 6 && this.score == [ 0, 0 ] ) {
+        } else if ( this.get( "turns" ) == 6 && this.score == [ 0, 0 ] ) {
             this.illegal( "Remember: You can't make any straight lines yet!" );
-        } else if ( this.turns == 12 ) {
+        } else if ( this.get( "turns" ) == 12 ) {
             this.illegal( "You can make lines!" );
         }
 
-        this.trackcurrent( this.board );
+        this.trackcurrent( this.get( "board" ) );
         ractive.update();
         settings.update();
         settings.set( {
@@ -782,7 +781,7 @@ var game = {
             return this.center;
         }
         var arr = board.filter( ( cur, i ) => {
-            return ( cur === null && ( this.turns < 4 || !this.hasIllegalLineIn( player, board.clone() ) ) );
+            return ( cur === null && ( this.get( "turns" ) < 4 || !this.hasIllegalLineIn( player, board.clone() ) ) );
         } );
 
         return arr[ this.toInt( Math.random() * arr.length ) ];
@@ -840,7 +839,7 @@ var game = {
     //returns true if specified player has a line through the center in the specified board
 
     hasIllegalLineIn: function ( player, board ) {
-        if ( this.turns > 12 ) {
+        if ( this.get( "turns" ) > 12 ) {
             return false;
         }
         for ( var i = 0, b = board, line = this.winningArrangements.concat( this.illegalArrangements ), l = line.length; i < l; i++ ) {
@@ -875,12 +874,12 @@ var game = {
             if ( possibles[ i ] !== this.pairArrangements[ pairArrOutPut ][ 0 ] && possibles[ i ] !== this.pairArrangements[ pairArrOutPut ][ 1 ] ) {
                 if ( board[ this.center ] === null && ( pairArrOutPut < 4 ) ) {
                     this.moveFromTo( player, possibles[ i ], this.center );
-                    this.turns = 0;
+                    this.get( "turns" ) = 0;
                     return;
                 }
 
                 this.moveFromTo( player, possibles[ i ], this.pairArrangements[ ( pairArrOutPut % 2 ) === 0 ? pairArrOutPut + 1 : pairArrOutPut - 1 ][ ( pairArrOutPut % 2 ) === 0 ? 1 : 0 ] );
-                this.turns = 0;
+                this.get( "turns" ) = 0;
                 return;
 
             }
@@ -1043,15 +1042,15 @@ var game = {
     },
     //logs current board to console
     placePiece: function ( player, pos ) {
-        if ( this.turns > 5 ) {
+        if ( this.get( "turns" ) > 5 ) {
             return false;
         }
-        if ( this.board[ pos ] === null && ( this.hasIllegalLineIn( player, this.hypotheticalMoveInFromTo( player, this.board.clone(), pos, pos ) ) === false ) ) {
-            this.board[ pos ] = player;
-            this.turns++;
+        if ( this.get( "board" )[ pos ] === null && ( this.hasIllegalLineIn( player, this.hypotheticalMoveInFromTo( player, this.get( "board" ).clone(), pos, pos ) ) === false ) ) {
+            this.get( "board" )[ pos ] = player;
+            this.get( "turns" ) ++;
             this.updateHUD();
-            if ( this.turns == 5 ) {
-                this.moves[ 0 ] = this.board;
+            if ( this.get( "turns" ) == 5 ) {
+                this.get( "moves" )[ 0 ] = this.get( "board" );
             }
             this.save();
             return true;
@@ -1062,19 +1061,19 @@ var game = {
     //places Piece in Board if possible
     aiTurn: function () {
         console.log( '----------------AI Turn' );
-        if ( this.turns > 5 ) {
+        if ( this.get( "turns" ) > 5 ) {
 
-            this.chooseBestMove( false, this.board );
+            this.chooseBestMove( false, this.get( "board" ) );
 
         } else {
-            this.placePiece( false, this.choosePreffered( false, this.board ) );
+            this.placePiece( false, this.choosePreffered( false, this.get( "board" ) ) );
         }
         this.updateHUD();
         console.log( '-------------------End AI turn' );
     },
     //AI's turn invoked after the user does their turn
     chooseBestMove: function ( player, board ) {
-        var bool = this.turns > 11,
+        var bool = this.get( "turns" ) > 11,
             canTrap = this.ifCanTrap( player, board );
         if ( bool && this.canCompleteALineIn( player, board ) ) {
             //complete the line then!
@@ -1094,63 +1093,63 @@ var game = {
             return;
         }
 
-        var InitialMovesPossible = this.trimArrangements( player, this.getPossibleBoardArrangementsFrom( player, this.board ) ),
+        var initialMovesPos = this.trimArrangements( player, this.getPossibleBoardArrangementsFrom( player, this.get( "board" ) ) ),
             OpponentsPossibleMoves = [],
             playersFutureMoves = [],
             initialMoveRankings = [],
             opponentMoveRankings = [],
             futureMoveRankings = [];
 
-        if ( InitialMovesPossible.length === 0 ) {
+        if ( initialMovesPos.length === 0 ) {
             this.moveIntoAnyOpenPos( player );
             console.log( "Welp We Lost :(" );
             return;
 
-        } else if ( InitialMovesPossible.length == 1 ) {
+        } else if ( initialMovesPos.length == 1 ) {
 
             //just skip we will move into that position that is possible now
             console.log( "Only one position to move to really :/" );
 
         } else {
 
-            for ( var first = 0, firstLength = InitialMovesPossible.length; first < firstLength; first++ ) {
+            initialMovesPos.forEach( ( initial, i ) => {
                 //console.log("Working the first round for the %s time",first+1);
                 //goes through first set
 
-
-                OpponentsPossibleMoves.push( this.getPossibleBoardArrangementsFrom( !player, InitialMovesPossible[ first ] ) );
+                var oppOptions = this.getPossibleBoardArrangementsFrom( !player, initial );
+                OpponentsPossibleMoves.push( oppOptions );
 
                 //console.log("Calculated and stored OpponentsPossibleMoves");
 
-                initialMoveRankings.push( [ this.rankBoard( player, InitialMovesPossible[ first ] ), first ] );
+                initialMoveRankings.push( [ this.rankBoard( player, initial ), first ] );
 
                 //console.log("Storing first rank for the %s time!",first);
 
 
-                for ( var second = 0, secondLength = OpponentsPossibleMoves[ first ].length; second < secondLength; second++ ) {
+                oppOptions.forEach( ( oppOption, i ) => {
 
-
+                    var playerSecond = this.trimArrangements( player, this.getPossibleBoardArrangementsFrom( player, oppOption ) );
                     //console.log("Looking through second possiblities for the %s time the length is %s",second, secondLength);
-                    playersFutureMoves.push( this.trimArrangements( player, this.getPossibleBoardArrangementsFrom( player, OpponentsPossibleMoves[ first ][ second ] ) ) );
+                    playersFutureMoves.push( playerSecond );
 
                     //console.log("Calculated and stored possibilities of Player for the %s time!",second);
 
-                    opponentMoveRankings.push( [ this.rankBoard( !player, OpponentsPossibleMoves[ first ][ second ] ), first ] );
+                    opponentMoveRankings.push( [ this.rankBoard( !player, oppOption ), first ] );
 
                     //console.log("Stored second rank at %s and %s",first,second);
 
-                    for ( var third = 0, thirdLength = playersFutureMoves[ second ].length; third < thirdLength; third++ ) {
+                    playerSecond.forEach( ( nextMove, i ) => {
                         futureMoveRankings.push( [ this.rankBoard( player, playersFutureMoves[ second ][ third ] ), first ] );
                         //console.log("Stored third rank at %s and %s and %s, with %s to go",first,second,third,thirdLength-third-1);
 
 
-                    }
+                    } )
 
 
-                }
+                } );
 
 
-            }
+            } );
             //console.log("We made it through that madness!!");
         }
 
@@ -1163,7 +1162,7 @@ var game = {
 
 
 
-        if ( InitialMovesPossible.length > 1 && ( sortedRanks[ sortedRanks.length - 1 ][ 0 ] ) > 0 ) {
+        if ( initialMovesPos.length > 1 && ( sortedRanks[ sortedRanks.length - 1 ][ 0 ] ) > 0 ) {
 
             //benefits the AI to Play for itself
             var firstBestMove = sortedRanks[ sortedRanks.length - 1 ][ 1 ];
@@ -1171,15 +1170,15 @@ var game = {
 
 
             if ( this.findBestAverage( firstBestMove, futureMoveRankings ) > this.findBestAverage( secondBestMove, futureMoveRankings ) ) {
-                change = this.changeBetween( this.board, InitialMovesPossible[ firstBestMove ] );
+                change = this.changeBetween( this.get( "board" ), initialMovesPos[ firstBestMove ] );
 
             } else {
-                change = this.changeBetween( this.board, InitialMovesPossible[ secondBestMove ] );
+                change = this.changeBetween( this.get( "board" ), initialMovesPos[ secondBestMove ] );
             }
 
 
-        } else if ( InitialMovesPossible.length == 1 ) {
-            change = this.changeBetween( this.board, InitialMovesPossible[ 0 ] );
+        } else if ( initialMovesPos.length == 1 ) {
+            change = this.changeBetween( this.get( "board" ), initialMovesPos[ 0 ] );
         } else {
             //screw the player
             console.log( "Let's screw e'm up!" );
@@ -1191,14 +1190,14 @@ var game = {
 
 
             //console.log("Worst Play is at %s with a ranking of %s and board config ",worstPlayForOpponent,initialMoveRankings[worstPlayForOpponent][0]);
-            //this.trackcurrent(InitialMovesPossible[worstPlayForOpponent]);
+            //this.trackcurrent(initialMovesPos[worstPlayForOpponent]);
 
             //console.log("Compared To:");
 
             //console.log("Second Worst Play is at %s with a ranking of %s and board config ",secondWorstPlayForOp,initialMoveRankings[secondWorstPlayForOp][0]);
-            //this.trackcurrent(InitialMovesPossible[secondWorstPlayForOp]);
+            //this.trackcurrent(initialMovesPos[secondWorstPlayForOp]);
 
-            change = initialMoveRankings[ worstPlayForOpponent ][ 0 ] > initialMoveRankings[ secondWorstPlayForOp ][ 0 ] ? this.changeBetween( this.board, InitialMovesPossible[ worstPlayForOpponent ] ) : this.changeBetween( this.board, InitialMovesPossible[ secondWorstPlayForOp ] );
+            change = initialMoveRankings[ worstPlayForOpponent ][ 0 ] > initialMoveRankings[ secondWorstPlayForOp ][ 0 ] ? this.changeBetween( this.get( "board" ), initialMovesPos[ worstPlayForOpponent ] ) : this.changeBetween( this.get( "board" ), initialMovesPos[ secondWorstPlayForOp ] );
             //console.log(change);
             //console.log("Lets do that move!");
 
@@ -1209,7 +1208,7 @@ var game = {
     },
     //chooses Best Location to move to for a player
     trimArrangements: function ( player, board ) {
-        var bool = this.turns < 12;
+        var bool = this.get( "turns" ) < 12;
         board.filter( function ( cur ) {
             if ( this.canCompleteALineIn( !player, cur ) || ( bool && this.hasIllegalLineIn( player, cur ) ) || this.isSameMoveAsLastTime( player, cur ) ) {
                 return false;
@@ -1219,9 +1218,9 @@ var game = {
     },
     //trims down unneccesary arrangements
     isSameMoveAsLastTime: function ( player, board ) {
-        var moves = this.moves,
+        var moves = this.get( "moves" ),
             l = moves.length - 2,
-            change = this.changeBetween( this.board, board );
+            change = this.changeBetween( this.get( "board" ), board );
         if ( l < 7 ) {
             return false;
         }
@@ -1243,9 +1242,9 @@ var game = {
     moveIntoAnyOpenPos: function ( player ) {
         console.log( 'Move into any Open Position Called.' );
 
-        if ( this.retRes( this.findPlayersPosIn( player, this.board ), ( ( cur, i ) => {
+        if ( this.retRes( this.findPlayersPosIn( player, this.get( "board" ) ), ( ( cur, i ) => {
                 if ( this.retRes( [ 0, 1, 2 ], num => {
-                        if ( this.board[ this.allPosMoveLocs[ cur ][ num ] ] === null && !this.hasIllegalLineIn( player, this.hypotheticalMoveInFromTo( player, this.board, cur, this.allPosMoveLocs[ cur ][ num ] ) ) ) {
+                        if ( this.get( "board" )[ this.allPosMoveLocs[ cur ][ num ] ] === null && !this.hasIllegalLineIn( player, this.hypotheticalMoveInFromTo( player, this.get( "board" ), cur, this.allPosMoveLocs[ cur ][ num ] ) ) ) {
                             this.moveFromTo( player, cur, this.allPosMoveLocs[ cur ][ num ] );
                             return true;
                         }
@@ -1256,7 +1255,7 @@ var game = {
             return true;
         }
         var f = [ 3, 4, 5, 6, 7, 8 ].filter( cur => {
-            return this.board[ this.allPosMoveLocs[ 4 ][ cur ] ] === null && !this.hasIllegalLineIn( player, this.hypotheticalMoveInFromTo( player, this.board, 4, cur ) )
+            return this.get( "board" )[ this.allPosMoveLocs[ 4 ][ cur ] ] === null && !this.hasIllegalLineIn( player, this.hypotheticalMoveInFromTo( player, this.get( "board" ), 4, cur ) )
         } )[ 0 ];
         if ( f ) {
             this.moveFromTo( player, 4, this.allPosMoveLocs[ 4 ][ f ] );
@@ -1273,7 +1272,8 @@ var game = {
         } )[ 0 ];
         return ret ? ret[ 1 ] : ret;
     }
-};
+} );
+
 var ractive, settings;
 
 function buildractive() {
@@ -1306,9 +1306,11 @@ function buildractive() {
         template: '#settings',
         oninit: function () {
             this.observe( 'player1', function ( newValue, oldValue ) {
-                game.setName( newValue, true );
-                settings.set( 'player1', newValue );
-                this.update();
+                if ( game ) {
+                    game.setName( newValue, true );
+                    settings.set( 'player1', newValue );
+                    this.update();
+                }
             } );
             this.observe( 'player2', function ( newValue, oldValue ) {
                 game.setName( newValue, false );
