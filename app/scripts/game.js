@@ -31,6 +31,9 @@ var game = Ractive.extend( {
             //these are all of the possible icons to choose from
             score: [ 0, 0 ],
             //scores of the two players
+            //Saves current state of the game each change that has been made to continue game later
+            moves: [],
+            ai: false
         }
         //Saves current turn, (turn%2==0) gives current players turn
     },
@@ -92,8 +95,9 @@ var game = Ractive.extend( {
 
 
     getEmpties: function () {
-        var b = this.get( "board" );
-        return [ b[ 0 ] !== null, b[ 1 ] !== null, b[ 2 ] !== null, b[ 3 ] !== null, b[ 4 ] !== null, b[ 5 ] !== null, b[ 6 ] !== null, b[ 7 ] !== null, b[ 8 ] !== null ];
+        return this.get( "board" ).map( ( cur ) => {
+            return cur !== null;
+        } );
     },
     moveFromTo: function ( player, from, to ) {
         if ( this.get( "turns" ) < 12 && this.moveFromToWithRules( player, from, to ) === false ) {
@@ -117,21 +121,21 @@ var game = Ractive.extend( {
 
             this.animateTo( from, to, function ( thi, from, to ) {
 
-                thi.board[ to ] = thi.board[ from ];
-                thi.board[ from ] = null;
-                thi.turns++;
+                thi.set( "board." + [ to ], thi.board[ from ] );
+                thi.set( "board." + [ from ], null );
+                thi.set( "turns", thi.get( "turns" ) + 1 );
                 thi.storeMoves( from, to );
-                console.log( "Successful Movement, From: %s To: %s For %s", from, to, thi.board[ to ] ? 'X' : 'O' );
+                console.log( "Successful Movement, From: %s To: %s For %s", from, to, thi.get( "board." + [ to ] ) ? 'X' : 'O' );
                 thi.trackcurrent( thi.board );
                 thi.updateHUD();
 
                 if ( thi.isWinIn( thi.board[ to ], thi.board ) ) {
-                    console.log( "%c%s Won!", "color:red;font-size:20px;", thi.getName( player ) );
-                    thi.illegal( thi.getName( thi.board[ to ] ) + ' won!' );
+                    console.log( "%c%s Won!", "color:red;font-size:20px;", thi.get( "getName" )( player ) );
+                    thi.illegal( thi.getName( thi.get( "board." + [ to ] ) ) + ' won!' );
                     thi.newGame( thi.board[ to ] );
-                } else if ( thi.ai && ( thi.turns % 2 === 1 ) ) {
+                } else if ( thi.get( "ai" ) && ( thi.get( "turns" ) % 2 === 1 ) ) {
                     setTimeout( function () {
-                        game.aiTurn();
+                        thi.aiTurn();
                     }, 2000 );
                 }
                 thi.save();
@@ -183,14 +187,11 @@ var game = Ractive.extend( {
         localStorage.turn = this.get( "turns" );
         localStorage.setObj( 'moves', this.get( "moves" ) );
         localStorage.setObj( 'icons', [ game.icon, game.iconPossibles ] );
-        localStorage.ai = this.ai;
+        localStorage.ai = this.get( "ai" );
 
 
 
     },
-    //Saves current state of the game each change that has been made to continue game later
-    moves: [],
-    //contains all moves within a game for storage and playback on reset, first element contains the initial board on which to apply the moves, moves.length+4 is how many turns passed in the game
     storeMoves: function ( from, to ) {
 
         this.get( "moves" ).push( [ from, to ] );
@@ -209,25 +210,21 @@ var game = Ractive.extend( {
         this.updateHUD();
 
     },
-    ai: false,
-    //stores if ai is playing or not
     load: function () {
         if ( !supportsLocalStorage() || !( localStorage.isPlaying ) || ( localStorage.isPlaying == 'false' ) ) {
             return false;
         }
-        this.ai = ( localStorage.ai == 'true' );
-        this.set( "board",
-            localStorage.getObj( 'board' ) );
-        this.set( "turns",
-            this.toInt( localStorage.turn ) );
+        this.set( "ai", ( localStorage.ai == 'true' ) );
+        this.set( "board", localStorage.getObj( 'board' ) );
+        this.set( "turns", this.toInt( localStorage.turn ) );
         this.set( "moves", localStorage.getObj( 'moves' ) );
-        this.icon = localStorage.getObj( 'icons' ) ? localStorage.getObj( 'icons' )[ 0 ] : this.icon;
-        this.iconPossibles = localStorage.getObj( 'icons' ) ? localStorage.getObj( 'icons' )[ 1 ] : this.iconPossibles;
-        this.score = localStorage.getObj( 'score' ) ? localStorage.getObj( 'score' ) : [ 0, 0 ];
+        this.set( "icon", localStorage.getObj( 'icons' )[ 0 ] || this.get( "icon" ) );
+        this.set( "iconPossibles", localStorage.getObj( 'icons' )[ 1 ] || this.get( "iconPossibles" ) );
+        this.set( "score", localStorage.getObj( 'score' ) || [ 0, 0 ] );
         var players = localStorage.getObj( 'players' );
         if ( players !== null ) {
-            this.player1Name = players[ 0 ];
-            this.player2Name = players[ 1 ];
+            this.set( "player1Name", players[ 0 ] );
+            this.set( "player2Name", players[ 1 ] );
         }
         return true;
 
