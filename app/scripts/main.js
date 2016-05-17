@@ -134,13 +134,11 @@ function buildgame() {
             this.observe('player1', function(newValue, oldValue) {
                 if (newValue && game) {
                     game.setName(newValue, true);
-                    this.set('player1', newValue);
                     this.update();
                 }
             });
             this.observe('player2', function(newValue, oldValue) {
                 game.setName(newValue, false);
-                this.set('player2', newValue);
                 this.update();
             });
         },

@@ -80,6 +80,7 @@ var Game = Ractive.extend({
         } else {
             this.set("player2Name", str);
         }
+        console.log(str);
         this.updateHUD();
         this.saveScore(null);
         //reflect Name change to HUD

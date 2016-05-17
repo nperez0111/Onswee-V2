@@ -29,8 +29,6 @@
     <!--[if lt IE 10]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
-
-
     <div class="container">
         <div class="header">
             <ul class="nav nav-pills pull-right">
@@ -45,25 +43,14 @@
             </ul>
             <h3 class="text-muted">OnSwee V2</h3>
         </div>
-
-
         <div id="outermessage">
             <div id="messageArea">
-
             </div>
         </div>
-
-
         <div id="settingsPage">
-
         </div>
-
-
         <div id="gameBoard">
-
         </div>
-
-
         <div id="rules">
             <h2>How to play:</h2>
             <p>
@@ -84,14 +71,10 @@
                 You are unable to move to any tile that is of the same color as the tile that you are moving your piece from. The tile you are moving to must also be touching the corner or edge that you're moving from.
             </p>
         </div>
-
         <footer>
             <p>Made by Nick The Sick</p>
         </footer>
-
     </div>
-
-
     <!-- build:js scripts/vendor.js -->
     <!-- bower:js -->
     <script src="/bower_components/jquery/dist/jquery.js"></script>
@@ -102,37 +85,28 @@
     <!-- endbower -->
     <!-- endbuild -->
     <script id='settings' type='text/ractive'>
-
         <div id="NameChooser">
             <h2>Edit Your Name</h2>
-
             <div class="group">
                 <input id="player1" type="text" maxlength="24" tabindex="1" oninput="setName(true)" required>
                 <span class="highlight"></span>
                 <span class="bar"></span>
                 <label for="player1">{{player1}} </label>
             </div>
-
             <div class="group">
                 <input id="player2" type="text" maxlength="24" tabindex="2" oninput="setName(false)" required>
                 <span class="highlight"></span>
                 <span class="bar"></span>
                 <label for="player2">{{player2}} </label>
             </div>
-
         </div>
         <div id="IsAI">
             <h2>CPU is: {{ai?'On':'Off'}}</h2>
             <input type='checkbox' id="ai" name="AI" checked="{{ai}}" onchange="setAI()">
         </div>
-
-
         <div id="IconChooser">
-
             <h2>Choose Your Icon</h2>
-
             <div id="playercont">
-
                 <h3 onclick="game.choosePlayer(true)" class="icoChoice ripplelink {{(player===0)?'Active':'Inactive'}}">
                         
                             <span class="icoChoice">
@@ -145,8 +119,6 @@
                             <img src="{{icon[0]}}" alt="Player 1 Icon">
                             
                         </h3>
-
-
                 <h3 onclick="game.choosePlayer(false)" class="icoChoice ripplelink {{(player==1)?'Active':'Inactive'}}">
                         
                             <span class="icoChoice">
@@ -158,117 +130,76 @@
                             
                             <img src="{{icon[1]}}" alt="Player 2 Icon">
                         </h3>
-
             </div>
-
             <div class="grid">
                 {{#each iconPossibles:i}}
-
                 <div onclick="game.setIcon({{player}},{{i}})" class="col-1-4 icoPossibles">
-
                     <img src="{{iconPossibles[i]}}" alt="Icon Number {{i+3}}" class="icons">
-
                 </div>
-
                 {{/each}}
             </div>
         </div>
-
     </script>
-
     <script id='template' type='text/ractive'>
         <div id="hud">
             <span id="turn">Round: {{((~~(turns / 2))+1)}}</span>
             <span id="undo" onclick="game.undo()">Undo Last move</span>
         </div>
-
         {{#each board:i}}
-
         <div class="boardPlaceHolder b{{(i+1)}} {{turn?'':'cursor'}} drop overHide" id="drop{{i}}" on-click="placePiece:{{player}}:{{i}}">
-
             <div class="wrap  {{(turn&&board[i]!==null) || isActive(i) ? 'ripplelink' : ''}}">
-
                 {{#if (board[i] !== null)}}
-
                 <div class="{{board[i] ? 'P1':'P2'}} {{selected==i?'Active clickable':''}} draggable  {{isActive(i) || (selected==-1&&board[i]==(turns%2==0)) ? 'clickable' : 'notClickable'}}" id="drag{{i}}" onclick="select({{i}})" style="{{'background-image:url('+icon[board[i]?0:1]}})">
-
-
-
                 </div>
-
                 {{else}} {{#if isActive(i)}}
                 <div class="empty Active clickable overHide" onclick="select({{i}})">
                     <div><span class="inner">Can move here</span>
                     </div>
                 </div>
                 {{/if}} {{/if}}
-
-
             </div>
         </div>
-
         {{/each}}
-
         <div id="curTurn">
-
             <div class="whosTurn ripplelink {{turns % 2 === 0 ? 'Active' : 'Inactive'}}">
-
                 <span class="whosTurn inner">
                         
-                            {{player1+(turns%2==0?"'s Turn ":"")}} : 
+                            {{player1Name+(turns%2==0?"'s Turn ":"")}} : 
                             
                             
                             <span class="score">{{score[0]==1?'1 Point':(score[0]+' Points')}}</span>
-
                 </span>
-
-
                 <img src="{{icon[0]}}" alt="Player 1 Icon" />
-
-
             </div>
-
-
-
-
             <div class="whosTurn ripplelink {{turns % 2 === 1 ? 'Active' : 'Inactive'}}">
-
                 <span class="whosTurn inner">
                         
-                            {{player2+(turns%2==1?"'s Turn ":"")}} :
+                            {{player2Name+(turns%2==1?"'s Turn ":"")}} :
                             
                             
                             <span class="score">{{score[1]==1?'1 Point':(score[1]+' Points')}}</span>
-
                 </span>
-
-
                 <img src="{{icon[1]}}" alt="Player 2 Icon" />
-
-
             </div>
-
         </div>&nbsp;
-
     </script>
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
     <script>
-        (function (i, s, o, g, r, a, m) {
-            i['GoogleAnalyticsObject'] = r;
-            i[r] = i[r] || function () {
-                (i[r].q = i[r].q || []).push(arguments)
-            }, i[r].l = 1 * new Date();
-            a = s.createElement(o),
-                m = s.getElementsByTagName(o)[0];
-            a.async = 1;
-            a.src = g;
-            m.parentNode.insertBefore(a, m)
-        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+    (function(i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r;
+        i[r] = i[r] || function() {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date();
+        a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
-        ga('create', 'UA-61069332-1', 'auto');
-        ga('send', 'pageview');
+    ga('create', 'UA-61069332-1', 'auto');
+    ga('send', 'pageview');
     </script>
-
     <!-- build:js({app,.tmp}) scripts/main.js -->
     <script src="scripts/fastclick.js"></script>
     <script src="scripts/jquery.ui.touch-punch.min.js"></script>
