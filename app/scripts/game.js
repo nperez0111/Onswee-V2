@@ -19,7 +19,74 @@ var Game = Ractive.extend({
         this.on("placePiece", function(event, args) {
             args = args.split(":");
             this.placePiece(args[0] == "true", parseInt(args[1]))
-        })
+        });
+        this.on("select", function(event, num) {
+
+            if (this.get("turns") < 6) {
+                return;
+            }
+            if (this.get("dontSelect")) {
+                this.set("dontSelect", false);
+                return;
+            }
+            var snum = this.toInt(this.get('selected')),
+                bool = num === this.get('moveables')[0] || num === this.get('moveables')[1] || num === this.get('moveables')[2];
+            console.log(num, snum, bool);
+            if (snum == num) {
+                //deselect that board position and make those positions un special and set setts.selected to -1
+                this.set('selected', -1);
+                this.set('moveables', []);
+            } else if (snum == -1 || !bool) {
+                //is not set so let's set current num to special and possible move locs to activated
+                /*if (this.get("board")[num] == this.get("player")) {
+                    this.illegal("It's " + this.getName(this.get("player")) + "'s turn!");
+                    return;
+                }*/
+
+                var arr = [];
+                for (var c = 0, all = this.allPosMoveLocs[num], cl = all.length; c < cl; c++) {
+                    if (this.get("board")[all[c]] === null) {
+                        if (this.get("turns") < 12 && this.hasIllegalLineIn(this.get("board")[num], this.hypotheticalMoveInFromTo(this.get("board")[num], this.get("board"), num, all[c]))) {
+
+                        } else {
+                            arr.push(all[c]);
+                        }
+                    }
+                }
+
+                if (arr.length === 0) {
+                    this.illegal("Can't make any straight lines in these turns");
+                    return;
+                }
+                this.set('selected', num);
+                this.set('moveables', arr);
+
+            } else if (bool) {
+                //move to num if it is one of the move locs
+                var flag = false,
+                    thi = this;
+                if (this.retRes(thi.allPosMoveLocs[snum], (function(cur, i) {
+                        if (thi.get("board")[cur] === null) {
+                            thi.moveFromTo(thi.get("board")[snum], snum, num);
+                            thi.set('selected', -1);
+                            thi.set('moveables', []);
+                            if (thi.get("board").every(function(a) {
+                                    return a == null;
+                                })) {
+                                thi.set("justWon", true);
+                            }
+                            return true;
+                        }
+                    }))) {
+                    return;
+                }
+
+            }
+            this.updateHUD();
+            this.set("justWon", false);
+
+
+        });
     },
     data: function() {
         //9 possible positions Null==Empty, True==Player1, False==Player2
@@ -87,25 +154,24 @@ var Game = Ractive.extend({
 
     },
     setIcon: function(player, icon) {
-        if ((this.get("icon." + player) == this.get("iconPossibles" + icon)) || (this.get("icon")[(player === 0 ? 1 : 0)] == this.get("iconPossibles." + icon))) {
+        if ((this.get("icon." + player) == this.get("iconPossibles." + icon)) || (this.get("icon." + this.get("player")) == this.get("iconPossibles." + icon))) {
             //if the one we are setting it to is the one set or if the one we are setting it to is the other players then just dont set it
             return;
         }
         var tmp = this.get("icon." + player); //stores curicon
-
         this.set("icon." + player, this.get("iconPossibles." + icon)); //sets curicon to newicon
 
         this.set("iconPossibles." + icon, tmp); //sets new icon to old icon
 
-        tmp = null;
-        settings.set({
+        this.updateHUD();
+        return {
             player1: this.get("player1Name"),
             player2: this.get("player2Name"),
             iconPossibles: this.get("iconPossibles"),
-            player: player === 0 ? 1 : 0
+            player: this.get("player"),
+            icon: this.get("icon")
 
-        });
-        this.updateHUD();
+        };
     },
     getEmpties: function() {
         return this.get("board").map((cur) => {
@@ -206,14 +272,6 @@ var Game = Ractive.extend({
         boardy[to] = player;
         return boardy;
 
-    },
-    //for the AI when it is in place
-
-
-
-    choosePlayer: function(player) {
-        settings.set('player', player ? 0 : 1);
-        settings.update();
     },
     save: function() {
         //save turn, save current moves, add last board state to moves, save names, save icons, save scores
@@ -373,7 +431,7 @@ var Game = Ractive.extend({
             return;
         }
         this.animationIsGoing = true;
-        console.log(errorMsg);
+        console.trace(errorMsg);
         var $el = $('#messageArea');
         $el.text(errorMsg);
         $el.show(800, 'swing', function() {

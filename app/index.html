@@ -107,9 +107,9 @@
         <div id="IconChooser">
             <h2>Choose Your Icon</h2>
             <div id="playercont">
-                <h3 onclick="game.choosePlayer(true)" class="icoChoice ripplelink {{(player===0)?'Active':'Inactive'}}">
+                <h3 on-click="choosePlayer:false" class="icoChoice ripplelink {{(player==false)?'Active':'Inactive'}}">
                         
-                            <span class="icoChoice">
+                            <span class="icoChoice"> 
                             
                                 {{player1}}
                                 
@@ -119,7 +119,7 @@
                             <img src="{{icon[0]}}" alt="Player 1 Icon">
                             
                         </h3>
-                <h3 onclick="game.choosePlayer(false)" class="icoChoice ripplelink {{(player==1)?'Active':'Inactive'}}">
+                <h3 on-click="choosePlayer:true" class="icoChoice ripplelink {{(player==true)?'Active':'Inactive'}}">
                         
                             <span class="icoChoice">
                             
@@ -133,7 +133,7 @@
             </div>
             <div class="grid">
                 {{#each iconPossibles:i}}
-                <div onclick="game.setIcon({{player}},{{i}})" class="col-1-4 icoPossibles">
+                <div on-click="setIcon:{{player}}:{{i}}" class="col-1-4 icoPossibles">
                     <img src="{{iconPossibles[i]}}" alt="Icon Number {{i+3}}" class="icons">
                 </div>
                 {{/each}}
@@ -149,10 +149,10 @@
         <div class="boardPlaceHolder b{{(i+1)}} {{turn?'':'cursor'}} drop overHide" id="drop{{i}}" on-click="placePiece:{{player}}:{{i}}">
             <div class="wrap  {{(turn&&board[i]!==null) || isActive(i) ? 'ripplelink' : ''}}">
                 {{#if (board[i] !== null)}}
-                <div class="{{board[i] ? 'P1':'P2'}} {{selected==i?'Active clickable':''}} draggable  {{isActive(i) || (selected==-1&&board[i]==(turns%2==0)) ? 'clickable' : 'notClickable'}}" id="drag{{i}}" onclick="select({{i}})" style="{{'background-image:url('+icon[board[i]?0:1]}})">
+                <div class="{{board[i] ? 'P1':'P2'}} {{selected==i?'Active clickable':''}} draggable  {{isActive(i) || (selected==-1&&board[i]==(player)) ? 'clickable' : 'notClickable'}}" id="drag{{i}}" on-click="select:{{i}}" style="{{'background-image:url('+icon[board[i]?0:1]}})">
                 </div>
                 {{else}} {{#if isActive(i)}}
-                <div class="empty Active clickable overHide" onclick="select({{i}})">
+                <div class="empty Active clickable overHide" on-click="select:{{i}}">
                     <div><span class="inner">Can move here</span>
                     </div>
                 </div>

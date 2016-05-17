@@ -29,81 +29,6 @@ function setName(player) {
     game.setName(str, player);
 }
 
-function select(num) {
-    if (game.get("turns") < 6) {
-        return;
-    }
-    if (game.get("dontSelect")) {
-        game.set("dontSelect", false);
-        return;
-    }
-    var snum = game.toInt(game.get('selected')),
-        bool = num === game.get('moveables')[0] || num === game.get('moveables')[1] || num === game.get('moveables')[2];
-    if (snum == num) {
-        //deselect that board position and make those positions un special and set setts.selected to -1
-        game.set('selected', -1);
-        game.set('moveables', []);
-    } else if (snum == -1 || !bool) {
-        //is not set so let's set current num to special and possible move locs to activated
-        if (game.get("board")[num] == game.get("player")) {
-            game.illegal("It's " + game.getName(game.get("player")) + "'s turn!");
-            return;
-        }
-
-        var arr = [];
-        for (var c = 0, all = game.allPosMoveLocs[num], cl = all.length; c < cl; c++) {
-            if (game.get("board")[all[c]] === null) {
-                if (game.get("turns") < 12 && game.hasIllegalLineIn(game.get("board")[num], game.hypotheticalMoveInFromTo(game.get("board")[num], game.get("board"), num, all[c]))) {
-
-                } else {
-                    arr.push(all[c]);
-                }
-            }
-        }
-
-        if (arr.length === 0) {
-            game.illegal("Can't make any straight lines in these turns");
-            return;
-        }
-        game.set('selected', num);
-        game.set('moveables', arr);
-
-    } else if (bool) {
-        //move to num if it is one of the move locs
-        var flag = false;
-        if (game.retRes(game.allPosMoveLocs[snum], (function(cur, i) {
-                if (game.get("board")[cur] === null) {
-                    game.moveFromTo(game.get("board")[snum], snum, num);
-                    game.set('selected', -1);
-                    game.set('moveables', []);
-                    if (game.get("board").every(function(a) {
-                            return a == null;
-                        })) {
-                        game.set("justWon", true);
-                    }
-                    return true;
-                }
-            }))) {
-            return;
-        }
-
-    }
-    game.updateHUD();
-    game.set("justWon", false);
-
-}
-
-function allowDrop(ev) {
-    ev.preventDefault();
-}
-
-function whichAmI(ev) {
-    if ((game.get("player")) == game.get("board")[game.toInt(ev.target.id.replace(/^\D+/g, ""))]) {
-        ev.dataTransfer.setData("which", ev.target.id.replace(/^\D+/g, ""));
-    } else {
-        game.illegal("It's " + game.getName(game.get("player")) + "'s turn!");
-    }
-}
 
 function drop(ev) {
     ev.preventDefault();
@@ -138,16 +63,25 @@ function buildgame() {
                 }
             });
             this.observe('player2', function(newValue, oldValue) {
-                game.setName(newValue, false);
-                this.update();
+                if (newValue && game) {
+                    game.setName(newValue, false);
+                    this.update();
+                }
             });
+            this.on("choosePlayer", function(event, val) {
+                this.set("player", val);
+            });
+            this.on("setIcon", function(event, params) {
+                params = params.split(":");
+                this.set(game.setIcon(params[0] == "true" ? 1 : 0, game.toInt(params[1])));
+            })
         },
         data: {
             player1: game.get("player1Name"),
             player2: game.get("player2Name"),
             icon: game.get("icon"),
             iconPossibles: game.get("iconPossibles"),
-            player: 0,
+            player: false,
             ai: game.get("ai"),
         }
     });
