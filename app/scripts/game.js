@@ -1,4 +1,4 @@
-var game = Ractive.extend( {
+var Game = Ractive.extend( {
 
     init: function () {
         this.set( "board", [ null, null, null, null, null, null, null, null, null ] );
@@ -11,13 +11,22 @@ var game = Ractive.extend( {
                 return;
             }
             //any first time code here
+
         }
 
+    },
+    oninit: function () {
+        this.on( "placePiece", function ( event, args ) {
+            args = args.split( ":" );
+            this.placePiece( args[ 0 ] == "true", parseInt( args[ 1 ] ) )
+        } )
     },
     data: function () {
         //9 possible positions Null==Empty, True==Player1, False==Player2
         return {
             board: [ null, null, null, null, null, null, null, null, null ],
+            moveables: [],
+            selected: -1,
             player1Name: "Player 1",
             player2Name: "Player 2",
             dontSelect: false,
@@ -33,7 +42,13 @@ var game = Ractive.extend( {
             //scores of the two players
             //Saves current state of the game each change that has been made to continue game later
             moves: [],
-            ai: false
+            ai: false,
+            isActive: function ( num ) {
+                return this.get( 'moveables' ).filter( function ( cur ) {
+                    return cur == num;
+                } ).length > 0;
+
+            }
         }
         //Saves current turn, (turn%2==0) gives current players turn
     },
@@ -43,61 +58,85 @@ var game = Ractive.extend( {
                 return this.get( "board" ) > 5;
             }
         },
-        getName: {
-            get: function ( player ) {
-
-                return player ? this.get( "player1Name" ) : this.get( "player2Name" );
-
-            }
-        },
-        setName: {
-            set: function ( str, player ) {
-                if ( player ) {
-                    this.set( "player1Name", str );
-                } else {
-                    this.set( "player2Name", str );
-                }
-                this.updateHUD();
-                this.saveScore( null );
-                //reflect Name change to HUD
-            }
-        },
         getIcon: {
             get: function ( player ) {
                 return this.icon[ player ? 0 : 1 ];
             }
         },
-        setIcon: {
-            set: function ( player, icon ) {
-                if ( ( this.icon[ player ] == this.iconPossibles[ icon ] ) || ( this.icon[ ( player === 0 ? 1 : 0 ) ] == this.iconPossibles[ icon ] ) ) {
-                    //if the one we are setting it to is the one set or if the one we are setting it to is the other players then just dont set it
-                    return;
-                }
-                var tmp = this.icon[ player ]; //stores curicon
-
-                this.icon[ player ] = this.iconPossibles[ icon ]; //sets curicon to newicon
-
-                this.iconPossibles[ icon ] = tmp; //sets new icon to old icon
-
-                tmp = null;
-                settings.set( {
-                    player1: this.get( "player1Name" ),
-                    player2: this.get( "player2Name" ),
-                    iconPossibles: this.get( "iconPossibles" ),
-                    player: player === 0 ? 1 : 0
-
-                } );
-                this.updateHUD();
+        player: {
+            get: function () {
+                return this.get( "turns" ) % 2 == 0;
             }
-        },
+        }
     },
-    //returns String, true for P1, False for P2},
+    getName: function ( player ) {
 
+        return player ? this.get( "player1Name" ) : this.get( "player2Name" );
 
+    },
+    setName: function ( str, player ) {
+        if ( player ) {
+            this.set( "player1Name", str );
+        } else {
+            this.set( "player2Name", str );
+        }
+        this.updateHUD();
+        this.saveScore( null );
+        //reflect Name change to HUD
+
+    },
+    setIcon: function ( player, icon ) {
+        if ( ( this.get( "icon." + player ) == this.get( "iconPossibles" + icon ) ) || ( this.get( "icon" )[ ( player === 0 ? 1 : 0 ) ] == this.get( "iconPossibles." + icon ) ) ) {
+            //if the one we are setting it to is the one set or if the one we are setting it to is the other players then just dont set it
+            return;
+        }
+        var tmp = this.get( "icon." + player ); //stores curicon
+
+        this.set( "icon." + player, this.get( "iconPossibles." + icon ) ); //sets curicon to newicon
+
+        this.set( "iconPossibles." + icon, tmp ); //sets new icon to old icon
+
+        tmp = null;
+        settings.set( {
+            player1: this.get( "player1Name" ),
+            player2: this.get( "player2Name" ),
+            iconPossibles: this.get( "iconPossibles" ),
+            player: player === 0 ? 1 : 0
+
+        } );
+        this.updateHUD();
+    },
     getEmpties: function () {
         return this.get( "board" ).map( ( cur ) => {
             return cur !== null;
         } );
+    },
+    placePiece: function ( player, num ) {
+
+        if ( this.get( "turns" ) > 5 ) {
+            return;
+        } else if ( this.get( "board." + num ) !== null ) {
+            this.illegal( 'Sorry, that position is taken' );
+            return;
+        }
+        if ( this.get( "justWon" ) ) {
+            this.set( "justWon", false )
+            return;
+        }
+        var board = this.get( "board" ).clone();
+        board[ num ] = player;
+        if ( this.hasIllegalLineIn( player, board ) ) {
+            this.illegal( "Sorry, you can't make a line when placing" );
+            return;
+        }
+
+        this.set( "board", board );
+        this.set( "turns", this.get( "turns" ) + 1 );
+        this.set( "player" )
+
+        if ( this.get( "ai" ) ) {
+            this.aiTurn();
+        }
     },
     moveFromTo: function ( player, from, to ) {
         if ( this.get( "turns" ) < 12 && this.moveFromToWithRules( player, from, to ) === false ) {
@@ -121,18 +160,18 @@ var game = Ractive.extend( {
 
             this.animateTo( from, to, function ( thi, from, to ) {
 
-                thi.set( "board." + [ to ], thi.board[ from ] );
-                thi.set( "board." + [ from ], null );
+                thi.set( "board." + to, thi.get( "board" )[ from ] );
+                thi.set( "board." + from, null );
                 thi.set( "turns", thi.get( "turns" ) + 1 );
                 thi.storeMoves( from, to );
                 console.log( "Successful Movement, From: %s To: %s For %s", from, to, thi.get( "board." + [ to ] ) ? 'X' : 'O' );
-                thi.trackcurrent( thi.board );
+                thi.trackcurrent( thi.get( "board" ) );
                 thi.updateHUD();
 
-                if ( thi.isWinIn( thi.board[ to ], thi.board ) ) {
+                if ( thi.isWinIn( thi.get( "board" )[ to ], thi.get( "board" ) ) ) {
                     console.log( "%c%s Won!", "color:red;font-size:20px;", thi.get( "getName" )( player ) );
-                    thi.illegal( thi.getName( thi.get( "board." + [ to ] ) ) + ' won!' );
-                    thi.newGame( thi.board[ to ] );
+                    thi.illegal( thi.getName( thi.get( "board." + to ) ) + ' won!' );
+                    thi.newGame( thi.get( "board" )[ to ] );
                 } else if ( thi.get( "ai" ) && ( thi.get( "turns" ) % 2 === 1 ) ) {
                     setTimeout( function () {
                         thi.aiTurn();
@@ -183,10 +222,10 @@ var game = Ractive.extend( {
 
         localStorage.isPlaying = this.get( "turns" ) > 0 ? true : false;
         //store things if game is in progress
-        localStorage.setObj( 'board', game.board );
+        localStorage.setObj( 'board', this.get( "board" ) );
         localStorage.turn = this.get( "turns" );
         localStorage.setObj( 'moves', this.get( "moves" ) );
-        localStorage.setObj( 'icons', [ game.icon, game.iconPossibles ] );
+        localStorage.setObj( 'icons', [ this.get( "icon" ), this.get( "iconPossibles" ) ] );
         localStorage.ai = this.get( "ai" );
 
 
