@@ -160,18 +160,18 @@ var Game = Ractive.extend( {
 
             this.animateTo( from, to, function ( thi, from, to ) {
 
-                thi.set( "board." + [ to ], thi.board[ from ] );
-                thi.set( "board." + [ from ], null );
+                thi.set( "board." + to, thi.get( "board" )[ from ] );
+                thi.set( "board." + from, null );
                 thi.set( "turns", thi.get( "turns" ) + 1 );
                 thi.storeMoves( from, to );
                 console.log( "Successful Movement, From: %s To: %s For %s", from, to, thi.get( "board." + [ to ] ) ? 'X' : 'O' );
-                thi.trackcurrent( thi.board );
+                thi.trackcurrent( thi.get( "board" ) );
                 thi.updateHUD();
 
-                if ( thi.isWinIn( thi.board[ to ], thi.board ) ) {
+                if ( thi.isWinIn( thi.get( "board" )[ to ], thi.get( "board" ) ) ) {
                     console.log( "%c%s Won!", "color:red;font-size:20px;", thi.get( "getName" )( player ) );
-                    thi.illegal( thi.getName( thi.get( "board." + [ to ] ) ) + ' won!' );
-                    thi.newGame( thi.board[ to ] );
+                    thi.illegal( thi.getName( thi.get( "board." + to ) ) + ' won!' );
+                    thi.newGame( thi.get( "board" )[ to ] );
                 } else if ( thi.get( "ai" ) && ( thi.get( "turns" ) % 2 === 1 ) ) {
                     setTimeout( function () {
                         thi.aiTurn();
