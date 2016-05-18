@@ -64,10 +64,9 @@ var Game = Ractive.extend({
             } else if (bool) {
                 //move to num if it is one of the move locs
                 var flag = false,
-                    thi = this,
-                    alreadyCalled = false;
+                    thi = this;
                 if (this.retRes(thi.allPosMoveLocs[snum], (function(cur, i) {
-                        if (thi.get("board")[cur] === null && !alreadyCalled) {
+                        if (thi.get("board")[cur] === null) {
                             thi.moveFromTo(thi.get("board")[snum], snum, num);
                             thi.set('selected', -1);
                             thi.set('moveables', []);
@@ -76,7 +75,6 @@ var Game = Ractive.extend({
                                 })) {
                                 thi.set("justWon", true);
                             }
-                            alreadyCalled = true;
                             return true;
                         }
                     }), true)) {
