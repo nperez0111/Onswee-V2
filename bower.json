@@ -1,44 +1,45 @@
 {
-    "name": "onsweev2",
-    "description": "Like Tic-Tac-Toe but better and more advanced",
-    "authors": [
-        "Nick Perez <nperez0111@gmail.com>"
-    ],
-    "license": "MIT",
-    "homepage": "https://github.com/nperez0111/Onswee-V2",
-    "private": true,
-    "ignore": [
-        "**/.*",
-        "node_modules",
-        "bower_components",
-        "test",
-        "tests"
-    ],
-    "dependencies": {
-        "bootstrap-sass": "~3.3.6",
-        "jquery-ui-draggable": "*",
-        "jquery.transit": "~0.9.12",
-        "jquery-ui-droppable": "*",
-        "jquery.ui": "~1.11.3",
-        "normalize.css": "~4.1.1",
-        "ractive": "~0.7.3"
+  "name": "onsweev2",
+  "description": "Like Tic-Tac-Toe but better and more advanced",
+  "authors": [
+    "Nick Perez <nperez0111@gmail.com>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/nperez0111/Onswee-V2",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap-sass": "~3.3.6",
+    "jquery-ui-draggable": "*",
+    "jquery.transit": "~0.9.12",
+    "jquery-ui-droppable": "*",
+    "jquery.ui": "~1.11.3",
+    "normalize.css": "~4.1.1",
+    "ractive": "~0.7.3",
+    "remarkable-bootstrap-notify": "^3.1.3"
+  },
+  "overrides": {
+    "bootstrap-sass": {
+      "main": [
+        "assets/stylesheets/_bootstrap.scss",
+        "assets/fonts/bootstrap/*",
+        "assets/javascripts/bootstrap.js"
+      ]
     },
-    "overrides": {
-        "bootstrap-sass": {
-            "main": [
-                "assets/stylesheets/_bootstrap.scss",
-                "assets/fonts/bootstrap/*",
-                "assets/javascripts/bootstrap.js"
-            ]
-        },
-        "jquery.ui": {
-            "main": [
-                "ui/draggable.js"
-            ]
-        }
-    },
-    "devDependencies": {
-        "chai": "~3.5.0",
-        "mocha": "~2.4.5"
+    "jquery.ui": {
+      "main": [
+        "ui/draggable.js"
+      ]
     }
+  },
+  "devDependencies": {
+    "chai": "~3.5.0",
+    "mocha": "~2.4.5"
+  }
 }
