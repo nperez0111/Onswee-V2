@@ -50,7 +50,12 @@ function buildgame() {
     game = new Game({
         el: 'gameBoard',
         template: '#template',
-        data: {}
+        data: {},
+        onrender: function() {
+            console.log("draggy");
+
+            dragAndDrop(this);
+        }
     });
     settings = new Ractive({
         el: 'settingsPage',
@@ -88,7 +93,7 @@ function buildgame() {
 
 }
 
-function dragAndDrop() {
+function dragAndDrop(obj) {
     var hadnt = true;
     $('.draggable').draggable({
         containment: $('#gameBoard'),
@@ -96,8 +101,8 @@ function dragAndDrop() {
         opacity: 0.8,
         revert: function(dropped) {
             //if it is not the players turn then send the draggable to where it was
-            if ((game.get("board")[game.toInt($(this).attr('id').replace(/^\D+/g, ""))] !== null) || !dropped) {
-                game.set("dontSelect", game.get("board")[game.toInt($(this).attr('id').replace(/^\D+/g, ""))] !== null);
+            if ((obj.get("board")[obj.toInt($(this).attr('id').replace(/^\D+/g, ""))] !== null) || !dropped) {
+                obj.set("dontSelect", obj.get("board")[obj.toInt($(this).attr('id').replace(/^\D+/g, ""))] !== null);
                 return true;
             }
 
@@ -107,13 +112,14 @@ function dragAndDrop() {
         delay: 200,
         zIndex: 120,
         drag: function(event, ui) {
+            console.log("dragStart")
             if (hadnt) {
                 $(this).parent().parent().removeClass('overHide');
                 hadnt = false;
-                if (game.get('selected') > -1) {
+                if (obj.get('selected') > -1) {
                     $(this).removeClass('Active');
-                    game.set('selected', -1);
-                    game.set('moveables', []);
+                    obj.set('selected', -1);
+                    obj.set('moveables', []);
                 }
             }
 
@@ -125,26 +131,27 @@ function dragAndDrop() {
         accept: ".draggable",
         tolerance: "pointer",
         drop: function(event, ui) {
-            var dropNum = game.toInt($(this).attr('id').replace(/^\D+/g, "")),
-                dragNum = game.toInt($(ui.draggable).attr('id').replace(/^\D+/g, ""));
+            console.log("fired");
+            var dropNum = obj.toInt($(this).attr('id').replace(/^\D+/g, "")),
+                dragNum = obj.toInt($(ui.draggable).attr('id').replace(/^\D+/g, ""));
             $(this).removeClass('Active');
-            if ((game.get("player")) !== game.get("board")[dragNum]) {
-                game.illegal("Sorry " + game.getName(game.get("board")[dragNum]) + ", it's " + game.getName(!game.get("board")[dragNum]) + "'s turn!");
+            if ((obj.get("player")) !== obj.get("board")[dragNum]) {
+                obj.illegal("Sorry " + obj.getName(obj.get("board")[dragNum]) + ", it's " + obj.getName(!obj.get("board")[dragNum]) + "'s turn!");
                 return false;
             } else if (dragNum == dropNum) {
                 return false;
-            } else if (game.get("board")[dropNum] !== null) {
+            } else if (obj.get("board")[dropNum] !== null) {
                 //Something there
-                game.illegal('Something already there!');
+                obj.illegal('Something already there!');
                 return false;
-            } else if (!game.canMoveFromTo(game.get("board")[dragNum], game.get("board").clone(), dragNum, dropNum)) {
+            } else if (!obj.canMoveFromTo(obj.get("board")[dragNum], obj.get("board").clone(), dragNum, dropNum)) {
 
-                game.illegal("Sorry that's too far to move to!");
+                obj.illegal("Sorry that's too far to move to!");
                 return false;
 
             } else {
 
-                game.moveFromTo(game.get("player"), dragNum, dropNum);
+                obj.moveFromTo(obj.get("player"), dragNum, dropNum);
 
             }
 
@@ -157,9 +164,12 @@ function dragAndDrop() {
             $(this).removeClass('Active');
         },
     });
-    if (game.get("turns") < 6) {
+    console.trace(obj)
+    if (obj.get("turns") < 6) {
         $('.draggable').draggable("disable");
         return;
+    } else {
+        $('.draggable').draggable("enable");
     }
     $(".ripplelink").click(function(e) {
 
@@ -189,9 +199,9 @@ function dragAndDrop() {
         }).addClass("animate");
     });
 }
-buildgame();
-$(document).ready(function() {
 
+$(document).ready(function() {
+    buildgame();
     $('.game').click(function() {
         goTo('#gameBoard', '.game');
     });
@@ -204,7 +214,6 @@ $(document).ready(function() {
     $(function() {
         FastClick.attach(document.body);
     });
-    dragAndDrop();
     if (document.location.hash) {
         var which = [
             ['g', '.game'],

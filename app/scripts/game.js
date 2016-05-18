@@ -137,7 +137,9 @@ var Game = Ractive.extend({
         }
     },
     getName: function(player) {
-
+        if (player === 0 || player == 1) {
+            player = player === 0;
+        }
         return player ? this.get("player1Name") : this.get("player2Name");
 
     },
@@ -226,26 +228,26 @@ var Game = Ractive.extend({
 
 
 
-            this.animateTo(from, to, function(thi, from, to) {
+            this.animateTo(from, to, (thi, from, to) => {
 
-                thi.set("board." + to, thi.get("board")[from]);
-                thi.set("board." + from, null);
-                thi.set("turns", thi.get("turns") + 1);
-                thi.storeMoves(from, to);
-                console.trace("Successful Movement, From: %s To: %s For %s", from, to, thi.get("board." + to) ? 'X' : 'O');
-                thi.trackcurrent(thi.get("board"));
-                thi.updateHUD();
+                this.set("board." + to, this.get("board")[from]);
+                this.set("board." + from, null);
+                this.set("turns", this.get("turns") + 1);
+                this.storeMoves(from, to);
+                console.trace("Successful Movement, From: %s To: %s For %s", from, to, this.get("board." + to) ? 'X' : 'O');
+                this.trackcurrent(this.get("board"));
+                this.updateHUD();
 
-                if (thi.isWinIn(thi.get("board")[to], thi.get("board"))) {
-                    console.log("%c%s Won!", "color:red;font-size:20px;", thi.get("getName")(player));
-                    thi.illegal(thi.getName(thi.get("board." + to)) + ' won!');
-                    thi.newGame(thi.get("board")[to]);
-                } else if (thi.get("ai") && (thi.get("turns") % 2 === 1)) {
+                if (this.isWinIn(this.get("board")[to], this.get("board"))) {
+                    console.log("%c%s Won!", "color:red;font-size:20px;", this.getName(this.get("board." + to)));
+                    this.illegal(('~' + this.getName(this.get("board." + to)) + ' won!'), "success");
+                    this.newGame(this.get("board")[to]);
+                } else if (this.get("ai") && (this.get("player"))) {
                     setTimeout(function() {
-                        thi.aiTurn();
+                        this.aiTurn();
                     }, 2000);
                 }
-                thi.save();
+                this.save();
             });
 
             return;
@@ -259,7 +261,7 @@ var Game = Ractive.extend({
 
     moveFromToWithRules: function(player, from, to) {
         if (this.hasIllegalLineIn(player, this.hypotheticalMoveInFromTo(player, this.get("board"), from, to))) {
-            this.illegal("Sorry, during these turns you can't make a line of any kind");
+            this.illegal("During these turns you can't make a line of any kind~Remember");
 
             return false;
         }
@@ -304,7 +306,7 @@ var Game = Ractive.extend({
 
         var last = this.get("moves").pop();
         this.set("turns", this.get("turns") - 1);
-        this.moveFromTo(this.get("turns") % 2 === 0, last[1], last[0]);
+        this.moveFromTo(this.get("player"), last[1], last[0]);
         this.save();
         this.updateHUD();
 
@@ -355,17 +357,17 @@ var Game = Ractive.extend({
     updateHUD: function() {
 
         if (this.get("turns") == 4 && this.score == [0, 0]) {
-            this.illegal("Remember: You can't place in a line yet!");
+            this.illegal("You can't place in a line yet!~Remember");
         } else if (this.get("turns") == 6 && this.score == [0, 0]) {
-            this.illegal("Remember: You can't make any straight lines yet!");
+            this.illegal("You can't make any straight lines yet!~Remember");
         } else if (this.get("turns") == 12) {
-            this.illegal("You can make lines!");
+            this.illegal("~You can make lines!", "success");
         }
 
         this.trackcurrent(this.get("board"));
 
 
-        dragAndDrop();
+        dragAndDrop(this);
 
     },
     //updates HUD to current values
