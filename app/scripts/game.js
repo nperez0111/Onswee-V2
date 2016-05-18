@@ -38,8 +38,8 @@ var Game = Ractive.extend( {
                 this.set( 'moveables', [] );
             } else if ( snum == -1 || !bool ) {
                 //is not set so let's set current num to special and possible move locs to activated
-                /*if (this.get("board")[num] == this.get("player")) {
-                    this.illegal("It's " + this.getName(this.get("player")) + "'s turn!");
+                /*if ( this.get( "board" )[ num ] == this.get( "player" ) ) {
+                    this.illegal( "~It's " + this.getName( this.get( "player" ) ) + "'s turn!" );
                     return;
                 }*/
 
@@ -55,7 +55,7 @@ var Game = Ractive.extend( {
                 }
 
                 if ( arr.length === 0 ) {
-                    this.illegal( "Can't make any straight lines in these turns" );
+                    this.illegal( "Sorry, " + this.getName( this.get( 'player' ) ) + " but the rules state that you cant make straight lines the first six turns.~Can't make any straight lines in these turns" );
                     return;
                 }
                 this.set( 'selected', num );
@@ -427,24 +427,31 @@ var Game = Ractive.extend( {
     animationIsGoing: false,
     //to prevent browser eagerclick
 
-    illegal: function ( errorMsg ) {
-        if ( this.animationIsGoing ) {
-            return;
-        }
-        this.animationIsGoing = true;
-        console.trace( errorMsg );
-        var $el = $( '#messageArea' );
-        $el.text( errorMsg );
-        $el.show( 800, 'swing', function () {
-            $el.delay( 1900 ).hide( 'drop', {}, 1000, () => {
-                $el.text( '' );
-                this.animationIsGoing = false;
-            } );
-
-        } );
+    illegal: function ( errorMsg, actualErrorOveride ) {
+        var d = errorMsg.split( "~" );
+        this.notify( d[ 1 ] || "Message:", d[ 0 ], 1900, actualErrorOveride || "error" );
     },
     //something illegal happened
-
+    notify: function ( title, message, time, typely ) {
+        var that = this,
+            not = $.notify( {
+                title: ( typely && typely === "error" ? '<span class="glyphicon glyphicon-warning-sign"></span> ' + title : title ),
+                message: message
+            }, {
+                type: typely || '',
+                delay: ( time || 0 ) + 4000,
+                placement: {
+                    from: "top",
+                    align: "right"
+                },
+                template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-minimalist alert-minimalist-{0}" role="alert">' +
+                    '<button type="button" aria-hidden="true" class="close" data-notify="dismiss">×</button><img data-notify="icon" class="img-circle pull-left">' +
+                    '<span data-notify="title">{1}</span>' +
+                    '<span data-notify="message">{2}</span>' +
+                    '</div>'
+            } );
+        return not;
+    },
     retRes: function ( arr, func, brek = false ) {
         var ret = false;
         arr.forEach( ( cur, i, arr ) => {
@@ -766,7 +773,7 @@ var Game = Ractive.extend( {
             this.save();
             return true;
         }
-        this.illegal( "Sorry that space is filled!" );
+        this.illegal( this.get( "board" )[ pos ] === null ? "Sorry " + this.getName( this.get( "player" ) ) + ", you can't make a straight line when placing your pieces the first six turns.~Illegal Placement:" : "Sorry " + this.getName( this.get( "player" ) ) + ", that space is filled!~Space already has piece.", "warning" );
         return false;
     },
     //places Piece in Board if possible
