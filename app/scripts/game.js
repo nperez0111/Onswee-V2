@@ -522,7 +522,9 @@ var Game = Ractive.extend( {
         var arr = board.map( ( c, i ) => {
             return i;
         } ).filter( ( cur, i ) => {
-            return ( board[ cur ] === null && ( !this.hasIllegalLineIn( player, board.clone() ) ) );
+            var b = board.clone();
+            b[ cur ] = player;
+            return ( board[ cur ] === null && ( !this.hasIllegalLineIn( player, b ) ) );
         } );
 
         return arr[ this.toInt( Math.random() * arr.length ) ];
@@ -784,7 +786,7 @@ var Game = Ractive.extend( {
     //places Piece in Board if possible
     aiTurn: function () {
         console.trace( "aiturn" )
-        console.log( '----------------AI Turn' );
+        console.log( '__________________AI Turn' );
         if ( this.get( "turns" ) > 5 ) {
 
             this.chooseBestMove( false, this.get( "board" ) );
@@ -792,7 +794,8 @@ var Game = Ractive.extend( {
         } else {
             this.placePiece( false, this.choosePreffered( false, this.get( "board" ) ) );
         }
-        console.log( '-------------------End AI turn' );
+        this.trackcurrent( this.get( "board" ) );
+        console.log( '__________________End AI turn' );
 
         this.updateHUD();
     },
