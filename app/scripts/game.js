@@ -40,10 +40,10 @@ var Game = Ractive.extend( {
                 this.set( 'moveables', [] );
             } else if ( snum == -1 || !bool ) {
                 //is not set so let's set current num to special and possible move locs to activated
-                /*if ( this.get( "board" )[ num ] == this.get( "player" ) ) {
+                if ( this.get( "board" )[ num ] == !this.get( "player" ) ) {
                     this.illegal( "~It's " + this.getName( this.get( "player" ) ) + "'s turn!" );
                     return;
-                }*/
+                }
 
                 var arr = [];
                 for ( var c = 0, all = this.allPosMoveLocs[ num ], cl = all.length; c < cl; c++ ) {
@@ -185,8 +185,8 @@ var Game = Ractive.extend( {
 
         if ( this.get( "turns" ) > 5 ) {
             return;
-        } else if (this.get("board." + num) !== null) {
-            this.illegal('Sorry ' + this.getName(this.get("player")) + ', that position is taken~Position taken');
+        } else if ( this.get( "board." + num ) !== null ) {
+            this.illegal( 'Sorry ' + this.getName( this.get( "player" ) ) + ', that position is taken~Position taken' );
             return;
         }
         if ( this.get( "justWon" ) ) {
@@ -196,7 +196,7 @@ var Game = Ractive.extend( {
         var board = this.get( "board" ).clone();
         board[ num ] = player;
         if ( this.hasIllegalLineIn( player, board ) ) {
-            this.illegal("Sorry " + this.getName(this.get("player")) + ", you can't make a line when placing~Illegal Movement");
+            this.illegal( "Sorry " + this.getName( this.get( "player" ) ) + ", you can't make a line when placing~Illegal Movement" );
             return;
         }
 
@@ -253,8 +253,8 @@ var Game = Ractive.extend( {
             return;
         } else {
             //Figure out what to do if its an invalid position
-            console.log("Attempted to move from %s to %s with player %s", from, to, player ? 'X' : 'O');
-            this.illegal("Sorry " + this.getName(this.get("player")) + ", you can't move there!");
+            console.log( "Attempted to move from %s to %s with player %s", from, to, player ? 'X' : 'O' );
+            this.illegal( "Sorry " + this.getName( this.get( "player" ) ) + ", you can't move there!" );
         }
     },
     // accepts player interger position from and to on the board and moves if no errors occur
@@ -356,12 +356,12 @@ var Game = Ractive.extend( {
     },
     updateHUD: function () {
 
-        if (this.get("turns") == 4 && this.score == [0, 0]) {
-            this.illegal("Sorry " + this.getName(this.get("player")) + ", You can't place in a line yet!~Remember");
-        } else if (this.get("turns") == 6 && this.score == [0, 0]) {
-            this.illegal("Sorry " + this.getName(this.get("player")) + ", You can't make any straight lines yet!~Remember");
-        } else if (this.get("turns") == 12) {
-            this.illegal("~You can make lines!", "success");
+        if ( this.get( "turns" ) == 4 && this.score == [ 0, 0 ] ) {
+            this.illegal( "Sorry " + this.getName( this.get( "player" ) ) + ", You can't place in a line yet!~Remember" );
+        } else if ( this.get( "turns" ) == 6 && this.score == [ 0, 0 ] ) {
+            this.illegal( "Sorry " + this.getName( this.get( "player" ) ) + ", You can't make any straight lines yet!~Remember" );
+        } else if ( this.get( "turns" ) == 12 ) {
+            this.illegal( "~You can make lines!", "success" );
         }
 
 
