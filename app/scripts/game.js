@@ -1201,11 +1201,14 @@ var Game = Ractive.extend( {
         bro += "|";
         brt += "|";
         br += "|";
-        console.log( '___________' );
+        var whosturn = "Now it's " + this.getName( this.get( "player" ) ) + "'s turn";
+        console.log( whosturn.split( "" ).fill( '_' ).join( "" ) );
+        console.log( "Turn Number:" + this.get( "turns" ) );
         console.log( bro );
         console.log( brt );
         console.log( br );
-        console.log( '‾‾‾‾‾‾‾‾‾‾‾' );
+        console.log( whosturn );
+        console.log( whosturn.split( "" ).fill( '‾' ).join( "" ) );
     },
     //logs current board to console
 } );
