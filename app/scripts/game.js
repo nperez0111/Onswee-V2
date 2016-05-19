@@ -7,7 +7,7 @@ var Game = Ractive.extend( {
         if ( !this.get( "justWon" ) && this.load() ) {
             //any post load
         } else {
-            if ( !supportsLocalStorage() ) {
+            if ( !this.supportsLocalStorage() ) {
                 return;
             }
             //any first time code here
@@ -84,14 +84,12 @@ var Game = Ractive.extend( {
                 }
 
             }
-            //this.updateHUD();
             this.set( "justWon", false );
-            /*if ( this.get( "ai" ) ) {
-                this.aiTurn()
-            }*/
 
 
         } );
+
+        this.initer();
     },
     data: function () {
         //9 possible positions Null==Empty, True==Player1, False==Player2
@@ -281,7 +279,7 @@ var Game = Ractive.extend( {
     },
     save: function () {
         //save turn, save current moves, add last board state to moves, save names, save icons, save scores
-        if ( !supportsLocalStorage() ) {
+        if ( !this.supportsLocalStorage() ) {
             return false;
         }
 
@@ -314,8 +312,16 @@ var Game = Ractive.extend( {
         this.updateHUD();
 
     },
+    supportsLocalStorage: function () {
+        try {
+            return 'localStorage' in window && window.localStorage !== null;
+        } catch ( e ) {
+            return false;
+        }
+    },
     load: function () {
-        if ( !supportsLocalStorage() || !( localStorage.isPlaying ) || ( localStorage.isPlaying == 'false' ) ) {
+        console.log( "loaded" );
+        if ( !this.supportsLocalStorage() ) {
             return false;
         }
         this.set( "ai", ( localStorage.ai == 'true' ) );
@@ -359,12 +365,12 @@ var Game = Ractive.extend( {
     },
     updateHUD: function () {
 
-        if ( this.get( "turns" ) == 4 && this.score == [ 0, 0 ] ) {
-            this.illegal( "Sorry " + this.getName( this.get( "player" ) ) + ", You can't place in a line yet!~Remember" );
-        } else if ( this.get( "turns" ) == 6 && this.score == [ 0, 0 ] ) {
-            this.illegal( "Sorry " + this.getName( this.get( "player" ) ) + ", You can't make any straight lines yet!~Remember" );
+        if ( this.get( "turns" ) == 4 ) {
+            this.illegal( "Sorry " + this.getName( this.get( "player" ) ) + ", You can't place in a line yet!~Remember:" );
+        } else if ( this.get( "turns" ) == 6 ) {
+            this.illegal( "Sorry " + this.getName( this.get( "player" ) ) + ", You can't make any straight lines yet!~Remember:" );
         } else if ( this.get( "turns" ) == 12 ) {
-            this.illegal( "~You can make lines!", "success" );
+            this.illegal( "From this round on, the goal of the game is to make a line through the center of the board.~Make lines!", "success" );
         }
 
 
@@ -383,7 +389,7 @@ var Game = Ractive.extend( {
         }
         //console.log( 'called save score' );
         //saves scores into score array
-        if ( !supportsLocalStorage() ) {
+        if ( !this.supportsLocalStorage() ) {
             return;
         }
         var arr = [ this.get( "player1Name" ), this.get( "player2Name" ), this.get( "score" ) ];
