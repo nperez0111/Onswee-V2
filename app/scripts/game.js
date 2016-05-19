@@ -84,7 +84,7 @@ var Game = Ractive.extend( {
                 }
 
             }
-            this.updateHUD();
+            //this.updateHUD();
             this.set( "justWon", false );
 
 
@@ -139,7 +139,7 @@ var Game = Ractive.extend( {
         }
     },
     getName: function ( player ) {
-        if ( player === 0 || player == 1 ) {
+        if ( player === 0 || player === 1 ) {
             player = player === 0;
         }
         return player ? this.get( "player1Name" ) : this.get( "player2Name" );
@@ -210,7 +210,6 @@ var Game = Ractive.extend( {
         }
     },
     moveFromTo: function ( player, from, to ) {
-        console.trace( "movefromto called" )
         if ( this.get( "turns" ) < 12 && this.moveFromToWithRules( player, from, to ) === false ) {
             return false;
         }
@@ -223,7 +222,7 @@ var Game = Ractive.extend( {
                             console.log( "Attempted to move from %s to %s with player %s", from, to, player ? 'X' : 'O' );
                             return true;
                         }
-                    } ) ) ) {
+                    } ), true ) ) {
                     return;
                 }
             }
@@ -241,13 +240,11 @@ var Game = Ractive.extend( {
                 this.updateHUD();
 
                 if ( this.isWinIn( this.get( "board" )[ to ], this.get( "board" ) ) ) {
-                    console.log( "%c%s Won!", "color:red;font-size:20px;", this.getName( this.get( "board." + to ) ) );
-                    this.illegal( ( '~' + this.getName( this.get( "board." + to ) ) + ' won!~' + this.get( "icon" )[ this.get( "player" ) ? 0 : 1 ] + "~2500" ), "success" );
+                    console.log( "%c%s Won!", "color:red;font-size:20px;", this.getName( !this.get( "board." + to ) ) );
+                    this.illegal( ( '~' + this.getName( player ) + ' won!~' + this.get( "icon" )[ player ? 0 : 1 ] + "~2500" ), "success" );
                     this.newGame( this.get( "board" )[ to ] );
                 } else if ( this.get( "ai" ) && ( this.get( "player" ) ) ) {
-                    console.log( "called" )
                     setTimeout( function () {
-                        console.log( "aiturn" )
                         this.aiTurn();
                     }, 2000 );
                 }

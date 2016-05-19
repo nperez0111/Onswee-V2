@@ -2,7 +2,7 @@ var game, settings;
 
 
 function resetMe() {
-    game.illegal( 'Reset Complete!' );
+    game.illegal( '~Reset Complete!', "success" );
     game.set( "turns", 0 );
     localStorage.clear();
     game.set( "justWon", true );
