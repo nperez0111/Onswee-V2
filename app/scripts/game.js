@@ -33,7 +33,7 @@ var Game = Ractive.extend( {
             }
             var snum = this.toInt( this.get( 'selected' ) ),
                 bool = num === this.get( 'moveables' )[ 0 ] || num === this.get( 'moveables' )[ 1 ] || num === this.get( 'moveables' )[ 2 ];
-            console.log( num, snum, bool );
+            //console.log( num, snum, bool );
             if ( snum == num ) {
                 //deselect that board position and make those positions un special and set setts.selected to -1
                 this.set( 'selected', -1 );
@@ -151,7 +151,6 @@ var Game = Ractive.extend( {
         } else {
             this.set( "player2Name", str );
         }
-        console.log( str );
         this.updateHUD();
         this.saveScore( null );
         //reflect Name change to HUD
@@ -432,7 +431,7 @@ var Game = Ractive.extend( {
 
     illegal: function ( errorMsg, actualErrorOveride ) {
         var d = errorMsg.split( "~" );
-        this.notify( d[ 1 ] || "Message:", d[ 0 ], d[ 3 ] || 1900, actualErrorOveride || "error", d[ 2 ] );
+        this.notify( d[ 1 ] || "Message:", d[ 0 ], this.toInt( d[ 3 ] || 1900 ), actualErrorOveride || "error", d[ 2 ] );
     },
     //something illegal happened
     notify: function ( title, message, time, typely, icon ) {
@@ -1188,9 +1187,9 @@ var Game = Ractive.extend( {
         ] //end of side traps
     ],
     trackcurrent: function ( board ) {
-        var bro = "",
-            brt = "",
-            br = "";
+        var bro = "|",
+            brt = "|",
+            br = "|";
         for ( var i = 0, l = board.length; i < l; i++ ) {
             if ( i / 3 < 1 ) {
                 bro += board[ i ] ? ' X ' : board[ i ] === null ? ' ' + i + ' ' : ' O ';
@@ -1200,11 +1199,14 @@ var Game = Ractive.extend( {
                 br += board[ i ] ? ' X ' : board[ i ] === null ? ' ' + i + ' ' : ' O ';
             }
         }
-        console.log( '---------' );
+        bro += "|";
+        brt += "|";
+        br += "|";
+        console.log( '___________' );
         console.log( bro );
         console.log( brt );
         console.log( br );
-        console.log( '---------' );
+        console.log( '‾‾‾‾‾‾‾‾‾‾‾' );
     },
     //logs current board to console
 } );
