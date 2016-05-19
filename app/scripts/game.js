@@ -55,7 +55,7 @@ var Game = Ractive.extend({
                 }
 
                 if (arr.length === 0) {
-                    this.illegal("Sorry, " + this.getName(this.get('player')) + " but the rules state that you cant make straight lines the first six turns.~Can't make any straight lines in these turns");
+                    this.illegal("Sorry " + this.getName(this.get('player')) + ", but the rules state that you cant make straight lines the first six turns.~Can't make any straight lines in these turns");
                     return;
                 }
                 this.set('selected', num);
@@ -185,7 +185,7 @@ var Game = Ractive.extend({
         if (this.get("turns") > 5) {
             return;
         } else if (this.get("board." + num) !== null) {
-            this.illegal('Sorry, that position is taken');
+            this.illegal('Sorry ' + this.getName(this.get("player")) + ', that position is taken~Position taken');
             return;
         }
         if (this.get("justWon")) {
@@ -195,7 +195,7 @@ var Game = Ractive.extend({
         var board = this.get("board").clone();
         board[num] = player;
         if (this.hasIllegalLineIn(player, board)) {
-            this.illegal("Sorry, you can't make a line when placing");
+            this.illegal("Sorry " + this.getName(this.get("player")) + ", you can't make a line when placing~Illegal Movement");
             return;
         }
 
@@ -217,7 +217,7 @@ var Game = Ractive.extend({
             if (from !== this.center) {
                 if (this.retRes(this.illegalMovements[from], ((cur) => {
                         if (cur == to) {
-                            this.illegal("Sorry, you can't move there!");
+                            this.illegal("Sorry " + this.getName(this.get("player")) + ", you can't move there!~Illegal Movement");
                             console.log("Attempted to move from %s to %s with player %s", from, to, player ? 'X' : 'O');
                             return true;
                         }
@@ -254,7 +254,7 @@ var Game = Ractive.extend({
         } else {
             //Figure out what to do if its an invalid position
             console.log("Attempted to move from %s to %s with player %s", from, to, player ? 'X' : 'O');
-            this.illegal("Sorry, you can't move there!");
+            this.illegal("Sorry " + this.getName(this.get("player")) + ", you can't move there!");
         }
     },
     // accepts player interger position from and to on the board and moves if no errors occur
@@ -357,9 +357,9 @@ var Game = Ractive.extend({
     updateHUD: function() {
 
         if (this.get("turns") == 4 && this.score == [0, 0]) {
-            this.illegal("You can't place in a line yet!~Remember");
+            this.illegal("Sorry " + this.getName(this.get("player")) + ", You can't place in a line yet!~Remember");
         } else if (this.get("turns") == 6 && this.score == [0, 0]) {
-            this.illegal("You can't make any straight lines yet!~Remember");
+            this.illegal("Sorry " + this.getName(this.get("player")) + ", You can't make any straight lines yet!~Remember");
         } else if (this.get("turns") == 12) {
             this.illegal("~You can make lines!", "success");
         }
@@ -447,10 +447,10 @@ var Game = Ractive.extend({
                     align: "right"
                 },
                 template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-minimalist alert-minimalist-{0}" role="alert">' +
-                    '<button type="button" aria-hidden="true" class="close" data-notify="dismiss">×</button><img data-notify="icon" class="img-circle pull-left">' +
-                    '<span data-notify="title">{1}</span>' +
-                    '<span data-notify="message">{2}</span>' +
-                    '</div>'
+                    '<button type="button" aria-hidden="true" class="close" data-notify="dismiss">×</button><img data-notify="icon" clas  +
+                '<span data-notify="title">{1}</span>' +
+                '<span data-notify="message">{2}</span>' +
+                '</div>'
             });
         return not;
     },
