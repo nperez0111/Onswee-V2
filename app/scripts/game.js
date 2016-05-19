@@ -16,6 +16,18 @@ var Game = Ractive.extend( {
 
     },
     oninit: function () {
+        this.observe( "ai", ( newVal, oldVal ) => {
+            console.log( newVal, oldVal );
+            if ( newVal ) {
+                var p2 = this.get( "player2Name" );
+                this.setName( "CPU", false );
+                settings.set( "player2", "CPU" );
+                this.set( "past", p2 );
+            } else if ( oldVal !== undefined ) {
+                this.setName( this.get( "past" ), false );
+                settings.set( "player2", this.get( "past" ) );
+            }
+        } );
         this.on( "placePiece", function ( event, args ) {
             args = args.split( ":" );
             if ( this.placePiece( args[ 0 ] == "true", parseInt( args[ 1 ] ) ) && this.get( "ai" ) ) {
@@ -113,6 +125,7 @@ var Game = Ractive.extend( {
             //Saves current state of the game each change that has been made to continue game later
             moves: [],
             ai: false,
+            past: "",
             isActive: function ( num ) {
                 return this.get( 'moveables' ).filter( function ( cur ) {
                     return cur == num;
@@ -321,7 +334,7 @@ var Game = Ractive.extend( {
     },
     load: function () {
         console.log( "loaded" );
-        if ( !this.supportsLocalStorage() ) {
+        if ( !this.supportsLocalStorage() || localStorage.isPlaying == undefined || localStorage.isPlaying !== "true" ) {
             return false;
         }
         this.set( "ai", ( localStorage.ai == 'true' ) );
