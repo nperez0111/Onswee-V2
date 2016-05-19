@@ -86,6 +86,9 @@ var Game = Ractive.extend( {
             }
             //this.updateHUD();
             this.set( "justWon", false );
+            /*if ( this.get( "ai" ) ) {
+                this.aiTurn()
+            }*/
 
 
         } );
@@ -242,8 +245,8 @@ var Game = Ractive.extend( {
                     console.log( "%c%s Won!", "color:red;font-size:20px;", this.getName( !this.get( "board." + to ) ) );
                     this.illegal( ( '~' + this.getName( player ) + ' won!~' + this.get( "icon" )[ player ? 0 : 1 ] + "~src~2500" ), "success" );
                     this.newGame( this.get( "board" )[ to ] );
-                } else if ( this.get( "ai" ) && ( this.get( "player" ) ) ) {
-                    setTimeout( function () {
+                } else if ( this.get( "ai" ) ) {
+                    setTimeout( () => {
                         this.aiTurn();
                     }, 2000 );
                 }
@@ -840,7 +843,7 @@ var Game = Ractive.extend( {
 
         } else {
 
-            initialMovesPos.forEach( ( initial, i ) => {
+            initialMovesPos.forEach( ( initial, fi ) => {
                 //console.log("Working the first round for the %s time",first+1);
                 //goes through first set
 
@@ -849,12 +852,12 @@ var Game = Ractive.extend( {
 
                 //console.log("Calculated and stored OpponentsPossibleMoves");
 
-                initialMoveRankings.push( [ this.rankBoard( player, initial ), first ] );
+                initialMoveRankings.push( [ this.rankBoard( player, initial ), fi ] );
 
                 //console.log("Storing first rank for the %s time!",first);
 
 
-                oppOptions.forEach( ( oppOption, i ) => {
+                oppOptions.forEach( ( oppOption, second ) => {
 
                     var playerSecond = this.trimArrangements( player, this.getPossibleBoardArrangementsFrom( player, oppOption ) );
                     //console.log("Looking through second possiblities for the %s time the length is %s",second, secondLength);
@@ -862,12 +865,12 @@ var Game = Ractive.extend( {
 
                     //console.log("Calculated and stored possibilities of Player for the %s time!",second);
 
-                    opponentMoveRankings.push( [ this.rankBoard( !player, oppOption ), first ] );
+                    opponentMoveRankings.push( [ this.rankBoard( !player, oppOption ), fi ] );
 
                     //console.log("Stored second rank at %s and %s",first,second);
 
-                    playerSecond.forEach( ( nextMove, i ) => {
-                        futureMoveRankings.push( [ this.rankBoard( player, playersFutureMoves[ second ][ third ] ), first ] );
+                    playerSecond.forEach( ( nextMove, third ) => {
+                        futureMoveRankings.push( [ this.rankBoard( player, playersFutureMoves[ second ][ third ] ), fi ] );
                         //console.log("Stored third rank at %s and %s and %s, with %s to go",first,second,third,thirdLength-third-1);
 
 
@@ -937,7 +940,7 @@ var Game = Ractive.extend( {
     //chooses Best Location to move to for a player
     trimArrangements: function ( player, board ) {
         var bool = this.get( "turns" ) < 12;
-        board.filter( function ( cur ) {
+        return board.filter( ( cur ) => {
             if ( this.canCompleteALineIn( !player, cur ) || ( bool && this.hasIllegalLineIn( player, cur ) ) || this.isSameMoveAsLastTime( player, cur ) ) {
                 return false;
             }
