@@ -57,7 +57,7 @@ var Game = Ractive.extend( {
                 }
 
                 if ( arr.length === 0 ) {
-                    this.illegal( "Sorry, " + this.getName( this.get( 'player' ) ) + " but the rules state that you cant make straight lines the first six turns.~Can't make any straight lines in these turns" );
+                    this.illegal( "Sorry, " + this.getName( this.get( 'player' ) ) + " but you can't make straight lines the first six turns.~Can't make any straight lines in these turns" );
                     return;
                 }
                 this.set( 'selected', num );
@@ -240,7 +240,7 @@ var Game = Ractive.extend( {
 
                 if ( this.isWinIn( this.get( "board" )[ to ], this.get( "board" ) ) ) {
                     console.log( "%c%s Won!", "color:red;font-size:20px;", this.getName( !this.get( "board." + to ) ) );
-                    this.illegal( ( '~' + this.getName( player ) + ' won!~' + this.get( "icon" )[ player ? 0 : 1 ] + "~2500" ), "success" );
+                    this.illegal( ( '~' + this.getName( player ) + ' won!~' + this.get( "icon" )[ player ? 0 : 1 ] + "~src~2500" ), "success" );
                     this.newGame( this.get( "board" )[ to ] );
                 } else if ( this.get( "ai" ) && ( this.get( "player" ) ) ) {
                     setTimeout( function () {
@@ -429,10 +429,11 @@ var Game = Ractive.extend( {
 
     illegal: function ( errorMsg, actualErrorOveride ) {
         var d = errorMsg.split( "~" );
-        this.notify( d[ 1 ] || "Message:", d[ 0 ], this.toInt( d[ 3 ] || 1900 ), actualErrorOveride || "error", d[ 2 ] );
+        //d in the format [Message,Title,icon,icoType,time]
+        this.notify( d[ 1 ] || "Message:", d[ 0 ], this.toInt( d[ 4 ] || 1900 ), actualErrorOveride || "error", d[ 2 ], d[ 3 ] );
     },
     //something illegal happened
-    notify: function ( title, message, time, typely, icon ) {
+    notify: function ( title, message, time, typely, icon, icotype ) {
         var that = this,
             not = $.notify( {
                 title: ( typely && typely === "error" ? '<span class="glyphicon glyphicon-warning-sign"></span> ' + title : title ),
@@ -440,8 +441,8 @@ var Game = Ractive.extend( {
                 icon: icon || null
             }, {
                 type: typely || '',
-                delay: ( time || 0 ) + 4000,
-                icon_type: "src",
+                delay: ( time || 0 ) + 3000,
+                icon_type: icotype || "src",
                 placement: {
                     from: "top",
                     align: "right"
@@ -777,7 +778,7 @@ var Game = Ractive.extend( {
             this.trackcurrent( this.get( "board" ) );
             return true;
         }
-        this.illegal( this.get( "board" )[ pos ] === null ? "Sorry " + this.getName( this.get( "player" ) ) + ", you can't make a straight line when placing your pieces the first six turns.~Illegal Placement:" : "Sorry " + this.getName( this.get( "player" ) ) + ", that space is filled!~Space already has piece.", "warning" );
+        this.illegal( this.get( "board" )[ pos ] === null ? "Sorry, " + this.getName( this.get( 'player' ) ) + " but you can't make straight lines the first six turns.~Can't make any straight lines in these turns" : "Sorry " + this.getName( this.get( "player" ) ) + ", that space is filled!~Space already has piece.", "warning" );
         return false;
     },
     //places Piece in Board if possible
