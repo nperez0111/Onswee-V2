@@ -364,8 +364,6 @@ var Game = Ractive.extend( {
             this.illegal( "~You can make lines!", "success" );
         }
 
-        this.trackcurrent( this.get( "board" ) );
-
 
         dragAndDrop( this );
 
@@ -776,6 +774,7 @@ var Game = Ractive.extend( {
                 this.set( "moves.0", this.get( "board" ) );
             }
             this.save();
+            this.trackcurrent( this.get( "board" ) );
             return true;
         }
         this.illegal( this.get( "board" )[ pos ] === null ? "Sorry " + this.getName( this.get( "player" ) ) + ", you can't make a straight line when placing your pieces the first six turns.~Illegal Placement:" : "Sorry " + this.getName( this.get( "player" ) ) + ", that space is filled!~Space already has piece.", "warning" );
