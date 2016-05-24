@@ -378,9 +378,9 @@ var Game = Ractive.extend( {
     },
     updateHUD: function () {
 
-        if ( this.get( "turns" ) == 4 ) {
+        if ( this.get( "turns" ) == 4 && this.score == [ 0, 0 ] ) {
             this.illegal( "Sorry " + this.getName( this.get( "player" ) ) + ", You can't place in a line yet!~Remember:" );
-        } else if ( this.get( "turns" ) == 6 ) {
+        } else if ( this.get( "turns" ) == 6 && this.score == [ 0, 0 ] ) {
             this.illegal( "Sorry " + this.getName( this.get( "player" ) ) + ", You can't make any straight lines yet!~Remember:" );
         } else if ( this.get( "turns" ) == 12 ) {
             this.illegal( "From this round on, the goal of the game is to make a line through the center of the board.~Make lines!", "success" );
@@ -477,6 +477,7 @@ var Game = Ractive.extend( {
             } );
         return not;
     },
+    //goes through array arr runs function func supplying arguments, if the return value exists store that value in ret which will be returned at the end of the function
     retRes: function ( arr, func, brek = false ) {
         var ret = false;
         arr.forEach( ( cur, i, arr ) => {
@@ -496,23 +497,22 @@ var Game = Ractive.extend( {
         var myplayer = this.findPlayersPosIn( player, board ).sort( compareNumber ),
             myOpponent = this.findPlayersPosIn( !player, board ).sort( compareNumber );
 
-        for ( var r = this.trapArrangements.length - 1; r--; ) {
-            var to = this.twoOutOfThree( this.trapArrangements[ r ][ 1 ], myplayer );
+        return this.retRes( this.trapArrangements, ( cur ) => {
+            var to = this.twoOutOfThree( cur[ 1 ], myplayer );
 
-            if ( to > -1 && this.arraysEqual( this.trapArrangements[ r ][ 0 ], myOpponent ) ) {
+            if ( to > -1 && this.arraysEqual( cur[ 0 ], myOpponent ) ) {
 
 
-                for ( var c = this.allPosMoveLocs[ to ].length - 1; c--; ) {
-                    if ( board[ this.allPosMoveLocs[ to ][ c ] ] == player ) {
+                return this.retRes( this.allPosMoveLocs[ to ], ( c ) => {
+                    if ( board[ c ] == player ) {
 
-                        return [ this.allPosMoveLocs[ to ][ c ], to ];
+                        return [ c, to ];
                     }
-                }
+                } );
 
             }
 
-        }
-        return null;
+        } ) || null;
     },
     //tests if the player can trap the other player within a board
     arraysEqual: function ( arr1, arr2 ) {
@@ -536,7 +536,6 @@ var Game = Ractive.extend( {
 
         return count == 1 ? c : -1;
     },
-    //if two arrays are equal returns true
     choosePreffered: function ( player, board ) {
         if ( board[ this.center ] === null ) {
             return this.center;
@@ -558,9 +557,10 @@ var Game = Ractive.extend( {
     //converts to int
 
     hasPossibleLineIn: function ( player, board ) {
-        var c = false;
+        var hasCenter = false;
         if ( this.hasCenterIn( player, board ) ) {
-            c = this.retRes( this.pairArrangements.filter( ( c, i ) => {
+            //if hascenter do easy computation;
+            hasCenter = this.retRes( this.pairArrangements.filter( ( c, i ) => {
                 return i > 3;
             } ), ( cur, i ) => {
                 var val = 4 + i;
@@ -574,7 +574,7 @@ var Game = Ractive.extend( {
 
 
         }
-        return c != false ? c : false || this.retRes( this.pairArrangements, ( cur, i ) => {
+        return hasCenter || this.retRes( this.pairArrangements, ( cur, i ) => {
             if ( board[ cur[ 0 ] ] == player && board[ cur[ 1 ] ] == player ) {
                 return i;
             }
@@ -590,16 +590,20 @@ var Game = Ractive.extend( {
 
     isWinIn: function ( player, board ) {
 
-        var pos = this.findPlayersPosIn( player, board ).sort( compareNumber );
+        var playersLocs = this.findPlayersPosIn( player, board ).sort( compareNumber );
 
-        if ( pos[ 0 ] > 3 ) {
+        if ( playersLocs[ 0 ] > 3 ) {
             return false;
         }
 
-        var cur = this.winningArrangements[ pos[ 0 ] ];
+        var cur = this.winningArrangements[ playersLocs[ 0 ] ];
 
-        return ( cur[ 1 ] == pos[ 1 ] && cur[ 2 ] == pos[ 2 ] );
+        return ( cur[ 1 ] == playersLocs[ 1 ] && cur[ 2 ] == playersLocs[ 2 ] );
 
+    },
+    logger: ( a ) => {
+        console.log( a );
+        return a;
     },
     //returns true if specified player has a line through the center in the specified board
 
@@ -607,13 +611,22 @@ var Game = Ractive.extend( {
         if ( this.get( "turns" ) > 12 ) {
             return false;
         }
+        return this.logger( this.retRes( this.winningArrangements.concat( this.illegalArrangements ), ( possibleLocs, i ) => {
+            return possibleLocs.every( ( cur ) => {
+                return this.playerHasPosIn( player, cur, board )
+            } );
+        } ) );
+        /*
         for ( var i = 0, b = board, line = this.winningArrangements.concat( this.illegalArrangements ), l = line.length; i < l; i++ ) {
             if ( b[ line[ i ][ 0 ] ] == player && b[ line[ i ][ 1 ] ] == player && b[ line[ i ][ 2 ] ] == player ) {
                 return true;
             }
-        }
+        }*/
 
         return false;
+    },
+    playerHasPosIn: function ( player, pos, board ) {
+        return player == board[ pos ];
     },
 
     canCompleteALineIn: function ( player, board ) {
