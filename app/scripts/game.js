@@ -499,6 +499,7 @@ var Game = Ractive.extend( {
 
         return this.retRes( this.trapArrangements, ( cur ) => {
             var to = this.twoOutOfThree( cur[ 1 ], myplayer );
+            console.log( to );
 
             if ( to > -1 && this.arraysEqual( cur[ 0 ], myOpponent ) ) {
 
@@ -611,11 +612,11 @@ var Game = Ractive.extend( {
         if ( this.get( "turns" ) > 12 ) {
             return false;
         }
-        return this.logger( this.retRes( this.winningArrangements.concat( this.illegalArrangements ), ( possibleLocs, i ) => {
+        return this.retRes( this.winningArrangements.concat( this.illegalArrangements ), ( possibleLocs, i ) => {
             return possibleLocs.every( ( cur ) => {
                 return this.playerHasPosIn( player, cur, board )
             } );
-        } ) );
+        } );
         /*
         for ( var i = 0, b = board, line = this.winningArrangements.concat( this.illegalArrangements ), l = line.length; i < l; i++ ) {
             if ( b[ line[ i ][ 0 ] ] == player && b[ line[ i ][ 1 ] ] == player && b[ line[ i ][ 2 ] ] == player ) {
