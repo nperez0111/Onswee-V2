@@ -162,20 +162,20 @@
         </div>
         {{/each}}
         <div id="curTurn">
-            <div class="whosTurn ripplelink {{turns % 2 === 0 ? 'Active' : 'Inactive'}}">
+            <div class="whosTurn ripplelink {{player ? 'Active' : 'Inactive'}}">
                 <span class="whosTurn inner">
                         
-                            {{player1Name+(turns%2==0?"'s Turn ":"")}} : 
+                            {{player1Name+(player?"'s Turn ":"")}} : 
                             
                             
                             <span class="score">{{score[0]==1?'1 Point':(score[0]+' Points')}}</span>
                 </span>
                 <img src="{{icon[0]}}" alt="Player 1 Icon" />
             </div>
-            <div class="whosTurn ripplelink {{turns % 2 === 1 ? 'Active' : 'Inactive'}}">
+            <div class="whosTurn ripplelink {{!player ? 'Active' : 'Inactive'}}">
                 <span class="whosTurn inner">
                         
-                            {{player2Name+(turns%2==1?"'s Turn ":"")}} :
+                            {{player2Name+(!player ? "'s Turn " : "")}} :
                             
                             
                             <span class="score">{{score[1]==1?'1 Point':(score[1]+' Points')}}</span>
@@ -186,20 +186,20 @@
     </script>
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
     <script>
-        (function (i, s, o, g, r, a, m) {
-            i['GoogleAnalyticsObject'] = r;
-            i[r] = i[r] || function () {
-                (i[r].q = i[r].q || []).push(arguments)
-            }, i[r].l = 1 * new Date();
-            a = s.createElement(o),
-                m = s.getElementsByTagName(o)[0];
-            a.async = 1;
-            a.src = g;
-            m.parentNode.insertBefore(a, m)
-        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+    (function(i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r;
+        i[r] = i[r] || function() {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date();
+        a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
-        ga('create', 'UA-61069332-1', 'auto');
-        ga('send', 'pageview');
+    ga('create', 'UA-61069332-1', 'auto');
+    ga('send', 'pageview');
     </script>
     <!-- build:js({app,.tmp}) scripts/main.js -->
     <script src="scripts/utilities.js"></script>
