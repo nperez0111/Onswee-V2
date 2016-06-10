@@ -256,11 +256,7 @@ var Game = Ractive.extend( {
                     console.log( "%c%s Won!", "color:red;font-size:20px;", this.getName( !this.get( "board." + to ) ) );
                     this.illegal( ( '~' + this.getName( player ) + ' won!~' + this.get( "icon" )[ player ? 0 : 1 ] + "~src~2500" ), "success" );
                     this.newGame( this.get( "board" )[ to ] );
-<<<<<<< HEAD
-                } else if ( this.get( "ai" ) && ( this.get( "player" ) ) ) {
-=======
                 } else if ( this.get( "ai" ) ) {
->>>>>>> master
                     setTimeout( () => {
                         this.aiTurn();
                     }, 2000 );
@@ -881,49 +877,23 @@ var Game = Ractive.extend( {
             /*
             initialMovesPos.forEach( ( initial, cur ) => {
 
-<<<<<<< HEAD
                         var oppOptions = this.getPossibleBoardArrangementsFrom( !player, initial );
                         OpponentsPossibleMoves.push( oppOptions );
 
                         initialMoveRankings.push( [ this.rankBoard( player, initial ), cur ] );
-=======
-            initialMovesPos.forEach( ( initial, fi ) => {
-                //console.log("Working the first round for the %s time",first+1);
-                //goes through first set
 
-                var oppOptions = this.getPossibleBoardArrangementsFrom( !player, initial );
-                OpponentsPossibleMoves.push( oppOptions );
-
-                //console.log("Calculated and stored OpponentsPossibleMoves");
-
-                initialMoveRankings.push( [ this.rankBoard( player, initial ), fi ] );
-
-                //console.log("Storing first rank for the %s time!",first);
-
-
-                oppOptions.forEach( ( oppOption, second ) => {
->>>>>>> master
 
 
                         oppOptions.forEach( ( oppOption, i ) => {
 
-<<<<<<< HEAD
                             var playerSecond = this.trimArrangements( player, this.getPossibleBoardArrangementsFrom( player, oppOption ) );
                             playersFutureMoves.push( playerSecond );
-=======
-                    opponentMoveRankings.push( [ this.rankBoard( !player, oppOption ), fi ] );
->>>>>>> master
+
 
                             opponentMoveRankings.push( [ this.rankBoard( !player, oppOption ), cur ] );
 
-<<<<<<< HEAD
                             playerSecond.forEach( ( nextMove, i ) => {
                                 futureMoveRankings.push( [ this.rankBoard( player, nextMove ), cur ] );
-=======
-                    playerSecond.forEach( ( nextMove, third ) => {
-                        futureMoveRankings.push( [ this.rankBoard( player, playersFutureMoves[ second ][ third ] ), fi ] );
-                        //console.log("Stored third rank at %s and %s and %s, with %s to go",first,second,third,thirdLength-third-1);
->>>>>>> master
 
                             } );
 
