@@ -1,6 +1,7 @@
 {
     "private": true,
     "version": "0.9.1",
+    "name": "OnsweeV2",
     "devDependencies": {
         "autoprefixer": "^6.0.2",
         "grunt": "^0.4.5",
