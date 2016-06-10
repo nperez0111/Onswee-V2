@@ -818,11 +818,7 @@ var Game = Ractive.extend( {
         }
 
         var initialMovesPos = this.trimArrangements( player, this.getPossibleBoardArrangementsFrom( player, this.get( "board" ) ) ),
-            OpponentsPossibleMoves = [],
-            playersFutureMoves = [],
-            initialMoveRankings = [],
-            opponentMoveRankings = [],
-            futureMoveRankings = [];
+            ranks = [ this.get( 'board' ) ];
 
         if ( initialMovesPos.length === 0 ) {
             this.moveIntoAnyOpenPos( player );
@@ -831,50 +827,59 @@ var Game = Ractive.extend( {
 
         } else if ( initialMovesPos.length == 1 ) {
 
+            change = this.changeBetween( this.get( "board" ), initialMovesPos[ 0 ] );
             //just skip we will move into that position that is possible now
             console.log( "Only one position to move to really :/" );
+            this.moveFromTo( player, change[ 0 ], change[ 1 ] );
+            return;
 
         } else {
+            /*
+            initialMovesPos.forEach( ( initial, cur ) => {
 
-            initialMovesPos.forEach( ( initial, i ) => {
-                //console.log("Working the first round for the %s time",first+1);
-                //goes through first set
+                        var oppOptions = this.getPossibleBoardArrangementsFrom( !player, initial );
+                        OpponentsPossibleMoves.push( oppOptions );
 
-                var oppOptions = this.getPossibleBoardArrangementsFrom( !player, initial );
-                OpponentsPossibleMoves.push( oppOptions );
-
-                //console.log("Calculated and stored OpponentsPossibleMoves");
-
-                initialMoveRankings.push( [ this.rankBoard( player, initial ), first ] );
-
-                //console.log("Storing first rank for the %s time!",first);
+                        initialMoveRankings.push( [ this.rankBoard( player, initial ), cur ] );
 
 
-                oppOptions.forEach( ( oppOption, i ) => {
+                        oppOptions.forEach( ( oppOption, i ) => {
 
-                    var playerSecond = this.trimArrangements( player, this.getPossibleBoardArrangementsFrom( player, oppOption ) );
-                    //console.log("Looking through second possiblities for the %s time the length is %s",second, secondLength);
-                    playersFutureMoves.push( playerSecond );
+                            var playerSecond = this.trimArrangements( player, this.getPossibleBoardArrangementsFrom( player, oppOption ) );
+                            playersFutureMoves.push( playerSecond );
 
-                    //console.log("Calculated and stored possibilities of Player for the %s time!",second);
+                            opponentMoveRankings.push( [ this.rankBoard( !player, oppOption ), cur ] );
 
-                    opponentMoveRankings.push( [ this.rankBoard( !player, oppOption ), first ] );
+                            playerSecond.forEach( ( nextMove, i ) => {
+                                futureMoveRankings.push( [ this.rankBoard( player, nextMove ), cur ] );
 
-                    //console.log("Stored second rank at %s and %s",first,second);
-
-                    playerSecond.forEach( ( nextMove, i ) => {
-                        futureMoveRankings.push( [ this.rankBoard( player, playersFutureMoves[ second ][ third ] ), first ] );
-                        //console.log("Stored third rank at %s and %s and %s, with %s to go",first,second,third,thirdLength-third-1);
+                            } );
 
 
-                    } )
+                        } );
 
 
-                } );
+                    } );*/
+            ranks.push( this.getPossibleRankingsFrom( player, ranks[ 0 ] ) );
+            var listOfBoards = ranks[ 1 ];
+            var nextRanks = listOfBoards.map( cur => {
+                return this.getPossibleRankingsFrom( !player, cur[ 2 ], cur[ 1 ] );
+            } ).reduce( function ( a, b ) {
+                return a.concat( b );
+            }, [] );
+            ranks.push( nextRanks );
+            var nextListOfBoards = nextRanks;
+            var nextnextranks = nextListOfBoards.map( cur => {
+                return this.getPossibleRankingsFrom( player, cur[ 2 ], cur[ 1 ] );
+            } ).reduce( function ( a, b ) {
+                return a.concat( b );
+            }, [] );
+            ranks.push( nextnextranks );
+            /*
+            ranks.push( this.getPossibleRankingsFrom( !player, ranks[ 1 ][ 2 ] ) );
+            //ranks.push( this.getPossibleRankingsFrom( player, ranks[ 2 ][ 2 ] ) );*/
+            console.log( ranks )
 
-
-            } );
-            //console.log("We made it through that madness!!");
         }
 
         var
@@ -891,6 +896,8 @@ var Game = Ractive.extend( {
             //benefits the AI to Play for itself
             var firstBestMove = sortedRanks[ sortedRanks.length - 1 ][ 1 ];
             var secondBestMove = sortedRanks[ sortedRanks.length - 2 ][ 1 ];
+            console.log( firstBestMove, secondBestMove );
+            console.log( initialMovesPos );
 
 
             if ( this.findBestAverage( firstBestMove, futureMoveRankings ) > this.findBestAverage( secondBestMove, futureMoveRankings ) ) {
@@ -901,10 +908,7 @@ var Game = Ractive.extend( {
             }
 
 
-        } else if ( initialMovesPos.length == 1 ) {
-            change = this.changeBetween( this.get( "board" ), initialMovesPos[ 0 ] );
         } else {
-            //screw the player
             console.log( "Let's screw e'm up!" );
             //console.log(opponentMoveRankings);
             //console.log(sec);
@@ -931,6 +935,21 @@ var Game = Ractive.extend( {
 
     },
     //chooses Best Location to move to for a player
+    getPossibleRankingsFrom: function ( player, board, firstMoveTaken = null ) {
+        return this.trimArrangements( player, this.getPossibleBoardArrangementsFrom( player, board ) ).map( ( cur, firstM ) => {
+            return [ this.rankBoard( player, cur ), firstMoveTaken == null ? firstM : firstMoveTaken, cur ];
+        } );
+        /*
+    returns an array in the format
+    [
+        [
+        board
+        ],
+        firstMoveTaken,
+        boardUsed
+    ]
+        */
+    },
     trimArrangements: function ( player, board ) {
         var bool = this.get( "turns" ) < 12;
         return board.filter( ( cur ) => {
