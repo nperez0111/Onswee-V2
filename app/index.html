@@ -80,6 +80,9 @@
     <script src="/bower_components/jquery.ui/ui/draggable.js"></script>
     <script src="/bower_components/ractive/ractive.js"></script>
     <script src="/bower_components/remarkable-bootstrap-notify/bootstrap-notify.js"></script>
+    <script src="/bower_components/fastclick/lib/fastclick.js"></script>
+    <script src="/bower_components/jquery-ui/jquery-ui.js"></script>
+    <script src="/bower_components/jqueryui-touch-punch/jquery.ui.touch-punch.min.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
     <script id='settings' type='text/ractive'>
@@ -159,20 +162,20 @@
         </div>
         {{/each}}
         <div id="curTurn">
-            <div class="whosTurn ripplelink {{turns % 2 === 0 ? 'Active' : 'Inactive'}}">
+            <div class="whosTurn ripplelink {{player ? 'Active' : 'Inactive'}}">
                 <span class="whosTurn inner">
                         
-                            {{player1Name+(turns%2==0?"'s Turn ":"")}} : 
+                            {{player1Name+(player?"'s Turn ":"")}} : 
                             
                             
                             <span class="score">{{score[0]==1?'1 Point':(score[0]+' Points')}}</span>
                 </span>
                 <img src="{{icon[0]}}" alt="Player 1 Icon" />
             </div>
-            <div class="whosTurn ripplelink {{turns % 2 === 1 ? 'Active' : 'Inactive'}}">
+            <div class="whosTurn ripplelink {{!player ? 'Active' : 'Inactive'}}">
                 <span class="whosTurn inner">
                         
-                            {{player2Name+(turns%2==1?"'s Turn ":"")}} :
+                            {{player2Name+(!player ? "'s Turn " : "")}} :
                             
                             
                             <span class="score">{{score[1]==1?'1 Point':(score[1]+' Points')}}</span>
@@ -199,8 +202,6 @@
     ga('send', 'pageview');
     </script>
     <!-- build:js({app,.tmp}) scripts/main.js -->
-    <script src="scripts/fastclick.js"></script>
-    <script src="scripts/jquery.ui.touch-punch.min.js"></script>
     <script src="scripts/utilities.js"></script>
     <script src="scripts/game.js"></script>
     <script src="scripts/main.js"></script>

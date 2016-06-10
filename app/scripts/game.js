@@ -7,7 +7,7 @@ var Game = Ractive.extend( {
         if ( !this.get( "justWon" ) && this.load() ) {
             //any post load
         } else {
-            if ( !supportsLocalStorage() ) {
+            if ( !this.supportsLocalStorage() ) {
                 return;
             }
             //any first time code here
@@ -16,6 +16,18 @@ var Game = Ractive.extend( {
 
     },
     oninit: function () {
+        this.observe( "ai", ( newVal, oldVal ) => {
+            console.log( newVal, oldVal );
+            if ( newVal ) {
+                var p2 = this.get( "player2Name" );
+                this.setName( "CPU", false );
+                settings.set( "player2", "CPU" );
+                this.set( "past", p2 );
+            } else if ( oldVal !== undefined ) {
+                this.setName( this.get( "past" ), false );
+                settings.set( "player2", this.get( "past" ) );
+            }
+        } );
         this.on( "placePiece", function ( event, args ) {
             args = args.split( ":" );
             if ( this.placePiece( args[ 0 ] == "true", parseInt( args[ 1 ] ) ) && this.get( "ai" ) ) {
@@ -40,10 +52,10 @@ var Game = Ractive.extend( {
                 this.set( 'moveables', [] );
             } else if ( snum == -1 || !bool ) {
                 //is not set so let's set current num to special and possible move locs to activated
-                /*if ( this.get( "board" )[ num ] == this.get( "player" ) ) {
+                if ( this.get( "board" )[ num ] == !this.get( "player" ) ) {
                     this.illegal( "~It's " + this.getName( this.get( "player" ) ) + "'s turn!" );
                     return;
-                }*/
+                }
 
                 var arr = [];
                 for ( var c = 0, all = this.allPosMoveLocs[ num ], cl = all.length; c < cl; c++ ) {
@@ -57,7 +69,7 @@ var Game = Ractive.extend( {
                 }
 
                 if ( arr.length === 0 ) {
-                    this.illegal( "Sorry, " + this.getName( this.get( 'player' ) ) + " but the rules state that you cant make straight lines the first six turns.~Can't make any straight lines in these turns" );
+                    this.illegal( "Sorry, " + this.getName( this.get( 'player' ) ) + " but you can't make straight lines the first six turns.~Can't make any straight lines in these turns" );
                     return;
                 }
                 this.set( 'selected', num );
@@ -84,11 +96,12 @@ var Game = Ractive.extend( {
                 }
 
             }
-            //this.updateHUD();
             this.set( "justWon", false );
 
 
         } );
+
+        this.initer();
     },
     data: function () {
         //9 possible positions Null==Empty, True==Player1, False==Player2
@@ -112,6 +125,7 @@ var Game = Ractive.extend( {
             //Saves current state of the game each change that has been made to continue game later
             moves: [],
             ai: false,
+            past: "",
             isActive: function ( num ) {
                 return this.get( 'moveables' ).filter( function ( cur ) {
                     return cur == num;
@@ -186,7 +200,7 @@ var Game = Ractive.extend( {
         if ( this.get( "turns" ) > 5 ) {
             return;
         } else if ( this.get( "board." + num ) !== null ) {
-            this.illegal( 'Sorry, that position is taken' );
+            this.illegal( 'Sorry ' + this.getName( this.get( "player" ) ) + ', that position is taken~Position taken' );
             return;
         }
         if ( this.get( "justWon" ) ) {
@@ -196,7 +210,7 @@ var Game = Ractive.extend( {
         var board = this.get( "board" ).clone();
         board[ num ] = player;
         if ( this.hasIllegalLineIn( player, board ) ) {
-            this.illegal( "Sorry, you can't make a line when placing" );
+            this.illegal( "Sorry " + this.getName( this.get( "player" ) ) + ", you can't make a line when placing~Illegal Movement" );
             return;
         }
 
@@ -240,9 +254,13 @@ var Game = Ractive.extend( {
 
                 if ( this.isWinIn( this.get( "board" )[ to ], this.get( "board" ) ) ) {
                     console.log( "%c%s Won!", "color:red;font-size:20px;", this.getName( !this.get( "board." + to ) ) );
-                    this.illegal( ( '~' + this.getName( player ) + ' won!~' + this.get( "icon" )[ player ? 0 : 1 ] + "~2500" ), "success" );
+                    this.illegal( ( '~' + this.getName( player ) + ' won!~' + this.get( "icon" )[ player ? 0 : 1 ] + "~src~2500" ), "success" );
                     this.newGame( this.get( "board" )[ to ] );
+<<<<<<< HEAD
                 } else if ( this.get( "ai" ) && ( this.get( "player" ) ) ) {
+=======
+                } else if ( this.get( "ai" ) ) {
+>>>>>>> master
                     setTimeout( () => {
                         this.aiTurn();
                     }, 2000 );
@@ -254,7 +272,7 @@ var Game = Ractive.extend( {
         } else {
             //Figure out what to do if its an invalid position
             console.log( "Attempted to move from %s to %s with player %s", from, to, player ? 'X' : 'O' );
-            this.illegal( "Sorry, you can't move there!" );
+            this.illegal( "Sorry " + this.getName( this.get( "player" ) ) + ", you can't move there!" );
         }
     },
     // accepts player interger position from and to on the board and moves if no errors occur
@@ -278,7 +296,7 @@ var Game = Ractive.extend( {
     },
     save: function () {
         //save turn, save current moves, add last board state to moves, save names, save icons, save scores
-        if ( !supportsLocalStorage() ) {
+        if ( !this.supportsLocalStorage() ) {
             return false;
         }
 
@@ -311,8 +329,16 @@ var Game = Ractive.extend( {
         this.updateHUD();
 
     },
+    supportsLocalStorage: function () {
+        try {
+            return 'localStorage' in window && window.localStorage !== null;
+        } catch ( e ) {
+            return false;
+        }
+    },
     load: function () {
-        if ( !supportsLocalStorage() || !( localStorage.isPlaying ) || ( localStorage.isPlaying == 'false' ) ) {
+        console.log( "loaded" );
+        if ( !this.supportsLocalStorage() || localStorage.isPlaying == undefined || localStorage.isPlaying !== "true" ) {
             return false;
         }
         this.set( "ai", ( localStorage.ai == 'true' ) );
@@ -357,11 +383,11 @@ var Game = Ractive.extend( {
     updateHUD: function () {
 
         if ( this.get( "turns" ) == 4 && this.score == [ 0, 0 ] ) {
-            this.illegal( "You can't place in a line yet!~Remember" );
+            this.illegal( "Sorry " + this.getName( this.get( "player" ) ) + ", You can't place in a line yet!~Remember:" );
         } else if ( this.get( "turns" ) == 6 && this.score == [ 0, 0 ] ) {
-            this.illegal( "You can't make any straight lines yet!~Remember" );
+            this.illegal( "Sorry " + this.getName( this.get( "player" ) ) + ", You can't make any straight lines yet!~Remember:" );
         } else if ( this.get( "turns" ) == 12 ) {
-            this.illegal( "~You can make lines!", "success" );
+            this.illegal( "From this round on, the goal of the game is to make a line through the center of the board.~Make lines!", "success" );
         }
 
 
@@ -380,7 +406,7 @@ var Game = Ractive.extend( {
         }
         //console.log( 'called save score' );
         //saves scores into score array
-        if ( !supportsLocalStorage() ) {
+        if ( !this.supportsLocalStorage() ) {
             return;
         }
         var arr = [ this.get( "player1Name" ), this.get( "player2Name" ), this.get( "score" ) ];
@@ -429,10 +455,11 @@ var Game = Ractive.extend( {
 
     illegal: function ( errorMsg, actualErrorOveride ) {
         var d = errorMsg.split( "~" );
-        this.notify( d[ 1 ] || "Message:", d[ 0 ], this.toInt( d[ 3 ] || 1900 ), actualErrorOveride || "error", d[ 2 ] );
+        //d in the format [Message,Title,icon,icoType,time]
+        this.notify( d[ 1 ] || "Message:", d[ 0 ], this.toInt( d[ 4 ] || 1900 ), actualErrorOveride || "error", d[ 2 ], d[ 3 ] );
     },
     //something illegal happened
-    notify: function ( title, message, time, typely, icon ) {
+    notify: function ( title, message, time, typely, icon, icotype ) {
         var that = this,
             not = $.notify( {
                 title: ( typely && typely === "error" ? '<span class="glyphicon glyphicon-warning-sign"></span> ' + title : title ),
@@ -440,8 +467,8 @@ var Game = Ractive.extend( {
                 icon: icon || null
             }, {
                 type: typely || '',
-                delay: ( time || 0 ) + 4000,
-                icon_type: "src",
+                delay: ( time || 0 ) + 3000,
+                icon_type: icotype || "src",
                 placement: {
                     from: "top",
                     align: "right"
@@ -454,6 +481,7 @@ var Game = Ractive.extend( {
             } );
         return not;
     },
+    //goes through array arr runs function func supplying arguments, if the return value exists store that value in ret which will be returned at the end of the function
     retRes: function ( arr, func, brek = false ) {
         var ret = false;
         arr.forEach( ( cur, i, arr ) => {
@@ -473,23 +501,23 @@ var Game = Ractive.extend( {
         var myplayer = this.findPlayersPosIn( player, board ).sort( compareNumber ),
             myOpponent = this.findPlayersPosIn( !player, board ).sort( compareNumber );
 
-        for ( var r = this.trapArrangements.length - 1; r--; ) {
-            var to = this.twoOutOfThree( this.trapArrangements[ r ][ 1 ], myplayer );
+        return this.retRes( this.trapArrangements, ( cur ) => {
+            var to = this.twoOutOfThree( cur[ 1 ], myplayer );
+            console.log( to );
 
-            if ( to > -1 && this.arraysEqual( this.trapArrangements[ r ][ 0 ], myOpponent ) ) {
+            if ( to > -1 && this.arraysEqual( cur[ 0 ], myOpponent ) ) {
 
 
-                for ( var c = this.allPosMoveLocs[ to ].length - 1; c--; ) {
-                    if ( board[ this.allPosMoveLocs[ to ][ c ] ] == player ) {
+                return this.retRes( this.allPosMoveLocs[ to ], ( c ) => {
+                    if ( board[ c ] == player ) {
 
-                        return [ this.allPosMoveLocs[ to ][ c ], to ];
+                        return [ c, to ];
                     }
-                }
+                } );
 
             }
 
-        }
-        return null;
+        } ) || null;
     },
     //tests if the player can trap the other player within a board
     arraysEqual: function ( arr1, arr2 ) {
@@ -513,7 +541,6 @@ var Game = Ractive.extend( {
 
         return count == 1 ? c : -1;
     },
-    //if two arrays are equal returns true
     choosePreffered: function ( player, board ) {
         if ( board[ this.center ] === null ) {
             return this.center;
@@ -521,7 +548,9 @@ var Game = Ractive.extend( {
         var arr = board.map( ( c, i ) => {
             return i;
         } ).filter( ( cur, i ) => {
-            return ( board[ cur ] === null && ( !this.hasIllegalLineIn( player, board.clone() ) ) );
+            var b = board.clone();
+            b[ cur ] = player;
+            return ( board[ cur ] === null && ( !this.hasIllegalLineIn( player, b ) ) );
         } );
 
         return arr[ this.toInt( Math.random() * arr.length ) ];
@@ -533,9 +562,10 @@ var Game = Ractive.extend( {
     //converts to int
 
     hasPossibleLineIn: function ( player, board ) {
-        var c = false;
+        var hasCenter = false;
         if ( this.hasCenterIn( player, board ) ) {
-            c = this.retRes( this.pairArrangements.filter( ( c, i ) => {
+            //if hascenter do easy computation;
+            hasCenter = this.retRes( this.pairArrangements.filter( ( c, i ) => {
                 return i > 3;
             } ), ( cur, i ) => {
                 var val = 4 + i;
@@ -549,7 +579,7 @@ var Game = Ractive.extend( {
 
 
         }
-        return c != false ? c : false || this.retRes( this.pairArrangements, ( cur, i ) => {
+        return hasCenter || this.retRes( this.pairArrangements, ( cur, i ) => {
             if ( board[ cur[ 0 ] ] == player && board[ cur[ 1 ] ] == player ) {
                 return i;
             }
@@ -565,16 +595,20 @@ var Game = Ractive.extend( {
 
     isWinIn: function ( player, board ) {
 
-        var pos = this.findPlayersPosIn( player, board ).sort( compareNumber );
+        var playersLocs = this.findPlayersPosIn( player, board ).sort( compareNumber );
 
-        if ( pos[ 0 ] > 3 ) {
+        if ( playersLocs[ 0 ] > 3 ) {
             return false;
         }
 
-        var cur = this.winningArrangements[ pos[ 0 ] ];
+        var cur = this.winningArrangements[ playersLocs[ 0 ] ];
 
-        return ( cur[ 1 ] == pos[ 1 ] && cur[ 2 ] == pos[ 2 ] );
+        return ( cur[ 1 ] == playersLocs[ 1 ] && cur[ 2 ] == playersLocs[ 2 ] );
 
+    },
+    logger: ( a ) => {
+        console.log( a );
+        return a;
     },
     //returns true if specified player has a line through the center in the specified board
 
@@ -582,13 +616,22 @@ var Game = Ractive.extend( {
         if ( this.get( "turns" ) > 12 ) {
             return false;
         }
+        return this.retRes( this.winningArrangements.concat( this.illegalArrangements ), ( possibleLocs, i ) => {
+            return possibleLocs.every( ( cur ) => {
+                return this.playerHasPosIn( player, cur, board )
+            } );
+        } );
+        /*
         for ( var i = 0, b = board, line = this.winningArrangements.concat( this.illegalArrangements ), l = line.length; i < l; i++ ) {
             if ( b[ line[ i ][ 0 ] ] == player && b[ line[ i ][ 1 ] ] == player && b[ line[ i ][ 2 ] ] == player ) {
                 return true;
             }
-        }
+        }*/
 
         return false;
+    },
+    playerHasPosIn: function ( player, pos, board ) {
+        return player == board[ pos ];
     },
 
     canCompleteALineIn: function ( player, board ) {
@@ -777,13 +820,13 @@ var Game = Ractive.extend( {
             this.trackcurrent( this.get( "board" ) );
             return true;
         }
-        this.illegal( this.get( "board" )[ pos ] === null ? "Sorry " + this.getName( this.get( "player" ) ) + ", you can't make a straight line when placing your pieces the first six turns.~Illegal Placement:" : "Sorry " + this.getName( this.get( "player" ) ) + ", that space is filled!~Space already has piece.", "warning" );
+        this.illegal( this.get( "board" )[ pos ] === null ? "Sorry, " + this.getName( this.get( 'player' ) ) + " but you can't make straight lines the first six turns.~Can't make any straight lines in these turns" : "Sorry " + this.getName( this.get( "player" ) ) + ", that space is filled!~Space already has piece.", "warning" );
         return false;
     },
     //places Piece in Board if possible
     aiTurn: function () {
         console.trace( "aiturn" )
-        console.log( '----------------AI Turn' );
+        console.log( '__________________AI Turn' );
         if ( this.get( "turns" ) > 5 ) {
 
             this.chooseBestMove( false, this.get( "board" ) );
@@ -791,7 +834,8 @@ var Game = Ractive.extend( {
         } else {
             this.placePiece( false, this.choosePreffered( false, this.get( "board" ) ) );
         }
-        console.log( '-------------------End AI turn' );
+        this.trackcurrent( this.get( "board" ) );
+        console.log( '__________________End AI turn' );
 
         this.updateHUD();
     },
@@ -837,21 +881,49 @@ var Game = Ractive.extend( {
             /*
             initialMovesPos.forEach( ( initial, cur ) => {
 
+<<<<<<< HEAD
                         var oppOptions = this.getPossibleBoardArrangementsFrom( !player, initial );
                         OpponentsPossibleMoves.push( oppOptions );
 
                         initialMoveRankings.push( [ this.rankBoard( player, initial ), cur ] );
+=======
+            initialMovesPos.forEach( ( initial, fi ) => {
+                //console.log("Working the first round for the %s time",first+1);
+                //goes through first set
+
+                var oppOptions = this.getPossibleBoardArrangementsFrom( !player, initial );
+                OpponentsPossibleMoves.push( oppOptions );
+
+                //console.log("Calculated and stored OpponentsPossibleMoves");
+
+                initialMoveRankings.push( [ this.rankBoard( player, initial ), fi ] );
+
+                //console.log("Storing first rank for the %s time!",first);
+
+
+                oppOptions.forEach( ( oppOption, second ) => {
+>>>>>>> master
 
 
                         oppOptions.forEach( ( oppOption, i ) => {
 
+<<<<<<< HEAD
                             var playerSecond = this.trimArrangements( player, this.getPossibleBoardArrangementsFrom( player, oppOption ) );
                             playersFutureMoves.push( playerSecond );
+=======
+                    opponentMoveRankings.push( [ this.rankBoard( !player, oppOption ), fi ] );
+>>>>>>> master
 
                             opponentMoveRankings.push( [ this.rankBoard( !player, oppOption ), cur ] );
 
+<<<<<<< HEAD
                             playerSecond.forEach( ( nextMove, i ) => {
                                 futureMoveRankings.push( [ this.rankBoard( player, nextMove ), cur ] );
+=======
+                    playerSecond.forEach( ( nextMove, third ) => {
+                        futureMoveRankings.push( [ this.rankBoard( player, playersFutureMoves[ second ][ third ] ), fi ] );
+                        //console.log("Stored third rank at %s and %s and %s, with %s to go",first,second,third,thirdLength-third-1);
+>>>>>>> master
 
                             } );
 

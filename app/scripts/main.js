@@ -109,7 +109,6 @@ function dragAndDrop( obj ) {
         delay: 200,
         zIndex: 120,
         drag: function ( event, ui ) {
-            console.log( "dragStart" )
             if ( hadnt ) {
                 $( this ).parent().parent().removeClass( 'overHide' );
                 hadnt = false;
