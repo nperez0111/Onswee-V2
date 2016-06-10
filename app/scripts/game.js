@@ -243,7 +243,7 @@ var Game = Ractive.extend( {
                     this.illegal( ( '~' + this.getName( player ) + ' won!~' + this.get( "icon" )[ player ? 0 : 1 ] + "~2500" ), "success" );
                     this.newGame( this.get( "board" )[ to ] );
                 } else if ( this.get( "ai" ) && ( this.get( "player" ) ) ) {
-                    setTimeout( function () {
+                    setTimeout( () => {
                         this.aiTurn();
                     }, 2000 );
                 }
@@ -933,7 +933,7 @@ var Game = Ractive.extend( {
     //chooses Best Location to move to for a player
     trimArrangements: function ( player, board ) {
         var bool = this.get( "turns" ) < 12;
-        board.filter( function ( cur ) {
+        return board.filter( ( cur ) => {
             if ( this.canCompleteALineIn( !player, cur ) || ( bool && this.hasIllegalLineIn( player, cur ) ) || this.isSameMoveAsLastTime( player, cur ) ) {
                 return false;
             }
