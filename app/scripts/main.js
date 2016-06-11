@@ -225,3 +225,18 @@ $( document ).ready( function () {
         }
     }
 } );
+
+function goTo( which, link ) {
+    var whiches = game.get( "which" );
+    if ( whiches && whiches[ 0 ] == which ) {
+        return;
+    }
+
+    $( whiches[ 0 ] ).slideUp( 'slow' );
+    $( which ).slideDown( 'slow' );
+    $( link ).addClass( 'active' );
+    $( whiches[ 1 ] ).removeClass( 'active' );
+
+    game.set( "which", [ which, link ] );
+
+}
