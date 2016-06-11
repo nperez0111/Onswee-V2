@@ -825,15 +825,16 @@ var Game = Ractive.extend( {
         return false;
     },
     //places Piece in Board if possible
-    aiTurn: function () {
+    aiTurn: function ( player = false ) {
         console.trace( "aiturn" )
         console.log( '__________________AI Turn' );
         if ( this.get( "turns" ) > 5 ) {
 
-            this.chooseBestMove( false, this.get( "board" ) );
+            var movement = this.chooseBestMove( player, this.get( "board" ) );
+            this.moveFromTo( player, movement[ 0 ], movement[ 1 ] )
 
         } else {
-            this.placePiece( false, this.choosePreffered( false, this.get( "board" ) ) );
+            this.placePiece( player, this.choosePreffered( player, this.get( "board" ) ) );
         }
         this.trackcurrent( this.get( "board" ) );
         console.log( '__________________End AI turn' );
@@ -862,8 +863,8 @@ var Game = Ractive.extend( {
             return;
         }
 
-        var initialMovesPos = this.trimArrangements( player, this.getPossibleBoardArrangementsFrom( player, this.get( "board" ) ) ),
-            ranks = [ this.get( 'board' ) ];
+        var initialMovesPos = this.trimArrangements( player, this.getPossibleBoardArrangementsFrom( player, board ) ),
+            ranks = [ this.getPossibleRankingsFrom( player, board ) ];
 
         if ( initialMovesPos.length === 0 ) {
             this.moveIntoAnyOpenPos( player );
@@ -879,106 +880,56 @@ var Game = Ractive.extend( {
             return;
 
         } else {
-            /*
-            initialMovesPos.forEach( ( initial, cur ) => {
-
-                        var oppOptions = this.getPossibleBoardArrangementsFrom( !player, initial );
-                        OpponentsPossibleMoves.push( oppOptions );
-
-                        initialMoveRankings.push( [ this.rankBoard( player, initial ), cur ] );
-
-
-
-                        oppOptions.forEach( ( oppOption, i ) => {
-
-                            var playerSecond = this.trimArrangements( player, this.getPossibleBoardArrangementsFrom( player, oppOption ) );
-                            playersFutureMoves.push( playerSecond );
-
-
-                            opponentMoveRankings.push( [ this.rankBoard( !player, oppOption ), cur ] );
-
-                            playerSecond.forEach( ( nextMove, i ) => {
-                                futureMoveRankings.push( [ this.rankBoard( player, nextMove ), cur ] );
-
-                            } );
-
-
-                        } );
-
-
-                    } );*/
-            ranks.push( this.getPossibleRankingsFrom( player, ranks[ 0 ] ) );
-            var listOfBoards = ranks[ 1 ];
-            var nextRanks = listOfBoards.map( cur => {
-                return this.getPossibleRankingsFrom( !player, cur[ 2 ], cur[ 1 ] );
-            } ).reduce( function ( a, b ) {
-                return a.concat( b );
-            }, [] );
-            ranks.push( nextRanks );
-            var nextListOfBoards = nextRanks;
-            var nextnextranks = nextListOfBoards.map( cur => {
-                return this.getPossibleRankingsFrom( player, cur[ 2 ], cur[ 1 ] );
-            } ).reduce( function ( a, b ) {
-                return a.concat( b );
-            }, [] );
-            ranks.push( nextnextranks );
-            /*
-            ranks.push( this.getPossibleRankingsFrom( !player, ranks[ 1 ][ 2 ] ) );
-            //ranks.push( this.getPossibleRankingsFrom( player, ranks[ 2 ][ 2 ] ) );*/
-            console.log( ranks )
+            [ 0, 1 ].forEach( i => {
+                ranks.push( ranks[ i ].map( cur => {
+                    return this.getPossibleRankingsFrom( cur % 2 == 0 ? !player : player, cur[ 2 ], cur[ 1 ] );
+                } ).reduce( function ( a, b ) {
+                    return a.concat( b );
+                }, [] ) );
+            } );
 
         }
 
-        var
-        /*AverageOfInitialMoves = this.averageArr(initialMoveRankings),
-                    save = this.averageArr(opponentMoveRankings),*/
-            sortedRanks = initialMoveRankings.clone().sort( compareNumbers ),
-            sec = opponentMoveRankings.clone().sort( compareNumbers ),
+        var sortedRanks = ranks.map( cur => {
+                return cur.sort( compareNumbers ).reverse();
+            } ),
             change = [];
 
 
 
-        if ( initialMovesPos.length > 1 && ( sortedRanks[ sortedRanks.length - 1 ][ 0 ] ) > 0 ) {
+        if ( initialMovesPos.length > 1 && ( sortedRanks[ 0 ][ 0 ] ) > 0 ) {
 
             //benefits the AI to Play for itself
-            var firstBestMove = sortedRanks[ sortedRanks.length - 1 ][ 1 ];
-            var secondBestMove = sortedRanks[ sortedRanks.length - 2 ][ 1 ];
-            console.log( firstBestMove, secondBestMove );
-            console.log( initialMovesPos );
+            var firstBestMove = sortedRanks[ 0 ][ 0 ][ 2 ],
+                secondBestMove = sortedRanks[ 0 ][ 0 ][ 2 ];
 
 
-            if ( this.findBestAverage( firstBestMove, futureMoveRankings ) > this.findBestAverage( secondBestMove, futureMoveRankings ) ) {
-                change = this.changeBetween( this.get( "board" ), initialMovesPos[ firstBestMove ] );
+            if ( sortedRanks[ 2 ][ 0 ][ 0 ] > sortedRanks[ 0 ][ 0 ][ 0 ] ) {
+                change = this.changeBetween( board, firstBestMove );
 
             } else {
-                change = this.changeBetween( this.get( "board" ), initialMovesPos[ secondBestMove ] );
+                change = this.changeBetween( board, secondBestMove );
             }
 
 
         } else {
             console.log( "Let's screw e'm up!" );
-            //console.log(opponentMoveRankings);
-            //console.log(sec);
-
-            var worstPlayForOpponent = this.findInArrOfArrs( sec[ 0 ][ 0 ], opponentMoveRankings );
-            var secondWorstPlayForOp = this.findInArrOfArrs( sec[ 1 ][ 0 ], opponentMoveRankings );
+            //benefits the AI to Play against player
+            var firstBestMove = sortedRanks[ 1 ][ sortedRanks[ 1 ].length - 1 ][ 2 ],
+                secondBestMove = sortedRanks[ 1 ][ sortedRanks[ 1 ].length - 2 ][ 2 ];
 
 
-            //console.log("Worst Play is at %s with a ranking of %s and board config ",worstPlayForOpponent,initialMoveRankings[worstPlayForOpponent][0]);
-            //this.trackcurrent(initialMovesPos[worstPlayForOpponent]);
+            if ( sortedRanks[ 2 ][ 0 ][ 0 ] > sortedRanks[ 1 ][ 0 ][ 0 ] ) {
+                change = this.changeBetween( board, firstBestMove );
 
-            //console.log("Compared To:");
-
-            //console.log("Second Worst Play is at %s with a ranking of %s and board config ",secondWorstPlayForOp,initialMoveRankings[secondWorstPlayForOp][0]);
-            //this.trackcurrent(initialMovesPos[secondWorstPlayForOp]);
-
-            change = initialMoveRankings[ worstPlayForOpponent ][ 0 ] > initialMoveRankings[ secondWorstPlayForOp ][ 0 ] ? this.changeBetween( this.get( "board" ), initialMovesPos[ worstPlayForOpponent ] ) : this.changeBetween( this.get( "board" ), initialMovesPos[ secondWorstPlayForOp ] );
-            //console.log(change);
-            //console.log("Lets do that move!");
+            } else {
+                change = this.changeBetween( board, secondBestMove );
+            }
 
 
         }
-        this.moveFromTo( player, change[ 0 ], change[ 1 ] );
+
+        return change;
 
     },
     //chooses Best Location to move to for a player
