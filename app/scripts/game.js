@@ -259,10 +259,10 @@ var Game = Ractive.extend( {
                 this.updateHUD();
 
                 if ( this.isWinIn( this.get( "board" )[ to ], this.get( "board" ) ) ) {
-                    console.log( "%c%s Won!", "color:red;font-size:20px;", this.getName( !this.get( "board." + to ) ) );
+                    console.log( "%c%s Won!", "color:red;font-size:20px;", this.getName( this.get( "board." + to ) ) );
                     this.illegal( ( '~' + this.getName( player ) + ' won!~' + this.get( "icon" )[ player ? 0 : 1 ] + "~src~2500" ), "success" );
                     this.newGame( this.get( "board" )[ to ] );
-                } else if ( this.get( "ai" ) ) {
+                } else if ( this.get( "ai" ) && this.get( 'player' ) === false ) {
                     setTimeout( () => {
                         this.aiTurn();
                     }, 2000 );
@@ -505,7 +505,7 @@ var Game = Ractive.extend( {
 
         return this.retRes( this.trapArrangements, ( cur ) => {
             var to = this.twoOutOfThree( cur[ 1 ], myplayer );
-
+            console.log( to );
             if ( to > -1 && this.arraysEqual( cur[ 0 ], myOpponent ) ) {
 
 
@@ -533,8 +533,8 @@ var Game = Ractive.extend( {
     twoOutOfThree: function ( arr1, arr2 ) {
         var count = 0,
             c = 0;
-        arr1.clone().reverse().forEach( function ( cur, i ) {
-            if ( cur !== arr2[ i ] ) {
+        arr1.clone().forEach( function ( cur, i ) {
+            if ( arr2.indexOf( cur ) == -1 ) {
                 count++;
                 c = cur;
             }
@@ -831,7 +831,9 @@ var Game = Ractive.extend( {
         if ( this.get( "turns" ) > 5 ) {
 
             var movement = this.chooseBestMove( player, this.get( "board" ) );
-            this.moveFromTo( player, movement[ 0 ], movement[ 1 ] )
+            if ( movement ) {
+                this.moveFromTo( player, movement[ 0 ], movement[ 1 ] );
+            }
 
         } else {
             this.placePiece( player, this.choosePreffered( player, this.get( "board" ) ) );
@@ -915,10 +917,10 @@ var Game = Ractive.extend( {
         } else {
             console.log( "Let's screw e'm up!" );
             //benefits the AI to Play against player
-            var firstBestMove = sortedRanks[ 1 ][ sortedRanks[ 1 ].length - 1 ][ 2 ],
-                secondBestMove = sortedRanks[ 1 ][ sortedRanks[ 1 ].length - 2 ][ 2 ];
+            var firstBestMove = ranks[ 0 ][ sortedRanks[ 1 ][ sortedRanks[ 1 ].length - 1 ][ 1 ] ][ 2 ],
+                secondBestMove = ranks[ 0 ][ sortedRanks[ 1 ][ sortedRanks[ 1 ].length - 2 ][ 1 ] ][ 2 ];
 
-
+            console.log( sortedRanks[ 1 ] );
             if ( sortedRanks[ 2 ][ 0 ][ 0 ] > sortedRanks[ 1 ][ 0 ][ 0 ] ) {
                 change = this.changeBetween( board, firstBestMove );
 
