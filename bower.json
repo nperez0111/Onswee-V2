@@ -41,7 +41,10 @@
     }
   },
   "devDependencies": {
-    "chai": "~3.5.0",
-    "mocha": "~2.4.5"
+    "chai": "^3.5.0",
+    "mocha": "^2.5.3"
+  },
+  "resolutions": {
+    "mocha": "^2.5.3"
   }
 }

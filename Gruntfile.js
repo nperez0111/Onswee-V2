@@ -1,4 +1,4 @@
-// Generated on 2016-04-18 using
+// Generated on 2016-06-11 using
 // generator-webapp 1.1.0
 'use strict';
 
@@ -141,9 +141,6 @@ module.exports = function ( grunt ) {
 
         // Compiles ES6 with Babel
         babel: {
-            options: {
-                sourceMap: true
-            },
             dist: {
                 files: [ {
                     expand: true,
@@ -258,7 +255,7 @@ module.exports = function ( grunt ) {
                 files: [ {
                     expand: true,
                     cwd: '<%= config.app %>/images',
-                    src: '<%= config.app %>/{,*/}*.{gif,jpeg,jpg,png}',
+                    src: '{,*/}*.{gif,jpeg,jpg,png}',
                     dest: '<%= config.dist %>/images'
                 } ]
             }
