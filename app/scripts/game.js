@@ -359,9 +359,13 @@ var Game = Ractive.extend( {
 
     },
     //loads last game played at last saved positions
-
+    actuallyAnim: false,
 
     animateTo: function ( from, to, callback ) {
+        if ( this.actuallyAnim == false ) {
+            callback( this, from, to );
+            return;
+        }
         var distanceX = this.toInt( to % 3 ) - this.toInt( from % 3 ),
             distanceY = this.toInt( to / 3 ) - this.toInt( from / 3 ),
             el = '#drag' + from;
@@ -505,7 +509,6 @@ var Game = Ractive.extend( {
 
         return this.retRes( this.trapArrangements, ( cur ) => {
             var to = this.twoOutOfThree( cur[ 1 ], myplayer );
-            console.log( to );
             if ( to > -1 && this.arraysEqual( cur[ 0 ], myOpponent ) ) {
 
 
@@ -843,8 +846,11 @@ var Game = Ractive.extend( {
         if ( this.get( "turns" ) > 5 ) {
 
             var movement = this.chooseBestMove( player, this.get( "board" ) );
-            if ( movement ) {
+            if ( Array.isArray( movement ) ) {
                 this.moveFromTo( player, movement[ 0 ], movement[ 1 ] );
+            }
+            if ( movement === true ) {
+                return true;
             }
 
         } else {
@@ -863,7 +869,7 @@ var Game = Ractive.extend( {
             //complete the line then!
             console.log( "Let's Complete A line!" );
             this.completeLineIn( player, board );
-            return;
+            return true;
         } else if ( bool && this.canCompleteALineIn( !player, board ) ) {
             //block that!!
             console.log( "Let's try to block em!" );
