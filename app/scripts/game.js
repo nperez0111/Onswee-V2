@@ -847,6 +847,10 @@ var Game = Ractive.extend( {
 
             var movement = this.chooseBestMove( player, this.get( "board" ) );
             if ( Array.isArray( movement ) ) {
+                if ( this.arraysEqual( movement, [] ) ) {
+                    this.moveIntoAnyOpenPos( player );
+                    return;
+                }
                 this.moveFromTo( player, movement[ 0 ], movement[ 1 ] );
             }
             if ( movement === true ) {
@@ -900,57 +904,55 @@ var Game = Ractive.extend( {
             return;
 
         } else {
-            [ 0, 1 ].forEach( i => {
-                ranks.push( ranks[ i ].map( cur => {
-                    return this.getPossibleRankingsFrom( cur % 2 == 0 ? !player : player, cur[ 2 ], cur[ 1 ] );
+
+            [ 0, 1 ].forEach( function ( i ) {
+                ranks.push( ranks[ i ].map( function ( cur ) {
+                    return _this8.getPossibleRankingsFrom( cur % 2 == 0 ? !player : player, cur[ 2 ], cur[ 1 ] );
                 } ).reduce( function ( a, b ) {
                     return a.concat( b );
                 }, [] ) );
             } );
-
         }
 
-        var sortedRanks = ranks.map( cur => {
+        var sortedRanks = ranks.map( function ( cur ) {
                 return cur.sort( compareNumbers ).reverse();
             } ),
             change = [];
 
-
-
-        if ( initialMovesPos.length > 1 && ( sortedRanks[ 0 ][ 0 ] ) > 0 ) {
+        if ( initialMovesPos.length > 1 && sortedRanks[ 0 ][ 0 ][ 0 ] > 0 ) {
 
             //benefits the AI to Play for itself
             var firstBestMove = sortedRanks[ 0 ][ 0 ][ 2 ],
                 secondBestMove = sortedRanks[ 0 ][ 0 ][ 2 ];
 
-
-            if ( sortedRanks[ 2 ][ 0 ][ 0 ] > sortedRanks[ 0 ][ 0 ][ 0 ] ) {
+            if ( ( sortedRanks[ 2 ][ 0 ] || [] )[ 0 ] || -1 > sortedRanks[ 0 ][ 0 ][ 0 ] ) {
                 change = this.changeBetween( board, firstBestMove );
-
             } else {
                 change = this.changeBetween( board, secondBestMove );
             }
-
-
         } else {
-            console.log( "Let's screw e'm up!" );
+            //console.log( "Let's screw e'm up!" );
             //benefits the AI to Play against player
-            var firstBestMove = ranks[ 0 ][ sortedRanks[ 1 ][ sortedRanks[ 1 ].length - 1 ][ 1 ] ][ 2 ],
-                secondBestMove = ranks[ 0 ][ sortedRanks[ 1 ][ sortedRanks[ 1 ].length - 2 ][ 1 ] ][ 2 ];
-
             console.log( sortedRanks[ 1 ] );
+
+            if ( sortedRanks[ 1 ].length > 2 ) {
+                var firstBestMove = ( ranks[ 0 ][ sortedRanks[ 1 ][ sortedRanks[ 1 ].length - 1 ][ 1 ] ] || [] )[ 2 ];
+                var secondBestMove = ( ranks[ 0 ][ sortedRanks[ 1 ][ sortedRanks[ 1 ].length - 2 ][ 1 ] ] || [] )[ 2 ];
+            } else {
+                var firstBestMove = ( sortedRanks[ 0 ][ 0 ] || [] )[ 2 ];
+                var secondBestMove = ( sortedRanks[ 2 ][ 0 ] || [] )[ 2 ];
+            }
+
+
+            //console.log( sortedRanks[ 1 ] );
             if ( sortedRanks[ 2 ][ 0 ][ 0 ] > sortedRanks[ 1 ][ 0 ][ 0 ] ) {
                 change = this.changeBetween( board, firstBestMove );
-
             } else {
                 change = this.changeBetween( board, secondBestMove );
             }
-
-
         }
 
         return change;
-
     },
     //chooses Best Location to move to for a player
     getPossibleRankingsFrom: function ( player, board, firstMoveTaken = null ) {
