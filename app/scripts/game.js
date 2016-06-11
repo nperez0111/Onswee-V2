@@ -21,12 +21,18 @@ var Game = Ractive.extend( {
             if ( newVal ) {
                 var p2 = this.get( "player2Name" );
                 this.setName( "CPU", false );
-                settings.set( "player2", "CPU" );
+                if ( settings ) {
+                    settings.set( "player2", "CPU" );
+                }
                 this.set( "past", p2 );
             } else if ( oldVal !== undefined ) {
                 this.setName( this.get( "past" ), false );
-                settings.set( "player2", this.get( "past" ) );
+                if ( settings ) {
+                    settings.set( "player2", this.get( "past" ) );
+                }
             }
+        }, {
+            defer: true
         } );
         this.on( "placePiece", function ( event, args ) {
             args = args.split( ":" );
@@ -499,7 +505,6 @@ var Game = Ractive.extend( {
 
         return this.retRes( this.trapArrangements, ( cur ) => {
             var to = this.twoOutOfThree( cur[ 1 ], myplayer );
-            console.log( to );
 
             if ( to > -1 && this.arraysEqual( cur[ 0 ], myOpponent ) ) {
 
