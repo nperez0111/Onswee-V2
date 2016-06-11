@@ -767,38 +767,50 @@ var Game = Ractive.extend( {
 
     },
     //returns an array of possible board arrangements
-
+    ranking: {
+        hasLine: 50,
+        oppHasLine: -400,
+        isWin: 400,
+        isLoss: -200,
+        hasPoss: 10,
+        oppHasPoss: -10,
+        hasCenter: 15,
+        oppHasCenter: -10,
+        canTrap: 200,
+        oppCanTrapped: -200,
+    },
     rankBoard: function ( player, board ) {
-        var rank = 0;
+        var rank = 0,
+            r = this.ranking;
         if ( this.canCompleteALineIn( player, board ) ) {
-            rank += 50;
+            rank += r.hasLine;
         }
         if ( this.canCompleteALineIn( !player, board ) ) {
-            rank -= 400;
+            rank -= r.oppHasLine;
         }
         if ( this.isWinIn( player, board ) ) {
-            rank += 400;
+            rank += r.isWin;
         }
         if ( this.isWinIn( !player, board ) ) {
-            rank -= 200;
+            rank -= r.isLoss;
         }
         if ( this.hasPossibleLineIn( player, board ) !== 12 ) {
-            rank += 10;
+            rank += r.hasPoss;
         }
         if ( this.hasPossibleLineIn( !player, board ) !== 12 ) {
-            rank -= 10;
+            rank -= r.oppHasPoss;
         }
         if ( this.hasCenterIn( player, board ) ) {
-            rank += 15;
+            rank += r.hasCenter;
         }
         if ( this.hasCenterIn( !player, board ) ) {
-            rank -= 10;
+            rank -= r.oppHasCenter;
         }
         if ( this.ifCanTrap( player, board ) !== null ) {
-            rank += 200;
+            rank += r.canTrap;
         }
         if ( this.ifCanTrap( !player, board ) !== null ) {
-            rank -= 125;
+            rank -= r.oppCanTrap;
         }
         //this.trackcurrent(board);
         //console.log("Rank of: "+rank+", For: "+this.getName(player)+" As: "+(player?'X':'O'));
