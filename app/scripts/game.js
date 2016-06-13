@@ -104,7 +104,7 @@ var Game = Ractive.extend( {
             }
             this.set( "justWon", false );
 
-
+            event.original.preventDefault();
         } );
 
         this.initer();
@@ -495,7 +495,7 @@ var Game = Ractive.extend( {
                 return;
             }
             var temp = func( cur, i, arr );
-            if ( temp ) {
+            if ( temp !== undefined || temp !== false ) {
                 ret = temp;
             }
         } );
@@ -574,20 +574,21 @@ var Game = Ractive.extend( {
             } ), ( cur, i ) => {
                 var val = 4 + i;
                 if ( board[ cur[ 0 ] ] == player && board[ cur[ 1 ] ] == player ) {
-
+                    //this.log( 'A:' + cur[ 0 ] + ' B:' + cur[ 1 ] );
                     if ( board[ this.pairArrangements[ -2 * ( val % 2 ) + val + 1 ][ -2 * ( val % 2 ) + 1 ] ] === null ) {
                         return val;
                     }
                 }
-            } );
+            }, true );
 
 
         }
-        return hasCenter || this.retRes( this.pairArrangements, ( cur, i ) => {
+        var ret = this.retRes( this.pairArrangements, ( cur, i ) => {
             if ( board[ cur[ 0 ] ] == player && board[ cur[ 1 ] ] == player ) {
                 return i;
             }
-        } ) || 12;
+        }, true );
+        return hasCenter === null ? false : hasCenter || ret === null ? 12 : ret;
 
     },
     //player is player board is in what board, returns the index at which the pairArrangment is found or 12 if none is found if the player being questioned has two in a line on the board
@@ -641,7 +642,7 @@ var Game = Ractive.extend( {
     canCompleteALineIn: function ( player, board ) {
 
         var pairArrOutPut = this.hasPossibleLineIn( player, board );
-
+        //this.log( pairArrOutPut );
         if ( pairArrOutPut == 12 ) {
             return false;
         } else if ( board[ this.center ] === null && ( pairArrOutPut < 4 ) ) {
@@ -884,6 +885,7 @@ var Game = Ractive.extend( {
             console.log( "I think we may Lose that next turn :(" );
         } else if ( bool && canTrap !== null ) {
             this.moveFromTo( player, canTrap[ 0 ], canTrap[ 1 ] );
+            console.log( 'Trapped them' );
             return;
         }
 
