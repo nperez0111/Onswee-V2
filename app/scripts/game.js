@@ -744,7 +744,7 @@ var Game = Ractive.extend( {
         var re = [];
 
         prev.forEach( function ( cur, i ) {
-            if ( cur !== newy[ i ] ) {
+            if ( cur !== ( newy || [] )[ i ] ) {
                 if ( cur === null ) {
                     re[ 1 ] = i;
                 }
@@ -925,7 +925,7 @@ var Game = Ractive.extend( {
             var firstBestMove = sortedRanks[ 0 ][ 0 ][ 2 ],
                 secondBestMove = sortedRanks[ 0 ][ 0 ][ 2 ];
 
-            if ( ( sortedRanks[ 2 ][ 0 ] || [] )[ 0 ] || -1 > sortedRanks[ 0 ][ 0 ][ 0 ] ) {
+            if ( ( sortedRanks[ 2 ][ 0 ] || [ 0 ] )[ 0 ] > ( sortedRanks[ 1 ][ 0 ] || [ 0 ] )[ 0 ] ) {
                 change = this.changeBetween( board, firstBestMove );
             } else {
                 change = this.changeBetween( board, secondBestMove );
@@ -933,7 +933,7 @@ var Game = Ractive.extend( {
         } else {
             //console.log( "Let's screw e'm up!" );
             //benefits the AI to Play against player
-            console.log( sortedRanks[ 1 ] );
+            //console.log( sortedRanks[ 1 ] );
 
             if ( sortedRanks[ 1 ].length > 2 ) {
                 var firstBestMove = ( ranks[ 0 ][ sortedRanks[ 1 ][ sortedRanks[ 1 ].length - 1 ][ 1 ] ] || [] )[ 2 ];
