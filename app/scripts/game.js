@@ -905,9 +905,9 @@ var Game = Ractive.extend( {
 
         } else {
 
-            [ 0, 1 ].forEach( function ( i ) {
-                ranks.push( ranks[ i ].map( function ( cur ) {
-                    return _this8.getPossibleRankingsFrom( cur % 2 == 0 ? !player : player, cur[ 2 ], cur[ 1 ] );
+            [ 0, 1 ].forEach( ( i ) => {
+                ranks.push( ranks[ i ].map( cur => {
+                    return this.getPossibleRankingsFrom( cur % 2 == 0 ? !player : player, cur[ 2 ], cur[ 1 ] );
                 } ).reduce( function ( a, b ) {
                     return a.concat( b );
                 }, [] ) );
