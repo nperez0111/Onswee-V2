@@ -610,7 +610,7 @@ var Game = Ractive.extend( {
 
         var cur = this.winningArrangements[ playersLocs[ 0 ] ];
 
-        return ( cur[ 1 ] == playersLocs[ 1 ] && cur[ 2 ] == playersLocs[ 2 ] );
+        return ( cur || [] ).length === 3 ? ( cur[ 1 ] == playersLocs[ 1 ] && cur[ 2 ] == playersLocs[ 2 ] ) : false;
 
     },
     log: true,
@@ -625,6 +625,13 @@ var Game = Ractive.extend( {
     //returns true if specified player has a line through the center in the specified board
 
     hasIllegalLineIn: function ( player, board ) {
+        if ( board.filter( c => {
+                return c === player
+            } ).length > 3 || board.filter( c => {
+                return c === !player
+            } ).length > 3 ) {
+            return true;
+        }
         if ( this.get( "turns" ) > 12 ) {
             return false;
         }
@@ -993,7 +1000,7 @@ var Game = Ractive.extend( {
         var moves = this.get( "moves" ),
             l = moves.length - 2,
             change = this.changeBetween( this.get( "board" ), board );
-        if ( l < 7 ) {
+        if ( l < 0 ) {
             return false;
         }
         return ( moves[ l ][ 0 ] == change[ 1 ] && moves[ l ][ 1 ] == change[ 0 ] );
