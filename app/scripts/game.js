@@ -530,7 +530,10 @@ var Game = Ractive.extend( {
         if ( arr1.length !== arr2.length ) {
             return false;
         }
-        return arr1.every( function ( x, i ) {
+        return arr1.every( ( x, i ) => {
+            if ( Array.isArray( x ) ) {
+                return this.arraysEqual( x, arr2[ i ] );
+            }
             return x == arr2[ i ];
         } );
     },
@@ -1004,6 +1007,30 @@ var Game = Ractive.extend( {
             return false;
         }
         return ( moves[ l ][ 0 ] == change[ 1 ] && moves[ l ][ 1 ] == change[ 0 ] );
+    },
+    isCyclical: function ( arr, query ) {
+        var sameAsQueryToIndex = arr.map( ( c, i ) => {
+            return i;
+        } ).filter( c => {
+            return this.arraysEqual( arr[ c ], query );
+        } ).reverse();
+        if ( sameAsQueryToIndex.length < 2 ) {
+            return false;
+        } else {
+            var a = sameAsQueryToIndex[ 0 ],
+                b = sameAsQueryToIndex[ 1 ],
+                distance = a - b;
+            var possiblyCyclical = arr.clone().filter( ( c, i ) => {
+                    return i >= b;
+                } ),
+                cycleA = possiblyCyclical.filter( ( c, i ) => {
+                    return i < distance;
+                } ),
+                cycleB = possiblyCyclical.filter( ( c, i ) => {
+                    return i >= distance;
+                } );
+            return this.arraysEqual( cycleA, cycleB );
+        }
     },
     findBestAverage: function ( choiceInFirstRound, thirdRoundArr ) {
         var c = 0,
