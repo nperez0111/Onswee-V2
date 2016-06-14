@@ -1020,7 +1020,7 @@ var Game = Ractive.extend( {
             var a = sameAsQueryToIndex[ 0 ],
                 b = sameAsQueryToIndex[ 1 ],
                 distance = a - b;
-            var possiblyCyclical = arr.clone().filter( ( c, i ) => {
+            var possiblyCyclical = arr.filter( ( c, i ) => {
                     return i >= b;
                 } ),
                 cycleA = possiblyCyclical.filter( ( c, i ) => {
@@ -1029,6 +1029,9 @@ var Game = Ractive.extend( {
                 cycleB = possiblyCyclical.filter( ( c, i ) => {
                     return i >= distance;
                 } );
+            if ( cycleA.length !== cycleB.length ) {
+                cycleB.push( query );
+            }
             return this.arraysEqual( cycleA, cycleB );
         }
     },
